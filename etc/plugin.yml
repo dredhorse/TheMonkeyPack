@@ -1,0 +1,7 @@
+name: TheMonkeyPack
+main: org.simiancage.TheMonkeyPack.TheMonkeyPack
+version: 1.0
+website: http://dev.bukkit.org/server-mods/themonkeypack/
+author: Don Redhorse
+description: Lot's of stuff.... neat stuff
+softdepend: [Vault]
