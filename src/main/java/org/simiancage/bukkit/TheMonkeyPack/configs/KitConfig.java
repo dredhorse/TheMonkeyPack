@@ -200,7 +200,7 @@ afterwards parsable again from the configuration class of bukkit
 
 
     private void setupCommands() {
-        main.registerCommand("kit", new KitCommand(main));
+        main.registerCommand("tmpkit", new KitCommand(main));
     }
 
     private void setupListeners() {

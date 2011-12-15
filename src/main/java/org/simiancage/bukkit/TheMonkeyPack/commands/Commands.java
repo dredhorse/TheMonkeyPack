@@ -33,11 +33,11 @@ public abstract class Commands implements CommandExecutor {
     protected final ChatColor PERMISSION_COLOR = ChatColor.LIGHT_PURPLE;
     protected final ChatColor INFO_MESSAGES = ChatColor.AQUA;
     protected final ChatColor WARNING_MESSAGES = ChatColor.GOLD;
-    protected final String PERM_DENIED = "You need the permission: %perm to use the %com command which allows %permDesc !";
+    protected final String PERM_DENIED = "You need the permission: %perm to use the %com command \n which %Desc !";
     protected final String WRONG_SYNTAX = "You used the wrong syntax for the command: " + COMMAND_COLOR;
     protected final String ALLOWS_YOU_TO = "which allows you to ";
     protected final String RIGHT_SYNTAX = "The right syntax for this command is: ";
-    protected final String EXAMPLE = "An example for the command is:";
+    protected final String EXAMPLE = "An example for the command is: ";
 
 
     protected TheMonkeyPack main;
@@ -57,7 +57,7 @@ public abstract class Commands implements CommandExecutor {
         String permDesc = command.getPermissionDesc();
         String msg = PERM_DENIED.replace("%perm", PERMISSION_COLOR + commandPerm + DEFAULT_COLOR);
         msg = msg.replace("%com", COMMAND_COLOR + commandName + DEFAULT_COLOR);
-        msg = msg.replace("%permDesc", SUB_COLOR + permDesc + DEFAULT_COLOR);
+        msg = msg.replace("%Desc", SUB_COLOR + permDesc + DEFAULT_COLOR);
         main.sendPlayerMessage(player, msg);
     }
 
@@ -138,5 +138,8 @@ public abstract class Commands implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         return false;
     }
+
+
+    abstract public boolean onPlayerCommand(Player player, String[] args);
 }
 

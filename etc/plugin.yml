@@ -5,3 +5,13 @@ website: http://dev.bukkit.org/server-mods/themonkeypack/
 author: Don Redhorse
 description: Lot's of stuff.... neat stuff
 softdepend: [Vault]
+
+commands:
+    tmpadmin:
+        description: administer TheMonkeyPack
+        usage: |
+            /<command>
+    tmpkit:
+        description: show a list of kit names or get a named kit
+        usage: |
+            /<command> [kitname] [player]

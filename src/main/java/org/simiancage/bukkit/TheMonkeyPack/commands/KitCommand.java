@@ -41,6 +41,7 @@ public class KitCommand extends Commands implements CommandExecutor {
         this.setPermission("tmp.kit", "allows access of the kit comamnd");
         this.setHasSubCommands(true);
         kitLogger = kitConfig.getKitLogger();
+        main.registerPlayerCommand(this.getCommandName(), this);
         mainLogger.debug("Kit command registered");
     }
 
@@ -59,6 +60,19 @@ public class KitCommand extends Commands implements CommandExecutor {
         }
 
         return false;
+    }
+
+    public boolean onPlayerCommand(Player player, String[] args) {
+        kitLogger.debug("kit command executing");
+        if (!main.hasPermission(player, getPermission())) {
+            permDenied(player, this);
+            return true;
+        } else {
+            runCommand(player, this.getCommandName(), args);
+            return true;
+        }
+
+
     }
 
     @Override
@@ -91,14 +105,15 @@ public class KitCommand extends Commands implements CommandExecutor {
                     }
                 }
             }
+            kitnames = "You have the following kits available: \n" + INFO_MESSAGES + kitnames;
             if (kitnames.equals("")) {
-                kitnames = "You don't have access to any kits";
+                kitnames = WARNING_MESSAGES + "You don't have access to any kits";
             }
             main.sendPlayerMessage(player, kitnames);
             return;
         }
         if (args.length >= 1) {
-            if (args[0].toLowerCase() == "help") {
+            if (args[0].toLowerCase().equalsIgnoreCase("help")) {
                 displayHelp(player, this);
                 return;
             }
@@ -215,7 +230,7 @@ public class KitCommand extends Commands implements CommandExecutor {
             }
 
             if (!found) {
-                main.sendPlayerMessage(player, WARNING_MESSAGES + "Please type " + COMMAND_COLOR + "'/kit'" + DEFAULT_COLOR + " for a list of valid kits or " + COMMAND_COLOR + "'/kit help'" + DEFAULT_COLOR + " for syntax help.");
+                main.sendPlayerMessage(player, WARNING_MESSAGES + "Please type " + COMMAND_COLOR + "'/kit'" + WARNING_MESSAGES + " for a list of valid kits or " + COMMAND_COLOR + "'/kit help'" + WARNING_MESSAGES + " for syntax help.");
                 kitLogger.debug(player.getName() + " requested unknown kit '" + args[0] + "'");
             }
             return;

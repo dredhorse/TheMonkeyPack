@@ -107,6 +107,7 @@ public class MainConfig {
     private static List<Type> weatherListenerEvents = new ArrayList<Type>();
     private static List<Type> worldListenerEvents = new ArrayList<Type>();
     private static List<Type> serverListenerEvents = new ArrayList<Type>();
+    private static List<Type> playerChatListeners = new ArrayList<Type>();
 
 
 // <<<<=== here..
@@ -181,6 +182,7 @@ public class MainConfig {
     private final String MODULE_NAME_KITS = "Kits";
     private boolean enableKits = false;
     public static KitConfig kitConfig;
+
     // ToDo after integrating the module make it available
     //public static KitsConfig kitsConfig;
 
@@ -416,6 +418,7 @@ afterwards parsable again from the configuration class of bukkit
     private void setupListeners() {
         addServerListenerEvents(Type.PLUGIN_ENABLE);
         addServerListenerEvents(Type.PLUGIN_DISABLE);
+        addPlayerChatListener(Type.PLAYER_COMMAND_PREPROCESS);
     }
 
 
@@ -478,6 +481,10 @@ afterwards parsable again from the configuration class of bukkit
         return serverListenerEvents;
     }
 
+    public static List<Type> getPlayerChatListeners() {
+        return playerChatListeners;
+    }
+
     public static void resetBlockListeners() {
         blockListenerEvents.clear();
     }
@@ -514,6 +521,10 @@ afterwards parsable again from the configuration class of bukkit
         serverListenerEvents.clear();
     }
 
+    public static void resetPlayerChatListeners() {
+        playerChatListeners.clear();
+    }
+
 
     public static void addBlockListeners(Type type) {
         if (!blockListenerEvents.contains(type)) {
@@ -540,8 +551,14 @@ afterwards parsable again from the configuration class of bukkit
     }
 
     public static void addPlayerListeners(Type type) {
-        if (!inventoryListenerEvents.contains(type)) {
+        if (!playerListenerEvents.contains(type)) {
             playerListenerEvents.add(type);
+        }
+    }
+
+    public static void addPlayerChatListener(Type type) {
+        if (!playerChatListeners.contains(type)) {
+            playerChatListeners.add(type);
         }
     }
 

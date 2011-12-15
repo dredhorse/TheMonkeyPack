@@ -38,7 +38,7 @@ public class AdminCommand extends Commands implements CommandExecutor {
 
     @Override
     public void runCommand(CommandSender sender, String label, String[] args) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
@@ -61,6 +61,11 @@ public class AdminCommand extends Commands implements CommandExecutor {
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean onPlayerCommand(Player player, String[] args) {
         return false;
     }
 }

@@ -21,8 +21,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerChatListener;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
+
+import java.util.HashMap;
 
 public class TheMonkeyPack extends JavaPlugin {
 
@@ -36,6 +39,7 @@ public class TheMonkeyPack extends JavaPlugin {
     private boolean economyEnabled;
     private KitConfig kitConfig;
     private Economy economy = null;
+    HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
 
 
 /*    interface Listener {
@@ -60,11 +64,18 @@ public class TheMonkeyPack extends JavaPlugin {
             addRegisteredListener();
         }
 
+        for (Type event : mainConfig.getPlayerChatListeners()) {
+            getServer().getPluginManager().registerEvent(event, new PlayerChatListener(this), Priority.Normal, this);
+            addRegisteredListener();
+        }
+
         mainLogger.debug(registeredCommands + " Commands registered");
         mainLogger.debug(registeredListeners + " Listeners registered");
         if (mainConfig.isEnableKits()) {
             kitConfig = KitConfig.getInstance();
         }
+
+        // ToDo add more configs for other Modules on Top
         mainLogger.enableMsg();
 
     }
@@ -84,6 +95,8 @@ public class TheMonkeyPack extends JavaPlugin {
         mainConfig.resetWeatherListeners();
         mainConfig.resetWorldListeners();
         mainConfig.resetServerListeners();
+        mainConfig.resetPlayerChatListeners();
+        registeredPlayerCommands.clear();
         economy = null;
         economyEnabled = false;
     }
@@ -146,6 +159,22 @@ public class TheMonkeyPack extends JavaPlugin {
 
     public void sendPlayerMessage(Player player, String msg) {
         player.sendRawMessage(msg);
+    }
+
+    public void registerPlayerCommand(String command, Commands commands) {
+        registeredPlayerCommands.put(command, commands);
+    }
+
+    public HashMap<String, Commands> getRegisteredPlayerCommands() {
+        return registeredPlayerCommands;
+    }
+
+    public boolean isValidPlayerCommand(String command) {
+        return registeredPlayerCommands.containsKey(command);
+    }
+
+    public Commands getPlayerCommand(String command) {
+        return registeredPlayerCommands.get(command);
     }
 }
 
