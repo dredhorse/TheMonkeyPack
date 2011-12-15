@@ -11,26 +11,32 @@ package org.simiancage.bukkit.TheMonkeyPack;
  */
 
 
-import org.bukkit.command.Command;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.event.Event.Type;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
+import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
-import org.simiancage.bukkit.TheMonkeyPack.helpers.CommandHelper;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.Listeners;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TheMonkeyPack extends JavaPlugin {
 
-    private CommandHelper commandHelper;
+
     private MainLogger mainLogger;
     private MainConfig mainConfig;
-    private Plugin instance;
+    private JavaPlugin instance;
+    private int registeredCommands = 0;
+    private int registeredListeners = 0;
+    private boolean vaultFound;
+    private boolean economyEnabled;
+    private KitConfig kitConfig;
+    private Economy economy = null;
+
 
 /*    interface Listener {
         void onEnable(TheMonkeyPack main);
@@ -40,78 +46,106 @@ public class TheMonkeyPack extends JavaPlugin {
 
 
     public void onEnable() {
+        registeredCommands = 0;
+        registeredListeners = 0;
         instance = this;
-        mainLogger = MainLogger.getInstance(this);
-        mainConfig = MainConfig.getInstance();
+        mainLogger = new MainLogger(this);
+        mainConfig = new MainConfig(this);
+        mainLogger.setConfig(mainConfig);
         mainConfig.setupConfig(this);
 
-        this.commandHelper = new CommandHelper(this);
 
+        for (Type event : mainConfig.getServerListenerEvents()) {
+            getServer().getPluginManager().registerEvent(event, new ServerListenerTMP(this), Priority.Monitor, this);
+            addRegisteredListener();
+        }
 
-        registerCommands();
+        mainLogger.debug(registeredCommands + " Commands registered");
+        mainLogger.debug(registeredListeners + " Listeners registered");
+        if (mainConfig.isEnableKits()) {
+            kitConfig = KitConfig.getInstance();
+        }
         mainLogger.enableMsg();
 
     }
 
     public void onDisable() {
-
-    }
-
-    /**
-     * Registering the commands we have
-     */
-
-
-    private void registerCommands() {
-        int total = 0;
-
-        for (Commands command : mainConfig.getCommands()) {
-            total++;
-            this.commandHelper.registerCommand(command);
+        if (mainConfig.isEnableKits()) {
+            kitConfig.resetKits();
         }
-        mainLogger.debug(total + " Commands registered");
+        registeredCommands = 0;
+        registeredListeners = 0;
+        mainConfig.resetBlockListeners();
+        mainConfig.resetEntityListeners();
+        mainConfig.resetEventListeners();
+        mainConfig.resetInventoryListeners();
+        mainConfig.resetPlayerListeners();
+        mainConfig.resetVehicleListeners();
+        mainConfig.resetWeatherListeners();
+        mainConfig.resetWorldListeners();
+        mainConfig.resetServerListeners();
+        economy = null;
+        economyEnabled = false;
     }
 
-
-    /**
-     * Registering the Listeners we have
-     */
-
-    private void registerListeners() {
-        int total = 0;
-        for (Listeners listener : mainConfig.getListeners()) {
-            total++;
-            listener.onEnable(this);
-        }
+    public void registerCommand(String command, Commands commands) {
+        mainLogger.debug("Command", command);
+        mainLogger.debug("CommandObject", commands);
+        this.getCommand(command).setExecutor(commands);
+        Permission permission = new Permission(commands.getPermission(), commands.getPermissionDesc());
+        this.getServer().getPluginManager().addPermission(permission);
+        registeredCommands++;
     }
 
-    /**
-     * onCommand
-     */
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        if (!this.isEnabled()) {
-            sender.sendMessage("This plugin is Disabled!");
-            return true;
-        }
-        ArrayList<String> allArgs = new ArrayList<String>(Arrays.asList(args));
-        allArgs.add(0, command.getName());
-        return this.commandHelper.locateAndRunCommand(sender, allArgs);
+    private void addRegisteredListener() {
+        registeredListeners++;
     }
 
-    public CommandHelper getCommandHandler() {
-        return this.commandHelper;
-    }
 
     public boolean hasPermission(CommandSender sender, String node) {
         Player player = (Player) sender;
         mainLogger.debug("Checking to see if player [" + player.getName() + "] has permission [" + node + "]");
-        boolean hasPermission = sender.hasPermission(node);
+        boolean hasPermission = player.hasPermission(node);
         if (hasPermission) {
             mainLogger.debug("Player [" + player.getName() + "] HAS PERMISSION [" + node + "]!");
         }
         return hasPermission;
     }
 
+    public boolean isVaultFound() {
+        return vaultFound;
+    }
+
+    public void setVaultFound(boolean vaultFound) {
+        this.vaultFound = vaultFound;
+    }
+
+    public boolean isEconomyEnabled() {
+        return economyEnabled;
+    }
+
+    public void setEconomyEnabled(boolean economyEnabled) {
+        this.economyEnabled = economyEnabled;
+    }
+
+    public Economy getEconomy() {
+        return economy;
+    }
+
+    public void setEconomy(Economy economy) {
+        this.economy = economy;
+    }
+
+    public MainLogger getMainLogger() {
+        return mainLogger;
+    }
+
+    public MainConfig getMainConfig() {
+        return mainConfig;
+    }
+
+    public void sendPlayerMessage(Player player, String msg) {
+        player.sendRawMessage(msg);
+    }
 }
 

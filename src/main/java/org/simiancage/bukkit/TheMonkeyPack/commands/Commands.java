@@ -1,120 +1,142 @@
 package org.simiancage.bukkit.TheMonkeyPack.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Player;
+import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * PluginName: TheMonkeyPack
  * Class: Commands
  * User: DonRedhorse
- * Date: 08.12.11
- * Time: 19:12
+ * Date: 15.12.11
+ * Time: 19:19
  */
 
-// contains code taken from https://github.com/PneumatiCraft/CommandHandler
-// and https://github.com/Multiverse/Multiverse-Core
-
-public abstract class Commands {
+public abstract class Commands implements CommandExecutor {
 
     protected String permission;
-    protected boolean opRequired;
-
-    protected int minimumArgLength;
-    protected int maximumArgLength;
-
-    protected String commandName;
+    protected String permissionDesc;
     protected String commandDesc;
     protected String commandExample;
-    public String commandUsage;
+    protected String commandUsage;
+    protected String commandName;
+    protected boolean hasSubCommands;
+    protected final ChatColor DEFAULT_COLOR = ChatColor.WHITE;
+    protected final ChatColor SUB_COLOR = ChatColor.AQUA;
+    protected final ChatColor COMMAND_COLOR = ChatColor.RED;
+    protected final ChatColor OPTIONAL_COLOR = ChatColor.GREEN;
+    protected final ChatColor PERMISSION_COLOR = ChatColor.LIGHT_PURPLE;
+    protected final ChatColor INFO_MESSAGES = ChatColor.AQUA;
+    protected final ChatColor WARNING_MESSAGES = ChatColor.GOLD;
+    protected final String PERM_DENIED = "You need the permission: %perm to use the %com command which allows %permDesc !";
+    protected final String WRONG_SYNTAX = "You used the wrong syntax for the command: " + COMMAND_COLOR;
+    protected final String ALLOWS_YOU_TO = "which allows you to ";
+    protected final String RIGHT_SYNTAX = "The right syntax for this command is: ";
+    protected final String EXAMPLE = "An example for the command is:";
 
-    protected List<String> commandKeys;
 
-
-    private Plugin main;
+    protected TheMonkeyPack main;
     private MainConfig mainConfig;
-    private MainLogger mainLogger;
+    protected MainLogger mainLogger;
 
 
-    public Commands(Plugin instance) {
+    public Commands(TheMonkeyPack instance) {
         main = instance;
-        mainLogger = MainLogger.getLogger();
-        mainConfig = MainConfig.getInstance();
-        this.commandKeys = new ArrayList<String>();
+        mainLogger = main.getMainLogger();
+        mainConfig = main.getMainConfig();
     }
 
-
-    public abstract void runCommand(CommandSender sender, List<String> args);
-
-    public boolean checkArgLength(List<String> args) {
-        return (this.minimumArgLength == -1 || this.minimumArgLength <= args.size())
-                && (args.size() <= this.maximumArgLength || this.maximumArgLength == -1);
+    public void permDenied(Player player, Commands command) {
+        String commandName = command.getCommandName();
+        String commandPerm = command.getPermission();
+        String permDesc = command.getPermissionDesc();
+        String msg = PERM_DENIED.replace("%perm", PERMISSION_COLOR + commandPerm + DEFAULT_COLOR);
+        msg = msg.replace("%com", COMMAND_COLOR + commandName + DEFAULT_COLOR);
+        msg = msg.replace("%permDesc", SUB_COLOR + permDesc + DEFAULT_COLOR);
+        main.sendPlayerMessage(player, msg);
     }
 
-    private String getArgsString(List<String> args) {
-        String returnString = "";
-        for (String s : args) {
-            returnString += s + " ";
+    public void displayHelp(Player player, Commands commands) {
+        main.sendPlayerMessage(player, WRONG_SYNTAX + commands.getCommandName());
+        main.sendPlayerMessage(player, ALLOWS_YOU_TO + commands.getCommandDesc());
+        main.sendPlayerMessage(player, RIGHT_SYNTAX + commands.getCommandUsage());
+        main.sendPlayerMessage(player, EXAMPLE + commands.getCommandExample());
+        if (commands.hasSubCommands) {
+            commands.subCommands(player);
         }
-        return returnString.substring(0, returnString.length() - 1);
     }
 
-    public String getKey(ArrayList<String> parsedArgs) {
-        // Combines our args to a space separated string
-        String argsString = this.getArgsString(parsedArgs);
+    abstract public void subCommands(CommandSender sender);
 
-        for (String s : this.commandKeys) {
-            String identifier = s.toLowerCase();
-            if (argsString.matches(identifier + "(\\s+.*|\\s*)")) {
-                return identifier;
-            }
-        }
-        return null;
-    }
+    abstract public void runCommand(CommandSender sender, String label, String[] args);
 
-    // mutates!
-    public List<String> removeKeyArgs(List<String> args, String key) {
-        int identifierLength = key.split(" ").length;
-        for (int i = 0; i < identifierLength; i++) {
-            // Since we're pulling from the front, always remove the first element
-            args.remove(0);
-        }
-        return args;
-    }
 
     public String getPermission() {
-        return this.permission;
-    }
-
-    public boolean isOpRequired() {
-        return this.opRequired;
-    }
-
-    public String getCommandName() {
-        return this.commandName;
+        return permission;
     }
 
     public String getCommandDesc() {
-        return this.commandDesc;
+        return commandDesc;
     }
 
     public String getCommandExample() {
-        return this.commandExample;
+        return commandExample;
     }
 
     public String getCommandUsage() {
-        return this.commandUsage;
+        return commandUsage;
     }
 
-    /**
-     * @return the plugin
-     */
-    public Plugin getPlugin() {
-        return this.main;
+    public String getCommandName() {
+        return commandName;
+    }
+
+    public String getPermissionDesc() {
+        return permissionDesc;
+    }
+
+    public void setPermission(String permission, String permDesc) {
+        this.permission = permission;
+        this.permissionDesc = permDesc;
+    }
+
+    public void setPermissionDesc(String permissionDesc) {
+        this.permissionDesc = permissionDesc;
+    }
+
+
+    public void setCommandDesc(String commandDesc) {
+        this.commandDesc = commandDesc;
+    }
+
+    public void setCommandExample(String commandExample) {
+        this.commandExample = commandExample;
+    }
+
+    public void setCommandUsage(String commandUsage) {
+        this.commandUsage = commandUsage;
+    }
+
+    public void setCommandName(String commandName) {
+        this.commandName = commandName;
+    }
+
+    public boolean isHasSubCommands() {
+        return hasSubCommands;
+    }
+
+    public void setHasSubCommands(boolean hasSubCommands) {
+        this.hasSubCommands = hasSubCommands;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        return false;
     }
 }
 

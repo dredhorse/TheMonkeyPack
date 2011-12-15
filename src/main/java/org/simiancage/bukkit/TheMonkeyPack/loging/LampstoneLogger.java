@@ -51,7 +51,7 @@ public class LampstoneLogger {
     /**
      * Instance of the ConfigurationCalls
      */
-    private final MainConfig config = MainConfig.getInstance();
+    private MainConfig config;
 
 
     /**

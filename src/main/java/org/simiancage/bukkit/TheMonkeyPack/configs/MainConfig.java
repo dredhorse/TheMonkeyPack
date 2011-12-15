@@ -10,11 +10,12 @@ package org.simiancage.bukkit.TheMonkeyPack.configs; /**
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.simiancage.bukkit.TheMonkeyPack.commands.AdminCommand;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
+import org.simiancage.bukkit.TheMonkeyPack.commands.Admin.AdminCommand;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.Listeners;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
 import java.io.*;
@@ -38,7 +39,7 @@ public class MainConfig {
     /**
      * Instance of the Configuration Class
      */
-    private static MainConfig instance = null;
+    private MainConfig instance = null;
 
 // Nothing to change from here to ==>>>
     /**
@@ -50,7 +51,9 @@ public class MainConfig {
     /**
      * Object to handle the plugin
      */
-    private Plugin main;
+    private JavaPlugin plugin;
+
+    private TheMonkeyPack main;
 
     /**
      * Configuration File Name
@@ -93,6 +96,18 @@ public class MainConfig {
      * Do we require a config update?
      */
     private boolean configRequiresUpdate = false;
+
+
+    private static List<Type> blockListenerEvents = new ArrayList<Type>();
+    private static List<Type> eventListenerEvents = new ArrayList<Type>();
+    private static List<Type> entityListenerEvents = new ArrayList<Type>();
+    private static List<Type> inventoryListenerEvents = new ArrayList<Type>();
+    private static List<Type> playerListenerEvents = new ArrayList<Type>();
+    private static List<Type> vehicleListenerEvents = new ArrayList<Type>();
+    private static List<Type> weatherListenerEvents = new ArrayList<Type>();
+    private static List<Type> worldListenerEvents = new ArrayList<Type>();
+    private static List<Type> serverListenerEvents = new ArrayList<Type>();
+
 
 // <<<<=== here..
 
@@ -165,16 +180,13 @@ public class MainConfig {
     private final String ENABLE_KITS = "enableKits";
     private final String MODULE_NAME_KITS = "Kits";
     private boolean enableKits = false;
+    public static KitConfig kitConfig;
     // ToDo after integrating the module make it available
     //public static KitsConfig kitsConfig;
 
 // *******************************************************************************************************************
 
     // These are helper variables
-
-    private List<Listeners> listeners = new ArrayList<Listeners>();
-
-    private List<Commands> commands = new ArrayList<Commands>();
 
 
 // *******************************************************************************************************************
@@ -214,7 +226,6 @@ afterwards parsable again from the configuration class of bukkit
     private void loadCustomConfig() {
 // ToDo Start here loading the configuration into your config variables
 
-        commands.add(new AdminCommand(main));
         enableAfkHandler = config.getBoolean(ENABLE_AFKHANDLER);
         enableHelloWorld = config.getBoolean(ENABLE_HELLOWORLD);
         enableKits = config.getBoolean(ENABLE_KITS);
@@ -229,6 +240,8 @@ afterwards parsable again from the configuration class of bukkit
         log.debug(ENABLE_AFKHANDLER, enableAfkHandler);
         log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
+
+
     }
 
 // And than we write it....
@@ -291,6 +304,9 @@ afterwards parsable again from the configuration class of bukkit
     private void loadModuleConfigs() {
         if (enableLampstone) {
             lampstoneConfig = new LampstoneConfig(main, MODULE_NAME_LAMPSTONE);
+        }
+        if (enableKits) {
+            kitConfig = new KitConfig(main, MODULE_NAME_KITS);
         }
         // ToDo after enabling the module make it available
 
@@ -373,11 +389,7 @@ afterwards parsable again from the configuration class of bukkit
      * @return instance of class
      */
 
-    public static MainConfig getInstance() {
-        if (instance == null) {
-            instance = new MainConfig();
-        }
-        log = MainLogger.getLogger();
+    public MainConfig getInstance() {
         return instance;
     }
 
@@ -389,13 +401,21 @@ afterwards parsable again from the configuration class of bukkit
      *
      * @return instance of class
      */
-    public static MainConfig getInstance(String configuratonFile) {
-        if (instance == null) {
-            instance = new MainConfig();
-        }
-        log = MainLogger.getLogger();
+    public MainConfig getInstance(String configuratonFile) {
         configFile = configuratonFile;
         return instance;
+    }
+
+    private void setupCommands() {
+        Commands adminCommand = new AdminCommand(main);
+        main.registerCommand("tmpadmin", adminCommand);
+
+
+    }
+
+    private void setupListeners() {
+        addServerListenerEvents(Type.PLUGIN_ENABLE);
+        addServerListenerEvents(Type.PLUGIN_DISABLE);
     }
 
 
@@ -412,12 +432,178 @@ afterwards parsable again from the configuration class of bukkit
 // The class stuff first
 
 
-    private MainConfig() {
+    public MainConfig(TheMonkeyPack theMonkeyPack) {
+        main = theMonkeyPack;
+        log = main.getMainLogger();
 
     }
 
 
-// than the getters
+// than the getters & setters
+
+
+    public static List<Type> getBlockListenerEvents() {
+        return blockListenerEvents;
+    }
+
+    public static List<Type> getEventListenerEvents() {
+        return eventListenerEvents;
+    }
+
+    public static List<Type> getEntityListenerEvents() {
+        return entityListenerEvents;
+    }
+
+    public static List<Type> getInventoryListenerEvents() {
+        return inventoryListenerEvents;
+    }
+
+    public static List<Type> getPlayerListenerEvents() {
+        return playerListenerEvents;
+    }
+
+    public static List<Type> getVehicleListenerEvents() {
+        return vehicleListenerEvents;
+    }
+
+    public static List<Type> getWeatherListenerEvents() {
+        return weatherListenerEvents;
+    }
+
+    public static List<Type> getWorldListenerEvents() {
+        return worldListenerEvents;
+    }
+
+    public static List<Type> getServerListenerEvents() {
+        return serverListenerEvents;
+    }
+
+    public static void resetBlockListeners() {
+        blockListenerEvents.clear();
+    }
+
+    public static void resetEventListeners() {
+        eventListenerEvents.clear();
+    }
+
+    public static void resetEntityListeners() {
+        entityListenerEvents.clear();
+    }
+
+    public static void resetInventoryListeners() {
+        inventoryListenerEvents.clear();
+    }
+
+    public static void resetPlayerListeners() {
+        playerListenerEvents.clear();
+    }
+
+    public static void resetVehicleListeners() {
+        vehicleListenerEvents.clear();
+    }
+
+    public static void resetWeatherListeners() {
+        weatherListenerEvents.clear();
+    }
+
+    public static void resetWorldListeners() {
+        worldListenerEvents.clear();
+    }
+
+    public static void resetServerListeners() {
+        serverListenerEvents.clear();
+    }
+
+
+    public static void addBlockListeners(Type type) {
+        if (!blockListenerEvents.contains(type)) {
+            blockListenerEvents.add(type);
+        }
+    }
+
+    public static void addEventListeners(Type type) {
+        if (!eventListenerEvents.contains(type)) {
+            eventListenerEvents.add(type);
+        }
+    }
+
+    public static void addEntityListeners(Type type) {
+        if (!entityListenerEvents.contains(type)) {
+            entityListenerEvents.add(type);
+        }
+    }
+
+    public static void addInventoryListeners(Type type) {
+        if (!entityListenerEvents.contains(type)) {
+            inventoryListenerEvents.add(type);
+        }
+    }
+
+    public static void addPlayerListeners(Type type) {
+        if (!inventoryListenerEvents.contains(type)) {
+            playerListenerEvents.add(type);
+        }
+    }
+
+    public static void addVehicleListeners(Type type) {
+        if (!vehicleListenerEvents.contains(type)) {
+            vehicleListenerEvents.add(type);
+        }
+    }
+
+    public static void addWeatherListeners(Type type) {
+        if (!weatherListenerEvents.contains(type)) {
+            weatherListenerEvents.add(type);
+        }
+    }
+
+    public static void addWorldListeners(Type type) {
+        if (!worldListenerEvents.contains(type)) {
+            worldListenerEvents.add(type);
+        }
+    }
+
+    public static void addServerListenerEvents(Type type) {
+        if (!serverListenerEvents.contains(type)) {
+            serverListenerEvents.add(type);
+        }
+    }
+
+    public static boolean isEnableEntityListener() {
+        return entityListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableEventListener() {
+        return eventListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableBlockListener() {
+        return blockListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableInventoryListener() {
+        return inventoryListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnablePlayerListener() {
+        return playerListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableVehicleListener() {
+        return vehicleListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableWeatherListener() {
+        return weatherListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableWorldListeners() {
+        return worldListenerEvents.size() > 0;
+    }
+
+    public static boolean isEnableServerListeners() {
+        return serverListenerEvents.size() > 0;
+    }
 
     /**
      * Method to return the PluginName
@@ -528,9 +714,10 @@ afterwards parsable again from the configuration class of bukkit
      * @see #versionCheck()
      */
 
-    public void setupConfig(Plugin plugin) {
-        main = plugin;
-        String pluginPath = main.getDataFolder() + System.getProperty("file.separator");
+    public void setupConfig(JavaPlugin plugin) {
+        this.plugin = plugin;
+        main = (TheMonkeyPack) plugin;
+        String pluginPath = plugin.getDataFolder() + System.getProperty("file.separator");
 // Checking if config file exists, if not create it
         if (!(new File(plugin.getDataFolder(), configFile)).exists()) {
             log.info("Creating default configuration file");
@@ -557,6 +744,9 @@ afterwards parsable again from the configuration class of bukkit
         if (checkForUpdate) {
             versionCheck();
         }
+        setupCommands();
+        setupListeners();
+        loadModuleConfigs();
         configAvailable = true;
     }
 
@@ -809,23 +999,6 @@ afterwards parsable again from the configuration class of bukkit
             saved = writeConfig();
         }
         return saved;
-    }
-
-
-    public List<Listeners> getListeners() {
-        return listeners;
-    }
-
-    public List<Commands> getCommands() {
-        return commands;
-    }
-
-    public void addListener(Listeners listener) {
-        listeners.add(listener);
-    }
-
-    public void addCommand(Commands command) {
-        commands.add(command);
     }
 
 }

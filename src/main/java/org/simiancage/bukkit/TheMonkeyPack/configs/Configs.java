@@ -107,9 +107,6 @@ public abstract class Configs {
 
 
     Configs() {
-        mainLogger = MainLogger.getLogger();
-        mainConfig = MainConfig.getInstance();
-
     }
 
 

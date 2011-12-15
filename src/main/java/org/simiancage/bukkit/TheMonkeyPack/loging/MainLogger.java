@@ -37,75 +37,25 @@ public class MainLogger {
     /**
      * Reference to the logger
      */
-    private final Logger logger;
+    private Logger logger;
     /**
      * contains the plugin name
      */
-    private final String pluginName;
+    String pluginName;
     /**
      * contains the plugin pluginVersion
      */
-    private final String pluginVersion;
+    private String pluginVersion = "";
     /**
      * Instance of the MainLogger
      */
-    private static MainLogger instance = null;
+    private MainLogger instance = null;
 
-// ToDo Change the org.simiancage.bukkit.TheMonkeyPack.loging.ConfigurationClass to the correct name of the Class
+
     /**
      * Instance of the ConfigurationCalls
      */
-    private final MainConfig config = MainConfig.getInstance();
-
-
-    /**
-     * Method to get the instance of the MainLogger.
-     * MainLogger will be initialized when necessary.
-     *
-     * @param loggerName should be "Minecraft"
-     * @param pluginName the pluginname as string
-     *
-     * @return instance of the MainLogger
-     */
-    public static MainLogger getInstance(String loggerName, String pluginName) {
-        if (instance == null) {
-            instance = new MainLogger(loggerName, pluginName);
-        }
-        return instance;
-    }
-
-
-    /**
-     * Method to get the instance of the MainLogger.
-     * MainLogger will be initialized when necessary.
-     *
-     * @param pluginName the pluginname as string
-     *
-     * @return instance of the MainLogger
-     */
-    public static MainLogger getInstance(String pluginName) {
-        if (instance == null) {
-            instance = new MainLogger(pluginName);
-        }
-        return instance;
-    }
-
-
-    /**
-     * Method to get the instance of the MainLogger.
-     * MainLogger will be initialized when necessary.
-     * Use this to initialize the MainLogger.
-     *
-     * @param pluginName the pluginname as Plugin
-     *
-     * @return instance of the MainLogger
-     */
-    public static MainLogger getInstance(Plugin pluginName) {
-        if (instance == null) {
-            instance = new MainLogger(pluginName);
-        }
-        return instance;
-    }
+    private static MainConfig config;
 
 
     /**
@@ -113,7 +63,7 @@ public class MainLogger {
      *
      * @return instance of the MainLogger, NOTE: This can be NULL
      */
-    public static MainLogger getLogger() {
+    public MainLogger getLogger() {
         return instance;
     }
 
@@ -135,8 +85,12 @@ public class MainLogger {
      *
      * @param pluginName the name of the plugin
      */
-    private MainLogger(String pluginName) {
+    MainLogger(String pluginName) {
         this("Minecraft", pluginName);
+    }
+
+    public MainLogger() {
+        this.logger = Logger.getLogger("Minecraft");
     }
 
 
@@ -161,7 +115,7 @@ public class MainLogger {
      *
      * @param plugin the plugin object
      */
-    private MainLogger(Plugin plugin) {
+    public MainLogger(Plugin plugin) {
         this(plugin.getServer().getLogger(), plugin.getDescription().getName(), plugin.getDescription().getVersion());
     }
 
@@ -175,8 +129,8 @@ public class MainLogger {
      * @param object object to output, will use .toString()
      */
     public void debug(String msg, Object object) {
-        if (config.isDebugLogEnabled()) {
-            this.logger.info(this.formatMessage(msg + "= [" + object.toString() + "]"));
+        if (this.config.isDebugLogEnabled()) {
+            this.logger.info(this.formatMessage(msg + " = [" + object.toString() + "]"));
         }
     }
 
@@ -186,8 +140,8 @@ public class MainLogger {
      * @param msg message to output
      */
     public void debug(String msg) {
-        if (config.isDebugLogEnabled()) {
-            this.logger.info(msg);
+        if (this.config.isDebugLogEnabled()) {
+            this.logger.info(this.formatMessage(msg));
         }
     }
 
@@ -208,7 +162,7 @@ public class MainLogger {
      * @param msg message to output
      */
     public void info(String msg) {
-        if (config.isErrorLogEnabled()) {
+        if (this.config.isErrorLogEnabled()) {
             this.logger.info(this.formatMessage(msg));
         }
     }
@@ -282,11 +236,13 @@ public class MainLogger {
      * @param msg message to output
      */
     public void error(String msg) {
-        if (config.isErrorLogEnabled()) {
+        if (this.config.isErrorLogEnabled()) {
             this.logger.info(msg);
         }
     }
 
-
+    public void setConfig(MainConfig config) {
+        this.config = config;
+    }
 }
 
