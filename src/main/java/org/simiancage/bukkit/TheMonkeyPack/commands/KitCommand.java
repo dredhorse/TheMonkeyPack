@@ -30,15 +30,47 @@ public class KitCommand extends Commands implements CommandExecutor {
     private KitConfig kitConfig = KitConfig.getInstance();
     private KitLogger kitLogger;
     private TheMonkeyPack main;
+    private String kitCmd;
+    private String helpOption;
+    private String cmdDescription;
+    private String cmdPermDescription;
+    private String displayHelpMessage;
+    private String kitsAvailableMessage;
+    private String noKitsAvailableMessages;
+    private String dontHaveAccessToKit;
+    private String pleaseTryAgain;
+    private String chargedForKit;
+    private String cantAfford;
+    private String notOnline;
+    private String enjoyTheKit;
+    private String hasReceived;
+    private String gaveYouAKit;
+    private String unknownKit;
 
     public KitCommand(TheMonkeyPack instance) {
         super(instance);
         main = (TheMonkeyPack) instance;
-        this.setCommandName("kit");
-        this.setCommandDesc("show a list of kit names or get a named kit");
-        this.setCommandUsage(COMMAND_COLOR + "/kit" + OPTIONAL_COLOR + " [kitname] [player]");
-        this.setCommandExample(COMMAND_COLOR + "/kit " + SUB_COLOR + "beginners");
-        this.setPermission("tmp.kit", "allows access of the kit comamnd");
+        kitCmd = kitConfig.getKitCmd();
+        helpOption = kitConfig.getHelpOption();
+        cmdDescription = kitConfig.getCmdDescription();
+        cmdPermDescription = kitConfig.getCmdPermDescription();
+        displayHelpMessage = kitConfig.getDisplayHelpMessage();
+        kitsAvailableMessage = kitConfig.getKitsAvailableMessage();
+        noKitsAvailableMessages = kitConfig.getNoKitsAvailableMessage();
+        dontHaveAccessToKit = kitConfig.getDontHaveAccessToKit();
+        pleaseTryAgain = kitConfig.getPleaseTryAgain();
+        chargedForKit = kitConfig.getChargedForKit();
+        cantAfford = kitConfig.getCantAfford();
+        notOnline = kitConfig.getNotOnline();
+        enjoyTheKit = kitConfig.getEnjoyTheKit();
+        hasReceived = kitConfig.getHasReceived();
+        gaveYouAKit = kitConfig.getGaveYouAKit();
+        unknownKit = kitConfig.getUnknownKit();
+        this.setCommandName(kitCmd);
+        this.setCommandDesc(cmdDescription);
+        this.setCommandUsage(COMMAND_COLOR + "/" + kitCmd + OPTIONAL_COLOR + " [kitname] [player]");
+        this.setCommandExample(COMMAND_COLOR + "/" + kitCmd + SUB_COLOR + " " + kitConfig.getKits().get(0).Name());
+        this.setPermission("tmp.kit", cmdPermDescription);
         this.setHasSubCommands(true);
         kitLogger = kitConfig.getKitLogger();
         main.registerPlayerCommand(this.getCommandName(), this);
@@ -77,7 +109,7 @@ public class KitCommand extends Commands implements CommandExecutor {
 
     @Override
     public void subCommands(CommandSender sender) {
-        sender.sendMessage("/kit " + SUB_COLOR + "help" + DEFAULT_COLOR + " displays this help.");
+        sender.sendMessage("/" + COMMAND_COLOR + kitCmd + SUB_COLOR + " " + helpOption + DEFAULT_COLOR + " " + displayHelpMessage);
     }
 
 
@@ -105,15 +137,17 @@ public class KitCommand extends Commands implements CommandExecutor {
                     }
                 }
             }
-            kitnames = "You have the following kits available: \n" + INFO_MESSAGES + kitnames;
+            kitnames = kitsAvailableMessage + " \n" + INFO_MESSAGES + kitnames;
             if (kitnames.equals("")) {
-                kitnames = WARNING_MESSAGES + "You don't have access to any kits";
+                kitnames = WARNING_MESSAGES + noKitsAvailableMessages;
             }
             main.sendPlayerMessage(player, kitnames);
             return;
         }
         if (args.length >= 1) {
-            if (args[0].toLowerCase().equalsIgnoreCase("help")) {
+            kitLogger.debug("option", args[0]);
+            if (args[0].toLowerCase().equals(helpOption)) {
+                kitLogger.debug("helpOption", helpOption);
                 displayHelp(player, this);
                 return;
             }
@@ -142,7 +176,7 @@ public class KitCommand extends Commands implements CommandExecutor {
                 } else if (main.hasPermission(player, "tmp.kit." + kit.Name().toLowerCase())) {
                     kitLogger.debug("Access granted");
                 } else {
-                    main.sendPlayerMessage(player, WARNING_MESSAGES + "You don't have access to this kit!");
+                    main.sendPlayerMessage(player, WARNING_MESSAGES + dontHaveAccessToKit);
                     kitLogger.debug("Access to kit '" + kit.Name().toLowerCase() + "' denied for " + pname);
                     return;
                 }
@@ -165,7 +199,8 @@ public class KitCommand extends Commands implements CommandExecutor {
                     }
                 }
                 if (seconds > 0L) {
-                    main.sendPlayerMessage(player, INFO_MESSAGES + "Please try again in " + KitHelper.timeUntil(seconds) + ".");
+                    String msg = pleaseTryAgain.replace("%sec", KitHelper.timeUntil(seconds));
+                    main.sendPlayerMessage(player, INFO_MESSAGES + msg);
                     kitLogger.debug("Refused kit for " + pname + ": " + kit.Name() + " (need cooldown)");
                     return;
                 }
@@ -177,10 +212,11 @@ public class KitCommand extends Commands implements CommandExecutor {
                         double kitCost = Double.valueOf(kit.Cost());
                         if (main.getEconomy().getBalance(player.getName()) > kitCost) {
                             main.getEconomy().withdrawPlayer(player.getName(), kitCost);
-                            main.sendPlayerMessage(player, main.getEconomy().format(kitCost) + " deducted");
+                            String msg = chargedForKit.replace("%kitCharge", main.getEconomy().format(kitCost));
+                            main.sendPlayerMessage(player, msg);
                             kitLogger.debug("Deducted " + main.getEconomy().format(kitCost) + " from " + pname);
                         } else {
-                            main.sendPlayerMessage(player, WARNING_MESSAGES + "You can't afford that");
+                            main.sendPlayerMessage(player, WARNING_MESSAGES + cantAfford);
                             kitLogger.debug(pname + " can't afford the kit '" + kit.Name() + "'");
                             return;
                         }
@@ -216,12 +252,15 @@ public class KitCommand extends Commands implements CommandExecutor {
                     String playername = elements[localInteger1];
                     Player p = main.getServer().getPlayer(playername);
                     if (p == null) {
-                        main.sendPlayerMessage(player, WARNING_MESSAGES + playername + DEFAULT_COLOR + " is not online");
+                        String msg = notOnline.replace("%player", WARNING_MESSAGES + playername + DEFAULT_COLOR);
+                        main.sendPlayerMessage(player, msg);
                     } else if (p.equals(player)) {
-                        main.sendPlayerMessage(player, "Enjoy the Kit ;)");
+                        main.sendPlayerMessage(player, enjoyTheKit);
                     } else {
-                        main.sendPlayerMessage(player, p.getName() + " has received a kit!");
-                        main.sendPlayerMessage(p, pname + " gave you a kit!");
+                        String msg = hasReceived.replace("%player", p.getName());
+                        main.sendPlayerMessage(player, msg);
+                        msg = gaveYouAKit.replace("%player", pname);
+                        main.sendPlayerMessage(p, msg);
                     }
 
                 }
@@ -230,7 +269,9 @@ public class KitCommand extends Commands implements CommandExecutor {
             }
 
             if (!found) {
-                main.sendPlayerMessage(player, WARNING_MESSAGES + "Please type " + COMMAND_COLOR + "'/kit'" + WARNING_MESSAGES + " for a list of valid kits or " + COMMAND_COLOR + "'/kit help'" + WARNING_MESSAGES + " for syntax help.");
+                String msg = unknownKit.replace("%cmd", COMMAND_COLOR + kitCmd + WARNING_MESSAGES);
+                msg = msg.replace("%help", COMMAND_COLOR + helpOption + WARNING_MESSAGES);
+                main.sendPlayerMessage(player, WARNING_MESSAGES + msg);
                 kitLogger.debug(player.getName() + " requested unknown kit '" + args[0] + "'");
             }
             return;

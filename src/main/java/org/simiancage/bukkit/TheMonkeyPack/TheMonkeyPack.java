@@ -162,6 +162,7 @@ public class TheMonkeyPack extends JavaPlugin {
     }
 
     public void registerPlayerCommand(String command, Commands commands) {
+        mainLogger.debug("chat command registered", command);
         registeredPlayerCommands.put(command, commands);
     }
 

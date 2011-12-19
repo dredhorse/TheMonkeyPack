@@ -86,8 +86,25 @@ public class KitConfig extends Configs {
     private CopyOnWriteArrayList<KitObject> kits = new CopyOnWriteArrayList();
     private String kitExample1 = "268 1;269 1;-300;$10";
     private String nameExample1 = "Starter";
-    private String kitExample2 = "256 1";
+    private String kitExample2 = "1 1";
     private String nameExample2 = "Rock";
+    private String kitCmd = "kit";
+    private String helpOption = "help";
+    private String cmdDescription = "show a list of kit names or get a named kit";
+    private String cmdPermDescription = "allows access of the kit command";
+    private String displayHelpMessage = "displays this help.";
+    private String kitsAvailableMessage = "You have the following kits available: ";
+    private String noKitsAvailableMessage = "You don''t have access to any kits!";
+    private String dontHaveAccessToKit = "You don''t have access to this kit!";
+    private String pleaseTryAgain = "Please try again in %sec";
+    private String chargedForKit = "deducted %kitCharge for the kit";
+    private String cantAfford = "You can''t afford that!";
+    private String notOnline = "Player %player is not online";
+    private String enjoyTheKit = "Enjoy the Kit ;)";
+    private String hasReceived = "Player %player has received a kit!";
+    private String gaveYouAKit = "Player %player gave you a kit!";
+    private String unknownKit = "Please type /%cmd for a list of valid kits or /%cmd %help for syntax help.";
+
 
 // *******************************************************************************************************************
 
@@ -117,6 +134,23 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     void customDefaultConfig() {
+        config.addDefault("kitCmd", kitCmd);
+        config.addDefault("helpOption", helpOption);
+        config.addDefault("cmdDescription", cmdDescription);
+        config.addDefault("cmdPermDescription", cmdPermDescription);
+        config.addDefault("displayHelpMessage", displayHelpMessage);
+        config.addDefault("kitsAvailableMessage", kitsAvailableMessage);
+        config.addDefault("noKitsAvailableMessage", noKitsAvailableMessage);
+        config.addDefault("dontHaveAccessToKit", dontHaveAccessToKit);
+        config.addDefault("pleaseTryAgain", pleaseTryAgain);
+        config.addDefault("chargedForKit", chargedForKit);
+        config.addDefault("cantAfford", cantAfford);
+        config.addDefault("notOnline", notOnline);
+        config.addDefault("enjoyTheKit", enjoyTheKit);
+        config.addDefault("hasReceived", hasReceived);
+        config.addDefault("gaveYouAKit", gaveYouAKit);
+        config.addDefault("unknownKit", unknownKit);
+
     }
 
 
@@ -127,6 +161,40 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     void loadCustomConfig() {
+
+        kitCmd = config.getString("kitCmd");
+        helpOption = config.getString("helpOption");
+        cmdDescription = config.getString("cmdDescription");
+        cmdPermDescription = config.getString("cmdPermDescription");
+        displayHelpMessage = config.getString("displayHelpMessage");
+        kitsAvailableMessage = config.getString("kitsAvailableMessage");
+        noKitsAvailableMessage = config.getString("noKitsAvailableMessage");
+        dontHaveAccessToKit = config.getString("dontHaveAccessToKit");
+        pleaseTryAgain = config.getString("pleaseTryAgain");
+        chargedForKit = config.getString("chargedForKit");
+        cantAfford = config.getString("cantAfford");
+        notOnline = config.getString("notOnline");
+        enjoyTheKit = config.getString("enjoyTheKit");
+        hasReceived = config.getString("hasReceived");
+        gaveYouAKit = config.getString("gaveYouAKit");
+        unknownKit = config.getString("unknownKit");
+        kitLogger.debug("kitCmd", kitCmd);
+        kitLogger.debug("helpOption", helpOption);
+        kitLogger.debug("cmdDescription", cmdDescription);
+        kitLogger.debug("cmdPermDescription", cmdPermDescription);
+        kitLogger.debug("displayHelpMessage", displayHelpMessage);
+        kitLogger.debug("kitsAvailableMessage", kitsAvailableMessage);
+        kitLogger.debug("noKitsAvailableMessage", noKitsAvailableMessage);
+        kitLogger.debug("dontHaveAccessToKit", dontHaveAccessToKit);
+        kitLogger.debug("pleaseTryAgain", pleaseTryAgain);
+        kitLogger.debug("chargedForKit", chargedForKit);
+        kitLogger.debug("cantAfford", cantAfford);
+        kitLogger.debug("notOnline", notOnline);
+        kitLogger.debug("enjoyTheKit", enjoyTheKit);
+        kitLogger.debug("hasReceived", hasReceived);
+        kitLogger.debug("gaveYouAKit", gaveYouAKit);
+        kitLogger.debug("unknownKit", unknownKit);
+
 
         if (!kits.isEmpty()) {
             kits.clear();
@@ -165,8 +233,56 @@ afterwards parsable again from the configuration class of bukkit
 
         stream.println("#-------- Module Configuration");
         stream.println();
+        stream.println("# --- Translation Features");
+        stream.println();
+        stream.println("# Almost everything player visible can be translated!");
+        stream.println("# Please change to your liking and use the following variables");
+        stream.println("# %player = playername, %cmd = command, %help = help option");
+        stream.println("# %kitCharge = amount to be charged for the kit");
+        stream.println("# %sec = Seconds to wait for cooldown to finish");
+        stream.println();
+        stream.println("# NOTE: You need to use '' if you want to use ' in this text!");
+        stream.println();
+        stream.println("# The alias command for /tmpkit WITHOUT the / !!!");
+        stream.println("kitCmd: '" + kitCmd + "'");
+        stream.println("# The alias for the help option");
+        stream.println("helpOption: '" + helpOption + "'");
+        stream.println("# The command description.");
+        stream.println("cmdDescription: '" + cmdDescription + "'");
+        stream.println("# The command permissions description.");
+        stream.println("cmdPermDescription: '" + cmdPermDescription + "'");
+        stream.println("# The help message displayed.");
+        stream.println("displayHelpMessage: '" + displayHelpMessage + "'");
+        stream.println("# The kits available message displayed.");
+        stream.println("kitsAvailableMessage: '" + kitsAvailableMessage + "'");
+        stream.println("# The no kits available message displayed.");
+        stream.println("noKitsAvailableMessage: '" + noKitsAvailableMessage + "'");
+        stream.println("# The message displayed if you don't have the permissions to access a kit.");
+        stream.println("dontHaveAccessToKit: '" + dontHaveAccessToKit + "'");
+        stream.println("# The message displayed if the cooldown is still active.");
+        stream.println("pleaseTryAgain: '" + pleaseTryAgain + "'");
+        stream.println("# The message displayed if we charged for a kit.");
+        stream.println("chargedForKit: '" + chargedForKit + "'");
+        stream.println("# The message displayed if the player can't afford a kit.");
+        stream.println("cantAfford: '" + cantAfford + "'");
+        stream.println("# The message displayed if a player is not online while giving a kit.");
+        stream.println("notOnline: '" + notOnline + "'");
+        stream.println("# The message displayed when a player receives a kit.");
+        stream.println("enjoyTheKit: '" + enjoyTheKit + "'");
+        stream.println("# The message displayed when a player received a kit.");
+        stream.println("hasReceived : '" + hasReceived + "'");
+        stream.println("# The message displayed when the player received a kit from somebody else.");
+        stream.println("gaveYouAKit : '" + gaveYouAKit + "'");
+        stream.println("# The message displayed when the player requested an unknown kit.");
+        stream.println("unknownKit : '" + unknownKit + "'");
+
+        stream.println();
+        stream.println("# --- Kits");
+        stream.println();
         stream.println("# Add Kits here with the following style");
         stream.println("# Name: ID Amount;ID Amount;ID amount (etc)[;-cooldown][;$price]");
+        stream.println();
+        stream.println("# Note: You can't use the helpOption (" + helpOption + ") name a a kit!");
         stream.println();
         stream.println("# As an example:");
         stream.println("# " + nameExample1 + ": " + kitExample1);
@@ -180,15 +296,6 @@ afterwards parsable again from the configuration class of bukkit
             kitLogger.debug("Kit ", kit.toString());
             stream.println("    " + kit);
         }
-
-        /*Iterator iterator = kits.iterator();
-
-        while(iterator.hasNext()){
-            kitLogger.debug("hmm");
-            String kit = iterator.next().toString();
-            kitLogger.debug("Kit: ", kit);
-            stream.println("    " + kit);
-        }*/
 
 
     }
@@ -216,6 +323,70 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public String getKitCmd() {
+        return kitCmd;
+    }
+
+    public String getHelpOption() {
+        return helpOption;
+    }
+
+    public String getCmdDescription() {
+        return cmdDescription;
+    }
+
+    public String getCmdPermDescription() {
+        return cmdPermDescription;
+    }
+
+    public String getDisplayHelpMessage() {
+        return displayHelpMessage;
+    }
+
+    public String getKitsAvailableMessage() {
+        return kitsAvailableMessage;
+    }
+
+    public String getNoKitsAvailableMessage() {
+        return noKitsAvailableMessage;
+    }
+
+    public String getDontHaveAccessToKit() {
+        return dontHaveAccessToKit;
+    }
+
+    public String getPleaseTryAgain() {
+        return pleaseTryAgain;
+    }
+
+    public String getChargedForKit() {
+        return chargedForKit;
+    }
+
+    public String getCantAfford() {
+        return cantAfford;
+    }
+
+    public String getNotOnline() {
+        return notOnline;
+    }
+
+    public String getEnjoyTheKit() {
+        return enjoyTheKit;
+    }
+
+    public String getHasReceived() {
+        return hasReceived;
+    }
+
+    public String getGaveYouAKit() {
+        return gaveYouAKit;
+    }
+
+    public String getUnknownKit() {
+        return unknownKit;
+    }
 
     public void resetKits() {
         kits.clear();

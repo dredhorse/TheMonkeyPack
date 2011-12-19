@@ -1,0 +1,89 @@
+# TheMonkeyPack 0.1 by [Don Redhorse]
+#
+# Configuration File for TheMonkeyPack.
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+#------- Default Configuration
+
+# Configuration Version
+configVer: '1.0'
+
+# Error Log Enabled
+# Enable logging to server console
+# Warning and Severe will still be logged.
+errorLogEnabled: true
+
+# Debug Log Enabled
+# Enable more logging.. could be messy!
+DebugLogEnabled: true
+
+# Check for Update
+# Will check if there is a new version of the plugin out.
+checkForUpdate: true
+
+# Auto Update Config
+# This will overwrite any changes outside the configuration parameters!
+autoUpdateConfig: false
+
+# Save Config
+# This will overwrite any changes outside the configuration parameters!
+# Only needed if you use ingame commands to change the configuration.
+saveConfig: false
+
+
+# ------- Translation Features
+
+# Almost everything player visible (except admin commands) can be translated!
+# Please change to your liking and use the following variables
+# %perm = permission, %cmd = command, %Description = command description
+
+# NOTE: You can't use a : in this text!
+
+# Message displayed when the permission is denied to use that command
+permDenied: 'You need the permission %perm to use the %cmd command which %Description !'
+# Message displayed when the wrong syntax for that command was used
+wrongSyntax: 'You used the wrong syntax for the command %cmd'
+# Message displayed when the right syntax for that command was used
+rightSyntax: 'The right syntax for this command is '
+# Message displayed when the explanation of the command is shown
+allowsYouTo: 'which allows you to %Description.'
+# Message displayed when the example of the command is shown
+example: 'An example for the command is '
+
+#-------- Module Configuration
+
+# Enable the different modules here or via
+# /mtp enable [MODULENAME]
+
+# After that you need to reload the server or use
+# /mtp reload
+# to create the config files for the different modules
+
+# So you still need to configure THEM!
+
+#-------- Module [AFK Handler] --------
+
+# Kick, Announce, GOD mode when AFK
+enableAfkHandler: false
+
+#-------- Module [HelloWorld] --------
+
+# Announce which world you entered
+enableHelloWorld: false
+
+#-------- Module [Lampstone] --------
+
+# Switch between different blocks between day and night
+enableLampstone: false
+
+#-------- Module [Wurkit] --------
+
+# Earn Money when you build or destroy stuff
+enableWurkit: false
+
+#-------- Module [Kits] --------
+
+# Give out kits to your players
+enableKits: true
+

@@ -33,11 +33,11 @@ public abstract class Commands implements CommandExecutor {
     protected final ChatColor PERMISSION_COLOR = ChatColor.LIGHT_PURPLE;
     protected final ChatColor INFO_MESSAGES = ChatColor.AQUA;
     protected final ChatColor WARNING_MESSAGES = ChatColor.GOLD;
-    protected final String PERM_DENIED = "You need the permission: %perm to use the %com command \n which %Desc !";
-    protected final String WRONG_SYNTAX = "You used the wrong syntax for the command: " + COMMAND_COLOR;
-    protected final String ALLOWS_YOU_TO = "which allows you to ";
-    protected final String RIGHT_SYNTAX = "The right syntax for this command is: ";
-    protected final String EXAMPLE = "An example for the command is: ";
+    protected String PERM_DENIED = "You need the permission: %perm to use the %cmd command which %Description !";
+    protected String WRONG_SYNTAX = "You used the wrong syntax for the command: %cmd";
+    protected String ALLOWS_YOU_TO = "which allows you to ";
+    protected String RIGHT_SYNTAX = "The right syntax for this command is: ";
+    protected String EXAMPLE = "An example for the command is: ";
 
 
     protected TheMonkeyPack main;
@@ -49,6 +49,11 @@ public abstract class Commands implements CommandExecutor {
         main = instance;
         mainLogger = main.getMainLogger();
         mainConfig = main.getMainConfig();
+        PERM_DENIED = mainConfig.getPERM_DENIED();
+        WRONG_SYNTAX = mainConfig.getWRONG_SYNTAX();
+        ALLOWS_YOU_TO = mainConfig.getALLOWS_YOU_TO();
+        RIGHT_SYNTAX = mainConfig.getRIGHT_SYNTAX();
+        EXAMPLE = mainConfig.getEXAMPLE();
     }
 
     public void permDenied(Player player, Commands command) {
@@ -56,16 +61,18 @@ public abstract class Commands implements CommandExecutor {
         String commandPerm = command.getPermission();
         String permDesc = command.getPermissionDesc();
         String msg = PERM_DENIED.replace("%perm", PERMISSION_COLOR + commandPerm + DEFAULT_COLOR);
-        msg = msg.replace("%com", COMMAND_COLOR + commandName + DEFAULT_COLOR);
-        msg = msg.replace("%Desc", SUB_COLOR + permDesc + DEFAULT_COLOR);
+        msg = msg.replace("%cmd", COMMAND_COLOR + commandName + DEFAULT_COLOR);
+        msg = msg.replace("%Description", SUB_COLOR + permDesc + DEFAULT_COLOR);
         main.sendPlayerMessage(player, msg);
     }
 
     public void displayHelp(Player player, Commands commands) {
-        main.sendPlayerMessage(player, WRONG_SYNTAX + commands.getCommandName());
-        main.sendPlayerMessage(player, ALLOWS_YOU_TO + commands.getCommandDesc());
-        main.sendPlayerMessage(player, RIGHT_SYNTAX + commands.getCommandUsage());
-        main.sendPlayerMessage(player, EXAMPLE + commands.getCommandExample());
+        String msg = WRONG_SYNTAX.replace("%cmd", COMMAND_COLOR + commands.getCommandName() + DEFAULT_COLOR);
+        main.sendPlayerMessage(player, msg);
+        msg = ALLOWS_YOU_TO.replace("%Description", SUB_COLOR + commands.getCommandDesc() + DEFAULT_COLOR);
+        main.sendPlayerMessage(player, msg);
+        main.sendPlayerMessage(player, RIGHT_SYNTAX + " " + commands.getCommandUsage());
+        main.sendPlayerMessage(player, EXAMPLE + " " + commands.getCommandExample());
         if (commands.hasSubCommands) {
             commands.subCommands(player);
         }
@@ -141,5 +148,7 @@ public abstract class Commands implements CommandExecutor {
 
 
     abstract public boolean onPlayerCommand(Player player, String[] args);
+
+
 }
 

@@ -35,6 +35,7 @@ public class PlayerChatListener extends PlayerListener {
         String command = args[0].substring(1);
 
         if (!isValidCommand(command)) {
+            mainLogger.debug("not a valid  TheMonkeyPack command");
             return;
         }
         event.setCancelled(true);

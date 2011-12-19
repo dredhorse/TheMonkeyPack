@@ -152,6 +152,12 @@ public class MainConfig {
 
 // Default Config Variables start here!
 
+    protected String PERM_DENIED = "You need the permission %perm to use the %cmd command which %Description !";
+    protected String WRONG_SYNTAX = "You used the wrong syntax for the command %cmd";
+    protected String ALLOWS_YOU_TO = "which allows you to %Description.";
+    protected String RIGHT_SYNTAX = "The right syntax for this command is ";
+    protected String EXAMPLE = "An example for the command is ";
+
 
 // These are the modules which can be enabled.
 
@@ -216,6 +222,12 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(ENABLE_LAMPSTONE, enableLampstone);
         config.addDefault(ENABLE_WURKIT, enableWurkit);
 
+        config.addDefault("permDenied", PERM_DENIED);
+        config.addDefault("wrongSyntax", WRONG_SYNTAX);
+        config.addDefault("allowsYouTo", ALLOWS_YOU_TO);
+        config.addDefault("rightSyntax", RIGHT_SYNTAX);
+        config.addDefault("example", EXAMPLE);
+
     }
 
 
@@ -233,6 +245,11 @@ afterwards parsable again from the configuration class of bukkit
         enableKits = config.getBoolean(ENABLE_KITS);
         enableLampstone = config.getBoolean(ENABLE_LAMPSTONE);
         enableWurkit = config.getBoolean(ENABLE_WURKIT);
+        PERM_DENIED = config.getString("permDenied");
+        WRONG_SYNTAX = config.getString("wrongSyntax");
+        ALLOWS_YOU_TO = config.getString("allowsYouTo");
+        RIGHT_SYNTAX = config.getString("rightSyntax");
+        EXAMPLE = config.getString("example");
 
 
         // ToDo Don't forget the debugging
@@ -242,6 +259,11 @@ afterwards parsable again from the configuration class of bukkit
         log.debug(ENABLE_AFKHANDLER, enableAfkHandler);
         log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
+        log.debug("permDenied", PERM_DENIED);
+        log.debug("wrongSyntax", WRONG_SYNTAX);
+        log.debug("allowsYouTo", ALLOWS_YOU_TO);
+        log.debug("rightSyntax", RIGHT_SYNTAX);
+        log.debug("example", EXAMPLE);
 
 
     }
@@ -259,7 +281,29 @@ afterwards parsable again from the configuration class of bukkit
 //Start here writing your config variables into the config file inkl. all comments
 
 
+        stream.println();
+        stream.println("# ------- Translation Features");
+        stream.println();
+        stream.println("# Almost everything player visible (except admin commands) can be translated!");
+        stream.println("# Please change to your liking and use the following variables");
+        stream.println("# %perm = permission, %cmd = command, %Description = command description");
+        stream.println();
+        stream.println("# NOTE: You need to use '' if you want to use ' in this text!");
+        stream.println();
+        stream.println("# Message displayed when the permission is denied to use that command");
+        stream.println("permDenied: '" + PERM_DENIED + "'");
+        stream.println("# Message displayed when the wrong syntax for that command was used");
+        stream.println("wrongSyntax: '" + WRONG_SYNTAX + "'");
+        stream.println("# Message displayed when the right syntax for that command was used");
+        stream.println("rightSyntax: '" + RIGHT_SYNTAX + "'");
+        stream.println("# Message displayed when the explanation of the command is shown");
+        stream.println("allowsYouTo: '" + ALLOWS_YOU_TO + "'");
+        stream.println("# Message displayed when the example of the command is shown");
+        stream.println("example: '" + EXAMPLE + "'");
+
+        stream.println();
         stream.println("#-------- Module Configuration");
+
         stream.println();
         stream.println("# Enable the different modules here or via");
         stream.println("# /mtp enable [MODULENAME]");
@@ -322,6 +366,26 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public String getPERM_DENIED() {
+        return PERM_DENIED;
+    }
+
+    public String getWRONG_SYNTAX() {
+        return WRONG_SYNTAX;
+    }
+
+    public String getALLOWS_YOU_TO() {
+        return ALLOWS_YOU_TO;
+    }
+
+    public String getRIGHT_SYNTAX() {
+        return RIGHT_SYNTAX;
+    }
+
+    public String getEXAMPLE() {
+        return EXAMPLE;
+    }
 
     public String getMODULE_NAME_LAMPSTONE() {
         return MODULE_NAME_LAMPSTONE;

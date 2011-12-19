@@ -1,0 +1,71 @@
+# TheMonkeyPack 0.1 by [Don Redhorse]
+#
+# Configuration File for module [Kits]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: '1.0'
+
+#-------- Module Configuration
+
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+# Please change to your liking and use the following variables
+# %player = playername, %cmd = command, %help = help option
+# %kitCharge = amount to be charged for the kit
+# %sec = Seconds to wait for cooldown to finish
+
+# NOTE: You can't use a : in this text!
+
+# The alias command for /tmpkit WITHOUT the / !!!
+kitCmd: 'kit'
+# The alias for the help option
+helpOption: 'help'
+# The command description.
+cmdDescription: 'show a list of kit names or get a named kit'
+# The command permissions description.
+cmdPermDescription: 'allows access of the kit command'
+# The help message displayed.
+displayHelpMessage: 'displays this help.'
+# The kits available message displayed.
+kitsAvailableMessage: 'You have the following kits available: '
+# The no kits available message displayed.
+noKitsAvailableMessage: 'You don''t have access to any kits!'
+# The message displayed if you don't have the permissions to access a kit.
+dontHaveAccessToKit: 'You don''t have access to this kit!'
+# The message displayed if the cooldown is still active.
+pleaseTryAgain: 'Please try again in %sec'
+# The message displayed if we charged for a kit.
+chargedForKit: 'deducted %kitCharge for the kit'
+# The message displayed if the player can't afford a kit.
+cantAfford: 'You can''t afford that!'
+# The message displayed if a player is not online while giving a kit.
+notOnline: 'Player %player is not online'
+# The message displayed when a player receives a kit.
+enjoyTheKit: 'Enjoy the Kit ;)'
+# The message displayed when a player received a kit.
+hasReceived : 'Player %player has received a kit!'
+# The message displayed when the player received a kit from somebody else.
+gaveYouAKit : 'Player %player gave you a kit!'
+# The message displayed when the player requested an unknown kit.
+unknownKit : 'Please type /%cmd for a list of valid kits or /%cmd %help for syntax help.'
+
+# --- Kits
+
+# Add Kits here with the following style
+# Name: ID Amount;ID Amount;ID amount (etc)[;-cooldown][;$price]
+
+# Note: You can't use the helpOption (help) name a a kit!
+
+# As an example:
+# Starter: 268 1;269 1;-300;$10
+# will give you 1 Wooden Sword (268) and 1 Wooden Door
+# with a cooldown of 300 seconds (5 minutes)
+# and for the amount of $10
+
+kits:
+    Starter: 269 1;268 1;-300;$10
+    Rock: 1 1
+
