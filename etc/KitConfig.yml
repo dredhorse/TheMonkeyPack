@@ -17,7 +17,7 @@ configVer: '1.0'
 # %kitCharge = amount to be charged for the kit
 # %sec = Seconds to wait for cooldown to finish
 
-# NOTE: You can't use a : in this text!
+# NOTE: You need to use '' if you want to use ' in this text!
 
 # The alias command for /tmpkit WITHOUT the / !!!
 kitCmd: 'kit'

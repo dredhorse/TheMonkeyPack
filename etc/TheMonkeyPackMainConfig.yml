@@ -38,7 +38,7 @@ saveConfig: false
 # Please change to your liking and use the following variables
 # %perm = permission, %cmd = command, %Description = command description
 
-# NOTE: You can't use a : in this text!
+# NOTE: You need to use '' if you want to use ' in this text!
 
 # Message displayed when the permission is denied to use that command
 permDenied: 'You need the permission %perm to use the %cmd command which %Description !'
