@@ -58,6 +58,10 @@ public class ServerListenerTMP extends ServerListener implements Listeners {
                 plugin.setEconomyEnabled(false);
                 mainLogger.info("un-hooked from Vault.");
                 mainLogger.info("as Vault was unloaded / disabled.");
+                if (mainConfig.isEnableGetPayed()) {
+                    mainConfig.setGetPayedActive(false);
+                    mainLogger.info("Disabling GetPayed!");
+                }
             }
         }
 
@@ -80,6 +84,10 @@ public class ServerListenerTMP extends ServerListener implements Listeners {
                 plugin.setEconomy(economyProvider.getProvider());
                 plugin.setEconomyEnabled(true);
                 mainLogger.info("Economy provider found: " + economyProvider.getProvider().getName());
+                if (mainConfig.isEnableGetPayed()) {
+                    mainConfig.setGetPayedActive(true);
+                    mainLogger.info("Activating GetPayed!");
+                }
 
             } else {
                 if (missingEconomyWarn) {

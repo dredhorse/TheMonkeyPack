@@ -15,3 +15,11 @@ commands:
         description: show a list of kit names or get a named kit
         usage: |
             /<command> [kitname] [player]
+    tmpgetpayed:
+        description: get price infos and configure some aspects of getpayed.
+        usage: |
+            /<command> [option]
+    tmpworkplace:
+        description: configure the workplace
+        usage: |
+            /<command> [option]

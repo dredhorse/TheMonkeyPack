@@ -178,16 +178,21 @@ public class MainConfig {
     // ToDo after integrating the module make it available
     //public static HelloWorldConfig helloWorldConfig;
 
-    private final String ENABLE_WURKIT = "enableWurkit";
-    private final String MODULE_NAME_WURKIT = "Wurkit";
-    private boolean enableWurkit = false;
-    // ToDo after integrating the module make it available
-    //public static WurkitConfig wurkitConfig;
+    private final String ENABLE_GETPAYED = "enableGetPayed";
+    private final String MODULE_NAME_GETPAYED = "GetPayed";
+    private boolean enableGetPayed = false;
+    public static GetPayedConfig getPayedConfig;
+    // GetPayed only becomes active if economies are detected!
+    private boolean getPayedActive = false;
+
 
     private final String ENABLE_KITS = "enableKits";
     private final String MODULE_NAME_KITS = "Kits";
     private boolean enableKits = false;
     public static KitConfig kitConfig;
+
+    private final String PERM_ADMIN = "tmp.admin";
+    private final String PERM_ADMIN_WORKPLACE = "tmp.admin.workplace";
 
     // ToDo after integrating the module make it available
     //public static KitsConfig kitsConfig;
@@ -220,7 +225,7 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(ENABLE_HELLOWORLD, enableHelloWorld);
         config.addDefault(ENABLE_KITS, enableKits);
         config.addDefault(ENABLE_LAMPSTONE, enableLampstone);
-        config.addDefault(ENABLE_WURKIT, enableWurkit);
+        config.addDefault(ENABLE_GETPAYED, enableGetPayed);
 
         config.addDefault("permDenied", PERM_DENIED);
         config.addDefault("wrongSyntax", WRONG_SYNTAX);
@@ -244,7 +249,7 @@ afterwards parsable again from the configuration class of bukkit
         enableHelloWorld = config.getBoolean(ENABLE_HELLOWORLD);
         enableKits = config.getBoolean(ENABLE_KITS);
         enableLampstone = config.getBoolean(ENABLE_LAMPSTONE);
-        enableWurkit = config.getBoolean(ENABLE_WURKIT);
+        enableGetPayed = config.getBoolean(ENABLE_GETPAYED);
         PERM_DENIED = config.getString("permDenied");
         WRONG_SYNTAX = config.getString("wrongSyntax");
         ALLOWS_YOU_TO = config.getString("allowsYouTo");
@@ -255,7 +260,7 @@ afterwards parsable again from the configuration class of bukkit
         // ToDo Don't forget the debugging
 
         log.debug(ENABLE_LAMPSTONE, enableLampstone);
-        log.debug(ENABLE_WURKIT, enableWurkit);
+        log.debug(ENABLE_GETPAYED, enableGetPayed);
         log.debug(ENABLE_AFKHANDLER, enableAfkHandler);
         log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
@@ -329,10 +334,10 @@ afterwards parsable again from the configuration class of bukkit
         stream.println("# Switch between different blocks between day and night");
         stream.println(ENABLE_LAMPSTONE + ": " + enableLampstone);
         stream.println();
-        stream.println("#-------- Module [" + MODULE_NAME_WURKIT + "] --------");
+        stream.println("#-------- Module [" + MODULE_NAME_GETPAYED + "] --------");
         stream.println();
         stream.println("# Earn Money when you build or destroy stuff");
-        stream.println(ENABLE_WURKIT + ": " + enableWurkit);
+        stream.println(ENABLE_GETPAYED + ": " + enableGetPayed);
         stream.println();
         stream.println("#-------- Module [" + MODULE_NAME_KITS + "] --------");
         stream.println();
@@ -348,11 +353,14 @@ afterwards parsable again from the configuration class of bukkit
     // Creating the necessary hooks into the different config classes
 
     private void loadModuleConfigs() {
-        if (enableLampstone) {
+        /*  if (enableLampstone) {
             lampstoneConfig = new LampstoneConfig(main, MODULE_NAME_LAMPSTONE);
-        }
+        }*/
         if (enableKits) {
             kitConfig = new KitConfig(main, MODULE_NAME_KITS);
+        }
+        if (enableGetPayed) {
+            getPayedConfig = new GetPayedConfig(main, MODULE_NAME_GETPAYED);
         }
         // ToDo after enabling the module make it available
 
@@ -366,6 +374,30 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public String getPERM_ADMIN() {
+        return PERM_ADMIN;
+    }
+
+    public String getPERM_ADMIN_WORKPLACE() {
+        return PERM_ADMIN_WORKPLACE;
+    }
+
+    public static GetPayedConfig getGetPayedConfig() {
+        return getPayedConfig;
+    }
+
+    public static KitConfig getKitConfig() {
+        return kitConfig;
+    }
+
+    public boolean isGetPayedActive() {
+        return getPayedActive;
+    }
+
+    public void setGetPayedActive(boolean getPayedActive) {
+        this.getPayedActive = getPayedActive;
+    }
 
     public String getPERM_DENIED() {
         return PERM_DENIED;
@@ -399,8 +431,8 @@ afterwards parsable again from the configuration class of bukkit
         return MODULE_NAME_HELLOWORLD;
     }
 
-    public String getMODULE_NAME_WURKIT() {
-        return MODULE_NAME_WURKIT;
+    public String getMODULE_NAME_GETPAYED() {
+        return MODULE_NAME_GETPAYED;
     }
 
     public String getMODULE_NAME_KITS() {
@@ -431,12 +463,12 @@ afterwards parsable again from the configuration class of bukkit
         this.enableHelloWorld = enableHelloWorld;
     }
 
-    public boolean isEnableWurkit() {
-        return enableWurkit;
+    public boolean isEnableGetPayed() {
+        return enableGetPayed;
     }
 
-    public void setEnableWurkit(boolean enableWurkit) {
-        this.enableWurkit = enableWurkit;
+    public void setEnableGetPayed(boolean enableGetPayed) {
+        this.enableGetPayed = enableGetPayed;
     }
 
     public boolean isEnableKits() {

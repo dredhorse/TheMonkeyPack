@@ -80,7 +80,7 @@ enableLampstone: false
 #-------- Module [Wurkit] --------
 
 # Earn Money when you build or destroy stuff
-enableWurkit: false
+enableGetPayed: false
 
 #-------- Module [Kits] --------
 

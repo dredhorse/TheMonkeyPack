@@ -26,6 +26,7 @@ public abstract class Commands implements CommandExecutor {
     protected String commandUsage;
     protected String commandName;
     protected boolean hasSubCommands;
+
     protected final ChatColor DEFAULT_COLOR = ChatColor.WHITE;
     protected final ChatColor SUB_COLOR = ChatColor.AQUA;
     protected final ChatColor COMMAND_COLOR = ChatColor.RED;
@@ -66,6 +67,17 @@ public abstract class Commands implements CommandExecutor {
         main.sendPlayerMessage(player, msg);
     }
 
+    public void permDenied(Player player, Commands command, String option, String permNode) {
+        String commandName = command.getCommandName();
+        String commandPerm = command.getPermission();
+        String permDesc = command.getPermissionDesc();
+        String msg = PERM_DENIED.replace("%perm", PERMISSION_COLOR + commandPerm + DEFAULT_COLOR);
+        msg = msg.replace("%cmd", COMMAND_COLOR + commandName + DEFAULT_COLOR);
+        msg = msg.replace("%Description", SUB_COLOR + permDesc + DEFAULT_COLOR);
+        main.sendPlayerMessage(player, msg);
+    }
+
+
     public void displayHelp(Player player, Commands commands) {
         String msg = WRONG_SYNTAX.replace("%cmd", COMMAND_COLOR + commands.getCommandName() + DEFAULT_COLOR);
         main.sendPlayerMessage(player, msg);
@@ -77,6 +89,17 @@ public abstract class Commands implements CommandExecutor {
             commands.subCommands(player);
         }
     }
+
+    public void permDenied(Player player, Commands command, String commandOption, String optionPermission, String optionDescription) {
+        String commandName = command.getCommandName() + " " + commandOption;
+        String commandPerm = optionPermission;
+        String permDesc = optionDescription;
+        String msg = PERM_DENIED.replace("%perm", PERMISSION_COLOR + commandPerm + DEFAULT_COLOR);
+        msg = msg.replace("%cmd", COMMAND_COLOR + commandName + DEFAULT_COLOR);
+        msg = msg.replace("%Description", SUB_COLOR + permDesc + DEFAULT_COLOR);
+        main.sendPlayerMessage(player, msg);
+    }
+
 
     abstract public void subCommands(CommandSender sender);
 

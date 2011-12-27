@@ -19,8 +19,10 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
+import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.BlockListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerChatListener;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
@@ -38,16 +40,9 @@ public class TheMonkeyPack extends JavaPlugin {
     private boolean vaultFound;
     private boolean economyEnabled;
     private KitConfig kitConfig;
+    private GetPayedConfig getPayedConfig;
     private Economy economy = null;
     HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
-
-
-/*    interface Listener {
-        void onEnable(TheMonkeyPack main);
-
-        void onDisable();
-    }*/
-
 
     public void onEnable() {
         registeredCommands = 0;
@@ -69,10 +64,19 @@ public class TheMonkeyPack extends JavaPlugin {
             addRegisteredListener();
         }
 
+        for (Type event : mainConfig.getBlockListenerEvents()) {
+            getServer().getPluginManager().registerEvent(event, new BlockListenerTMP(this), Priority.Monitor, this);
+            addRegisteredListener();
+        }
+
         mainLogger.debug(registeredCommands + " Commands registered");
         mainLogger.debug(registeredListeners + " Listeners registered");
         if (mainConfig.isEnableKits()) {
             kitConfig = KitConfig.getInstance();
+        }
+        if (mainConfig.isEnableGetPayed()) {
+            getPayedConfig = GetPayedConfig.getInstance();
+            getPayedConfig.getGetPayedHelper().onEnable();
         }
 
         // ToDo add more configs for other Modules on Top
@@ -83,6 +87,9 @@ public class TheMonkeyPack extends JavaPlugin {
     public void onDisable() {
         if (mainConfig.isEnableKits()) {
             kitConfig.resetKits();
+        }
+        if (mainConfig.isEnableGetPayed()) {
+            getPayedConfig.getGetPayedHelper().onDisable();
         }
         registeredCommands = 0;
         registeredListeners = 0;

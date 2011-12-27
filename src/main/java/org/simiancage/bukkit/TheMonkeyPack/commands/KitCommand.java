@@ -74,7 +74,7 @@ public class KitCommand extends Commands implements CommandExecutor {
         this.setHasSubCommands(true);
         kitLogger = kitConfig.getKitLogger();
         main.registerPlayerCommand(this.getCommandName(), this);
-        mainLogger.debug("Kit command registered");
+        mainLogger.debug(kitCmd + " command registered");
     }
 
     @Override
