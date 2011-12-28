@@ -1,0 +1,221 @@
+# TheMonkeyPack 0.2 by [Don Redhorse]
+#
+# Configuration File for module [GetPayed]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# Please note: due to the amount of translations for this module you find the
+#              translation feature at the end of the file.
+
+
+# --- Workplace Configuration
+
+# ID of the tool to mark a workplace (Default 284, Gold Shovel.
+workPlaceTool: 284
+# Calculation method for break payment (flat / percent).
+defaultBreakType: "percent"
+# Amount to pay for breaking blocks
+defaultBreakAmount: 10.0
+# Calculation method for place payment (flat / percent).
+defaultPlaceType: "percent"
+# Amount to pay for placing blocks.
+defaultPlaceAmount: 10.0
+# The message displayed when the players enter a workplace.
+workPlaceGreeting: "You just entered a workplace."
+# The message displayed when the players leaves a workplace.
+workPlaceFarewell: "You just left a workplace."
+# Time in seconds changes are saved to disk.
+workPlaceSaveInterval: 360
+# Ticks (20 Ticks = 1 Seconds to check if player entered / left a workplace.
+# If you notice lag being caused by this increase this value to check less often
+entryExitRefreshRate: 10
+
+# --- PayDay Configuration
+
+# Set your message in the message field. Use the text $$ where you want to put your amount.
+# The currency units are automatically picked up
+payDayMessage: "It's payday! You earned $$"
+# Broadcast the PayDay message to the players?
+payDayMessageEnabled: true
+# Time in Seconds for Payment
+payDayInterval: 60
+# Anti-Place-Break-Exploit, stores blocks inside the buffer
+# 1000 is a good value. The buffer uses a sliding window.
+bufferSize: 1000
+# Clear the buffer every time onString payday (saves some memory from time to time
+clearBufferOnPayday: true
+
+# --- PriceList Configuration
+
+# The pricelist is what you pay the player for breaking or placing certain blocks
+# default is what the player is paid if you don't specify how much a certain block is
+# For example if you only have Stone and default setup in your price list then your players
+# will get your set break price every time they break stone and if they break any other block they will get your default price
+# For a list of block names take a look in the GetPayedItems.txt file.
+
+# The format is:
+#    <block_name>:
+#        break: 0.0
+#        place: 0.0
+
+PriceList:
+    default:
+        break: 10.0
+        place: 10.0
+
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+# Please change to your liking and use the following variables
+# %player = playername, %cmd = command, %help = help option
+# $$ = amount and currency , %onOff = will become onString or offString
+# %employer = owner of the workplace
+# %breakPlace = will become break or place
+# %workplace = will become workplace name
+# %oldname / %newname = old / new name of the workplace
+# %varname = variable name, %newvalue = new value of variable
+# %blocktype = type of block
+
+# The alias for the help option.
+helpOption: "help"
+# The help message displayed.
+displayHelpMessage: "displays this help."
+
+# The alias command for /tmpgetpayed WITHOUT the / !!!
+getPayedCmd: "getpayed"
+# The command description.
+getPayedCmdDescription: "get price infos and configure some aspects of getpayed."
+# The command permissions description.
+getPayedCmdPermDescription: "allows access of the getpayed command"
+# # The alias command for /tmpworkplace WITHOUT the / !!!
+workPlaceCmd: "workplace"
+# The command description.
+workPlaceCmdDescription: "configure the workplace"
+# The command permissions description.
+workPlaceCmdPermDescription: "allows access to the workplace command"
+# The alias command for /tmppriceset WITHOUT the / !!!.
+priceSetCmd: "priceset"
+# The command description.
+priceSetCmdDescription: "set the break or place price of the next block that you right click."
+# The command permissions description.
+priceSetCmdPermDescription: "allows acces to the priceset command"
+
+# The alias for the pricecheck option.
+priceCheck: "pricecheck"
+# The pricecheck description.
+displayPriceCheckMessage: "[on|off] Turns on and off the price check feature."
+# The alias for the paydaymessage option.
+displayPayDayMessage: "paydaymessage"
+# The paydaymessage description.
+displayDisplayPayDayMessageMessage: "[on|off] Turns on and off the payday message for yourself."
+# The alias for the create option.
+workplaceCreateOption: "create"
+# The create description.
+workplaceCreateDescription: "creates a new workplace after you selected the 2 points with your workplace selection tool"
+# The alias for the rename option.
+workplaceRenameOption: "rename"
+# The rename description.
+workplaceRenameDescription: "renames a workplace"
+# The alias for the info option.
+workplaceInfoOption: "info"
+# The info description.
+workplaceInfoDescription: "display information about the workplace you are standing in"
+# The alias for the delete option.
+workplaceDeleteOption: "delete"
+# The delete description.
+workplaceDeleteDescription: "deletes a workplace"
+# The alias for the set option.
+workplaceSetOption: "set"
+# The set description.
+workplaceSetDescription: "set one of the workplace setting of the workplace your are standing in"
+
+# The priceset description.
+displayPriceSetMessage: "Set the break or place price of the next block that you right click to <newPrice>."
+# onString translatation.
+onString: "on"
+# offString translatation.
+offString: "off"
+#  <newPrice>  translatation.
+newPrice: "<newPrice>"
+# break translatation.
+break: "break"
+# place translatation.
+place: "place"
+# Message displayed when pay for work in your workplace.
+PaydayEmployerMessage: "You have paid $$ for services rendered on your Work Places"
+# Message displayed when you work in an workplace.
+PaydayEmployedMessage: "You have been paid $$ for services rendered to %employer"
+# Pricecheck is ON message.
+PricecheckMessagesOn: "Right click any block to check its price."
+# Pricecheck is OFF message.
+PricecheckMessagesOff: "Price check off"
+# Payday messages on / off
+PaydayMessagesOnoff: "Payday Message %onOff"
+# Can't place and break when you do priceset at the same time!
+CantBreakPlaceAtSameTime: "You cannot use break and place price setting at the same time. %breakPlace price setting turned %onOff"
+# Right Click to priceset a block with break or place
+RightClickBlockToPriceset: "Now right click the block you want to set the %breakPlace price for."
+# Help Message displayed when the workplace name is missing.
+WorkplaceCreateHelpMessage: "You must enter a Work Place Name!"
+# Help Message displayed when the <oldname> and / or <newname> are missing.
+WorkplaceRenameHelpMessage: "You need to supply <oldname> <newname> for this command!"
+# Help Messages displayed when variable and / or option are missing.
+WorkplaceSetHelpMessage: "You need to supply variable and option to set!"
+# Help Message displayed when workplaces overlap.
+WorkplaceSelectionOverlapHelpMessage: "Your selection overlaps another Work place please select your points again."
+# Help Message displayed when not enough points where selected.
+WorkplaceSelect2PointsHelpMessage: "You must select two points before your Work place can be created!"
+# Help Message displayed when workplace already exists.
+WorkplaceAlreadyExist: "There is already a Work place with that name, please choose another name"
+# Message displayed when workplace is created.
+WorkplaceCreatedMessage: "Workplace %workplace created"
+# Message displayed when workplace is deleted.
+WorkplaceDeletedMessage: "Workplace %workplace deleted"
+# Message displayed when workplace isn't owned by player.
+YouNeedToOwnTheWorkplaceMessage: "You need to own the workplace to manage it!"
+# Message displayed when workplace doesn't exit.
+NoWorkplaceWithThisNameMessage: "There is no workplace by this name!"
+# Message displayed when workplace is renamed.
+WorkplaceRenamedToMessage: "Workplace %oldname renamed to %newname"
+# Info Message displayed for Name of workplace.
+WorkplaceNameMessage: "Name of the Workplace"
+# Info Message displayed for owner of workplace.
+WorkplaceOwnerMessage: "Owner of the Workplace"
+# Info Message displayed for break type of workplace.
+WorkplaceBreakTypeMessage: "Break payment type"
+# Info Message displayed for break amount of workplace.
+WorkplaceBreakAmountMessage: "Break payment amount"
+# Info Message displayed for place type of workplace.
+WorkplacePlaceTypeMessage: "Place payment type"
+# Info Message displayed for place amount of workplace.
+WorkplacePlaceAmountMessage: "Place payment amount"
+# Message displayed when wrong type entered.
+WrongBreakPlaceTypeMessage: "When setting break or place types you must choose either percent or flat!"
+# Message displayed when variable name is wrong.
+NotAValidVariableMessage: "%varname is not a valid workplace variable"
+# Message displayed when variable newly set.
+VarSetToNewValueMessage: "%varname set to %newvalue"
+# Message displayed when player is not in a workplace.
+YouAreNotInAWorkplaceMessage: "You are currently not in a workplace"
+# Message displayed when a player is pricechecking for BREAK
+YouWillBePaidForBreaking: "You will be paid $$ for breaking %blocktype."
+# Message displayed when a player is pricechecking for PLACEMENT
+YouWillBePaidForPlacing: "You will be paid $$ for placing %blocktype."
+# Message displayed when a player is pricechecking if no specifc price is set for BREAK
+YouWillBePaidDefaultForBreaking: "This block does not have a set break price, you will be paid the default price of $$ for breaking %blocktype."
+# Message displayed when a player is pricechecking if no specifc price is set for PLACEMENT
+YouWillBePaidDefaultForPlacing: "This block does not have a set place price, you will be paid the default price of $$ for placeing %blocktype."
+# Message displayed when both points of a workplace are selected
+BothPointsSelected: "Both points selected. You may now create your workplace or continue to set your points."
+# Message displayed when second point is selected
+PointTwoSelected: "Point two placed, now left click to make point one!"
+# Message displayed when first point is selected
+PointOneSelected: "Point one placed, now right click to make point two!"
+# Message displayed when workplace creating is done in an existing workplace
+YouCantCreateAWorkplaceInAnExistingOne: "You cannot create your work place within someone else's work place"
+
