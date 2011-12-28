@@ -34,7 +34,7 @@ public class GPBlockEvent {
     protected GetPayedLogger getPayedLogger;
     static GPBlockEvent instance;
     protected GetPayedHelper getPayedHelper;
-    private final String PLAYER_ALLOW_PAY = "tmp.getpayed.player.allowpay";
+    private final String PLAYER_ALLOW_PAY = "tmp.getpayed.allowpay";
 
 
     private GPBlockEvent(TheMonkeyPack plugin) {
@@ -59,60 +59,6 @@ public class GPBlockEvent {
         Block block = event.getBlock();
         blockEvent(block, player, false);
 
-        /*
-        if ((!main.getServer().getScheduler().isQueued(getPayedHelper.getCurrentTaskId()) && (!main.getServer().getScheduler().isCurrentlyRunning(getPayedHelper.getCurrentTaskId()))))
-        {
-            getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval() * 20));
-        }
-
-        if (!isInBlackList(event.getBlock().getLocation())){
-            if ((main.hasPermission(player, PLAYER_ALLOW_PAY)))
-            {
-                int workPlace = getPayedHelper.isPositionInWorkPlace(event.getBlock().getLocation());
-                if (workPlace != -1)
-                {
-                    Map<String, Object> workPlaceInfo = getPayedHelper.getWorkPlacesInfo().get(workPlace);
-                    if ((workPlaceInfo.get("BreakType").toString().equalsIgnoreCase("percent")))
-                    {
-                        double amountToAdd = getPrice(event.getBlock(), true).doubleValue() * (Double.parseDouble(workPlaceInfo.get("BreakAmount").toString()) / 100.0D);
-                        recordPlayerPayments(player, amountToAdd, workPlace);
-                        payPlayer(player, getPrice(event.getBlock(), true));
-                    } else if (workPlaceInfo.get("BreakType").toString().equalsIgnoreCase("flat")) {
-                        double amountToAdd = Double.parseDouble(workPlaceInfo.get("BreakAmount").toString());
-                        recordPlayerPayments(player, amountToAdd, workPlace);
-                        payPlayer(player, getPrice(event.getBlock(), true));
-                    }
-                }
-                else payPlayer(player, getPrice(event.getBlock(), true));
-            }
-        }
-        *//*else
-        {
-            int workPlace = getPayedHelper.isPositionInWorkPlace(event.getBlock().getLocation());
-            if (workPlace != -1)
-            {
-                Map<String, Object> workPlaceInfo = getPayedHelper.getWorkPlacesInfo().get(workPlace);
-                if (((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("BreakType").toString().equalsIgnoreCase("percent"))
-                {
-                    double amountToAdd = getPrice(event.getBlock(), true).doubleValue() * (Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("BreakAmount").toString()) / 100.0D);
-                    recordPlayerPayments(player, amountToAdd, workPlace);
-                    payPlayer(player, getPrice(event.getBlock(), true));
-                } else if (((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("BreakType").toString().equalsIgnoreCase("flat")) {
-                    double amountToAdd = Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("BreakAmount").toString());
-                    recordPlayerPayments(player, amountToAdd, workPlace);
-                    payPlayer(player, getPrice(event.getBlock(), true));
-                }
-            }
-            else payPlayer(player, getPrice(event.getBlock(), true));
-
-        }*//*
-
-        getPayedHelper.addBlockToBlacklist(event.getBlock().getLocation());
-        if (getPayedHelper.sizeOfBlackList() > getPayedConfig.getBufferSize())
-        {
-            getPayedHelper.removeBlockFromBlacklist(0);
-            ;
-        }*/
 
     }
 
@@ -149,68 +95,6 @@ public class GPBlockEvent {
         blockEvent(block, player, true);
 
 
-/*
-        Player player = event.getPlayer();
-
-        if ((!main.getServer().getScheduler().isQueued(getPayedHelper.getCurrentTaskId())) && (!main.getServer().getScheduler().isCurrentlyRunning(getPayedHelper.getCurrentTaskId())))
-        {
-            getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval() * 20));
-        }
-
-        if (!isInBlackList(event.getBlock().getLocation()))
-        {
-
-            if ((main.hasPermission(player, PLAYER_ALLOW_PAY)))
-            {
-                int workPlace = getPayedHelper.isPositionInWorkPlace(event.getBlock().getLocation());
-                if (workPlace != -1)
-                {
-                    Map<String, Object> workPlaceInfo = getPayedHelper.getWorkPlacesInfo().get(workPlace);
-                    if ((workPlaceInfo.get("PlaceType").toString().equalsIgnoreCase("percent")))
-                    {
-                        double amountToAdd = getPrice(event.getBlock(), false).doubleValue() * (Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("PlaceAmount").toString()) / 100.0D);
-                        recordPlayerPayments(player, amountToAdd, workPlace);
-                        payPlayer(player, getPrice(event.getBlock(), false));
-                    } else if (((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("PlaceType").toString().equalsIgnoreCase("flat")) {
-                        double amountToAdd = Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(workPlace))).get("PlaceAmount").toString());
-                        recordPlayerPayments(player, amountToAdd, workPlace);
-                        payPlayer(player, getPrice(event.getBlock(), false));
-                    }
-                }
-                else payPlayer(player, getPrice(event.getBlock(), false));
-            }
-        }
-        else
-        {
-            int wurkPlace = plugin.isPositionInWurkPlace(event.getBlock().getLocation());
-            if (wurkPlace != -1)
-            {
-                if (((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(wurkPlace))).get("PlaceType").toString().equalsIgnoreCase("percent"))
-                {
-                    double amountToAdd = getPrice(event.getBlock(), false).doubleValue() * (Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(wurkPlace))).get("PlaceAmount").toString()) / 100.0D);
-                    recordPlayerPayments(player, amountToAdd, wurkPlace);
-                    payPlayer(player, getPrice(event.getBlock(), false));
-                } else if (((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(wurkPlace))).get("PlaceType").toString().equalsIgnoreCase("flat")) {
-                    double amountToAdd = Double.parseDouble(((Map)plugin.wurkPlacesInfo.get(Integer.valueOf(wurkPlace))).get("PlaceAmount").toString());
-                    recordPlayerPayments(player, amountToAdd, wurkPlace);
-                    payPlayer(player, getPrice(event.getBlock(), false));
-                }
-            }
-            else payPlayer(player, getPrice(event.getBlock(), false));
-
-        }
-
-        plugin.blackListX.add(Integer.valueOf(event.getBlock().getX()));
-        plugin.blackListY.add(Integer.valueOf(event.getBlock().getY()));
-        plugin.blackListZ.add(Integer.valueOf(event.getBlock().getZ()));
-
-        if (plugin.blackListX.size() > Integer.parseInt(plugin.interval.get("bufferSize").toString()))
-        {
-            plugin.blackListX.remove(0);
-            plugin.blackListY.remove(0);
-            plugin.blackListZ.remove(0);
-        }
-    }*/
     }
 
     public boolean isInBlackList(Location location) {
@@ -261,7 +145,7 @@ public class GPBlockEvent {
 
 
         if ((!main.getServer().getScheduler().isQueued(getPayedHelper.getCurrentTaskId()) && (!main.getServer().getScheduler().isCurrentlyRunning(getPayedHelper.getCurrentTaskId())))) {
-            getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval() * 20));
+            getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval()));
         }
 
         if (!isInBlackList(block.getLocation())) {
@@ -269,6 +153,7 @@ public class GPBlockEvent {
                 int workPlace = getPayedHelper.isPositionInWorkPlace(block.getLocation());
                 if (workPlace != -1) {
                     Map<String, Object> workPlaceInfo = getPayedHelper.getWorkPlacesInfo().get(workPlace);
+                    getPayedLogger.debug("workplaceInfo", workPlaceInfo.toString());
                     if ((workPlaceInfo.get(eventType + "Type").toString().equalsIgnoreCase("percent"))) {
                         double amountToAdd = getPrice(block, true).doubleValue() * (Double.parseDouble(workPlaceInfo.get(eventType + "Amount").toString()) / 100.0D);
                         recordPlayerPayments(player, amountToAdd, workPlace);

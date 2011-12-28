@@ -71,7 +71,7 @@ public class MainConfig {
     /**
      * Enable more logging.. could be messy!
      */
-    boolean debugLogEnabled = true;
+    boolean debugLogEnabled = false;
     /**
      * Check if there is a new version of the plugin out.
      */
@@ -293,18 +293,16 @@ afterwards parsable again from the configuration class of bukkit
         stream.println("# Please change to your liking and use the following variables");
         stream.println("# %perm = permission, %cmd = command, %Description = command description");
         stream.println();
-        stream.println("# NOTE: You need to use '' if you want to use ' in this text!");
-        stream.println();
         stream.println("# Message displayed when the permission is denied to use that command");
-        stream.println("permDenied: '" + PERM_DENIED + "'");
+        stream.println("permDenied: \"" + PERM_DENIED + "\"");
         stream.println("# Message displayed when the wrong syntax for that command was used");
-        stream.println("wrongSyntax: '" + WRONG_SYNTAX + "'");
+        stream.println("wrongSyntax: \"" + WRONG_SYNTAX + "\"");
         stream.println("# Message displayed when the right syntax for that command was used");
-        stream.println("rightSyntax: '" + RIGHT_SYNTAX + "'");
+        stream.println("rightSyntax: \"" + RIGHT_SYNTAX + "\"");
         stream.println("# Message displayed when the explanation of the command is shown");
-        stream.println("allowsYouTo: '" + ALLOWS_YOU_TO + "'");
+        stream.println("allowsYouTo: \"" + ALLOWS_YOU_TO + "\"");
         stream.println("# Message displayed when the example of the command is shown");
-        stream.println("example: '" + EXAMPLE + "'");
+        stream.println("example: \"" + EXAMPLE + "\"");
 
         stream.println();
         stream.println("#-------- Module Configuration");
@@ -966,7 +964,7 @@ afterwards parsable again from the configuration class of bukkit
             stream.println("#------- Default Configuration");
             stream.println();
             stream.println("# Configuration Version");
-            stream.println("configVer: '" + configVer + "'");
+            stream.println("configVer: \"" + configVer + "\"");
             stream.println();
             stream.println("# Error Log Enabled");
             stream.println("# Enable logging to server console");

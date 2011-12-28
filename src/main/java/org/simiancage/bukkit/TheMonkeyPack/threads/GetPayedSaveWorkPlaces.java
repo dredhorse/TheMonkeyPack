@@ -35,8 +35,7 @@ public class GetPayedSaveWorkPlaces
     private final ChatColor MODULE = ChatColor.GREEN;
     private final ChatColor DEFAULT = ChatColor.WHITE;
     private String moduleName;
-    private final String WORKPLACES_FILE = "WorkPlaces.dat";
-    private File workPlaceSaveFile = new File(main.getDataFolder() + WORKPLACES_FILE);
+
 
     public GetPayedSaveWorkPlaces(TheMonkeyPack instance) {
         main = instance;
@@ -49,6 +48,7 @@ public class GetPayedSaveWorkPlaces
     }
 
     public void run() {
+        File workPlaceSaveFile = new File(main.getDataFolder() + System.getProperty("file.separator") + getPayedHelper.getWORKPLACES_FILE());
         try {
             workPlaceSaveFile.createNewFile();
             FileOutputStream outFile = new FileOutputStream(workPlaceSaveFile);
@@ -62,7 +62,7 @@ public class GetPayedSaveWorkPlaces
             out.flush();
             out.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            getPayedLogger.severe("Problems saving the workplace file", ex);
         }
 
         getPayedLogger.debug("Workplaces saved");

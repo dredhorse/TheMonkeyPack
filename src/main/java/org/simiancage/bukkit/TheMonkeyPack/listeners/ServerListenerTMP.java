@@ -73,12 +73,12 @@ public class ServerListenerTMP extends ServerListener implements Listeners {
         PluginManager pm = plugin.getServer().getPluginManager();
         Plugin checkVault = pm.getPlugin("Vault");
         Plugin checkMobArena = pm.getPlugin("MobArena");
-        if (checkVault != null) {
+        if (checkVault != null && !plugin.isEconomyEnabled()) {
             plugin.setVaultFound(true);
             mainLogger.info("Vault detected");
             mainLogger.info("Checking economy providers now!");
         }
-        if (plugin.isVaultFound()) {
+        if (plugin.isVaultFound() && !plugin.isEconomyEnabled()) {
             RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
             if (economyProvider != null) {
                 plugin.setEconomy(economyProvider.getProvider());

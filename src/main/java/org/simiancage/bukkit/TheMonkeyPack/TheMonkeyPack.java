@@ -24,6 +24,7 @@ import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.BlockListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerChatListener;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
@@ -66,6 +67,11 @@ public class TheMonkeyPack extends JavaPlugin {
 
         for (Type event : mainConfig.getBlockListenerEvents()) {
             getServer().getPluginManager().registerEvent(event, new BlockListenerTMP(this), Priority.Monitor, this);
+            addRegisteredListener();
+        }
+
+        for (Type event : mainConfig.getPlayerListenerEvents()) {
+            getServer().getPluginManager().registerEvent(event, new PlayerListenerTMP(this), Priority.Monitor, this);
             addRegisteredListener();
         }
 

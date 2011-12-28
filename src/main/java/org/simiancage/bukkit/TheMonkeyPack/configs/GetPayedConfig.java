@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,13 +38,15 @@ public class GetPayedConfig extends Configs {
      */
     public enum Messages {
         PAYDAY_EMPLOYER_MESSAGE, PAYDAY_EMPLOYED_MESSAGE, PRICECHECK_MESSAGES_ON, PRICECHECK_MESSAGES_OFF, PAYDAY_MESSAGES_ONOFF,
-        DISPLAY_PRICE_SET_MESSAGE, CANT_BREAK_PLACE_AT_SAME_TIME, RIGHT_CLICK_BLOCK_TO_PRICESET, WORKPLACE_CREATE_HELP_MESSAGE,
+        CANT_BREAK_PLACE_AT_SAME_TIME, RIGHT_CLICK_BLOCK_TO_PRICESET, WORKPLACE_CREATE_HELP_MESSAGE,
         WORKPLACE_RENAME_HELP_MESSAGE, WORKPLACE_SET_HELP_MESSAGE, WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE,
         WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE, WORKPLACE_ALREADY_EXIST, WORKPLACE_CREATED_MESSAGE, WORKPLACE_DELETED_MESSAGE,
         YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE, NO_WORKPLACE_WITH_THIS_NAME_MESSAGE, WORKPLACE_RENAMED_TO_MESSAGE,
         WORKPLACE_NAME_MESSAGE, WORKPLACE_OWNER_MESSAGE, WORKPLACE_BREAK_TYPE_MESSAGE, WORKPLACE_BREAK_AMOUNT_MESSAGE,
         WORKPLACE_PLACE_TYPE_MESSAGE, WORKPLACE_PLACE_AMOUNT_MESSAGE, WRONG_BREAK_PLACE_TYPE_MESSAGE, NOT_A_VALID_VARIABLE_MESSAGE,
-        VAR_SET_TO_NEW_VALUE_MESSAGE, YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE;
+        VAR_SET_TO_NEW_VALUE_MESSAGE, YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE, YOU_WILL_BE_PAID_FOR_BREAKING, YOU_WILL_BE_PAID_FOR_PLACING,
+        YOU_WILL_BE_PAID_DEFAULT_FOR_BREAKING, YOU_WILL_BE_PAID_DEFAULT_FOR_PLACING, BOTH_POINTS_SELECTED, POINT_TWO_SELECTED, POINT_ONE_SELECTED,
+        YOU_CANT_CREATE_A_WORKPLACE_IN_AN_EXISTING_ONE;
 
         @Override
         public String toString() {
@@ -191,18 +194,20 @@ public class GetPayedConfig extends Configs {
     private final String PAYDAY_MESSAGE_ENABLED = "payDayMessageEnabled";
     private String priceCheck = "pricecheck";
     private final String PRICE_CHECK = "priceCheck";
-    private String displayPriceCheckMessage = "Turns on and off the price check feature.";
+    private String displayPriceCheckMessage = "[on|off] Turns on and off the price check feature.";
     private final String DISPLAY_PRICE_CHECK_MESSAGE = "displayPriceCheckMessage";
     private String displayPayDayMessage = "paydaymessage";
     private final String DISPLAY_PAY_DAY_MESSAGE = "displayPayDayMessage";
-    private String displayDisplayPayDayMessageMessage = "Turns on and off the payday message for yourself.";
+    private String displayDisplayPayDayMessageMessage = "[on|off] Turns on and off the payday message for yourself.";
     private final String DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE = "displayDisplayPayDayMessageMessage";
+    private String displayPriceSetMessage = "Set the break or place price of the next block that you right click to <newPrice>.";
+    private final String DISPLAY_PRICE_SET_MESSAGE = "displayPriceSetMessage";
     private String newPrice = "<newPrice>";
     private final String NEW_PRICE = "newPrice";
-    private String on = "on";
-    private final String ON = "on";
-    private String off = "off";
-    private final String OFF = "off";
+    private String onString = "on";
+    private final String ON_STRING = "onString";
+    private String offString = "off";
+    private final String OFF_STRING = "offString";
     private String breakString = "break";
     private final String BREAK_STRING = "break";
     private String placeString = "place";
@@ -229,72 +234,19 @@ public class GetPayedConfig extends Configs {
     private final String WORKPLACE_SET_DESCRIPTION = "workplaceSetDescription";
 
 
-    // Messages from here onward
-    private String payDayEmployerMessage = "You have paid $$ for services rendered on your Work Places";
-    private final String PAYDAY_EMPLOYER_MESSAGE = "payDayEmployerMessage";
-    private String payDayEmployedMessage = "You have been paid $$ for services rendered to %employer";
-    private final String PAYDAY_EMPLOYED_MESSAGE = "payDayEmployedMessage";
-    private String priceCheckMessagesOn = "Right click any block to check its price.";
-    private final String PRICECHECK_MESSAGES_ON = "priceCheckMessagesOn";
-    private String priceCheckMessagesOff = "Price check off";
-    private final String PRICECHECK_MESSAGES_OFF = "priceCheckMessagesOff";
-    private String payDayMessagesOnOff = "Payday Message %onOff";
-    private final String PAYDAY_MESSAGES_ONOFF = "payDayMessagesOnOff";
-    private String displayPriceSetMessage = "Set the break or place price of the next block that you right click to <newPrice>.";
-    private final String DISPLAY_PRICE_SET_MESSAGE = "displayPriceSetMessage";
-    private String cantBreakPlaceAtSameTime = "You cannot use break and place price setting at the same time. %breakPlace price setting turned %onOff";
-    private final String CANT_BREAK_PLACE_AT_SAME_TIME = "cantBreakPlaceAtSameTime";
-    private String rightClickBlockToPriceSet = "Now right click the block you want to set the %breakPlace price for.";
-    private final String RIGHT_CLICK_BLOCK_TO_PRICESET = "rightClickBlockToPriceSet";
-    private String workplaceCreateHelpMessage = "You must enter a Work Place Name!";
-    private final String WORKPLACE_CREATE_HELP_MESSAGE = "workplaceCreateHelpMessage";
-    private String workplaceRenameHelpMessage = "You need to supply <oldname> <newname> for this command!";
-    private final String WORKPLACE_RENAME_HELP_MESSAGE = "workplaceRenameHelpMessage";
-    private String workplaceSetHelpMessage = "You need to supply variable and option to set!";
-    private final String WORKPLACE_SET_HELP_MESSAGE = "workplaceSetHelpMessage";
-    private String workplaceSelectionOverlapHelpMessage = "Your selection overlaps another Work place please select your points again.";
-    private final String WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE = "workplaceSelectionOverlapHelpMessage";
-    private String workplaceSelect2PointsHelpMessage = "You must select two points before your Work place can be created!";
-    private final String WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE = "workplaceSelect2PointsHelpMessage";
-    private String workplaceAlreadyExist = "There is already a Work place with that name, please choose another name";
-    private final String WORKPLACE_ALREADY_EXIST = "workplaceAlreadyExist";
-    private String workplaceCreatedMessage = "Workplace %workplace created";
-    private final String WORKPLACE_CREATED_MESSAGE = "workplaceCreatedMessage";
-    private String workplaceDeletedMessage = "Workplace %workplace deleted";
-    private final String WORKPLACE_DELETED_MESSAGE = "workplaceDeletedMessage";
-    private String youNeedToOwnTheWorkplaceMessage = "You need to own the workplace to manage it";
-    private final String YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE = "youNeedToOwnTheWorkplaceMessage";
-    private String noWorkplaceWithThisNameMessage = "There is no workplace by this name";
-    private final String NO_WORKPLACE_WITH_THIS_NAME_MESSAGE = "noWorkplaceWithThisNameMessage";
-    private String workplaceRenamedToMessage = "Workplace %oldname renamed to %newname";
-    private final String WORKPLACE_RENAMED_TO_MESSAGE = "workplaceRenamedToMessage";
-    private String workplaceNameMessage = "Name of the Workplace";
-    private final String WORKPLACE_NAME_MESSAGE = "workplaceNameMessage";
-    private String workplaceOwnerMessage = "Owner of the Workplace";
-    private final String WORKPLACE_OWNER_MESSAGE = "workplaceOwnerMessage";
-    private String workplaceBreakTypeMessage = "Break payment type";
-    private final String WORKPLACE_BREAK_TYPE_MESSAGE = "workplaceBreakTypeMessage";
-    private String workplaceBreakAmountMessage = "Break payment amount";
-    private final String WORKPLACE_BREAK_AMOUNT_MESSAGE = "workplaceBreakAmountMessage";
-    private String workplacePlaceTypeMessage = "Place payment type";
-    private final String WORKPLACE_PLACE_TYPE_MESSAGE = "workplacePlaceTypeMessage";
-    private String workplacePlaceAmountMessage = "Place payment amount";
-    private final String WORKPLACE_PLACE_AMOUNT_MESSAGE = "workplacePlaceAmountMessage";
-    private String wrongBreakPlaceTypeMessage = "When setting break or place types you must choose either percent or flat!";
-    private final String WRONG_BREAK_PLACE_TYPE_MESSAGE = "wrongBreakPlaceTypeMessage";
-    private String notAValidVariableMessage = "%varname is not a valid workplace variable";
-    private final String NOT_A_VALID_VARIABLE_MESSAGE = "notAValidVariableMessage";
-    private String varSetToNewValueMessage = "%varname set to %newvalue";
-    private final String VAR_SET_TO_NEW_VALUE_MESSAGE = "varSetToNewValueMessage";
-    private String youAreNotInAWorkplaceMessage = "You are not currently in a workplace";
-    private final String YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE = "youAreNotInAWorkplaceMessage";
+    private EnumMap<Messages, String> messageTranslations;
+    private EnumMap<Messages, String> messageComments;
 
 
     // Permissions from here onward
 
+    // permission for getpayed commands pricecheck, paydaymessage
     private final String PERM_GETPAYED = "tmp.getpayed.getpayed";
+    // permission for workplace info command, also basis permission
     private final String PERM_WORKPLACE = "tmp.getpayed.workplace";
+    // permission for priceset command
     private final String PERM_PRICESET = "tmp.getpayed.priceset";
+    // permission for configuring / creating a workplace
     private final String PERM_WORKPLACE_CONFIGURE = "tmp.getpayed.workplace.configure";
 
 // Internal variables
@@ -305,13 +257,61 @@ public class GetPayedConfig extends Configs {
 // *******************************************************************************************************************
 
 
-/*  Here comes the custom config, the default config is later on in the class
+/*  Here comes the custom config, the default config is later onString in the class
 Keep in mind that you need to create your config file in a way which is
 afterwards parsable again from the configuration class of bukkit
 */
 
 // First we have the default part..
 // Which is devided in setting up some variables first
+
+
+    /**
+     * Method to setup the translations
+     */
+
+    void setupTranslations() {
+
+        messageComments = new EnumMap<Messages, String>(Messages.class);
+        messageTranslations = new EnumMap<Messages, String>(Messages.class);
+        initMessage(Messages.PAYDAY_EMPLOYER_MESSAGE, "You have paid $$ for services rendered on your Work Places", "Message displayed when pay for work in your workplace.");
+        initMessage(Messages.PAYDAY_EMPLOYED_MESSAGE, "You have been paid $$ for services rendered to %employer", "Message displayed when you work in an workplace.");
+        initMessage(Messages.PRICECHECK_MESSAGES_ON, "Right click any block to check its price.", "Pricecheck is ON message.");
+        initMessage(Messages.PRICECHECK_MESSAGES_OFF, "Price check off", "Pricecheck is OFF message.");
+        initMessage(Messages.PAYDAY_MESSAGES_ONOFF, "Payday Message %onOff", "Payday messages on / off");
+        initMessage(Messages.CANT_BREAK_PLACE_AT_SAME_TIME, "You cannot use break and place price setting at the same time. %breakPlace price setting turned %onOff", "Can't place and break when you do priceset at the same time!");
+        initMessage(Messages.RIGHT_CLICK_BLOCK_TO_PRICESET, "Now right click the block you want to set the %breakPlace price for.", "Right Click to priceset a block with break or place");
+        initMessage(Messages.WORKPLACE_CREATE_HELP_MESSAGE, "You must enter a Work Place Name!", "Help Message displayed when the workplace name is missing.");
+        initMessage(Messages.WORKPLACE_RENAME_HELP_MESSAGE, "You need to supply <oldname> <newname> for this command!", "Help Message displayed when the <oldname> and / or <newname> are missing.");
+        initMessage(Messages.WORKPLACE_SET_HELP_MESSAGE, "You need to supply variable and option to set!", "Help Messages displayed when variable and / or option are missing.");
+        initMessage(Messages.WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE, "Your selection overlaps another Work place please select your points again.", "Help Message displayed when workplaces overlap.");
+        initMessage(Messages.WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE, "You must select two points before your Work place can be created!", "Help Message displayed when not enough points where selected.");
+        initMessage(Messages.WORKPLACE_ALREADY_EXIST, "There is already a Work place with that name, please choose another name", "Help Message displayed when workplace already exists.");
+        initMessage(Messages.WORKPLACE_CREATED_MESSAGE, "Workplace %workplace created", "Message displayed when workplace is created.");
+        initMessage(Messages.WORKPLACE_DELETED_MESSAGE, "Workplace %workplace deleted", "Message displayed when workplace is deleted.");
+        initMessage(Messages.YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE, "You need to own the workplace to manage it!", "Message displayed when workplace isn't owned by player.");
+        initMessage(Messages.NO_WORKPLACE_WITH_THIS_NAME_MESSAGE, "There is no workplace by this name!", "Message displayed when workplace doesn't exit.");
+        initMessage(Messages.WORKPLACE_RENAMED_TO_MESSAGE, "Workplace %oldname renamed to %newname", "Message displayed when workplace is renamed.");
+        initMessage(Messages.WORKPLACE_NAME_MESSAGE, "Name of the Workplace", "Info Message displayed for Name of workplace.");
+        initMessage(Messages.WORKPLACE_OWNER_MESSAGE, "Owner of the Workplace", "Info Message displayed for owner of workplace.");
+        initMessage(Messages.WORKPLACE_BREAK_TYPE_MESSAGE, "Break payment type", "Info Message displayed for break type of workplace.");
+        initMessage(Messages.WORKPLACE_BREAK_AMOUNT_MESSAGE, "Break payment amount", "Info Message displayed for break amount of workplace.");
+        initMessage(Messages.WORKPLACE_PLACE_TYPE_MESSAGE, "Place payment type", "Info Message displayed for place type of workplace.");
+        initMessage(Messages.WORKPLACE_PLACE_AMOUNT_MESSAGE, "Place payment amount", "Info Message displayed for place amount of workplace.");
+        initMessage(Messages.WRONG_BREAK_PLACE_TYPE_MESSAGE, "When setting break or place types you must choose either percent or flat!", "Message displayed when wrong type entered.");
+        initMessage(Messages.NOT_A_VALID_VARIABLE_MESSAGE, "%varname is not a valid workplace variable", "Message displayed when variable name is wrong.");
+        initMessage(Messages.VAR_SET_TO_NEW_VALUE_MESSAGE, "%varname set to %newvalue", "Message displayed when variable newly set.");
+        initMessage(Messages.YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE, "You are currently not in a workplace", "Message displayed when player is not in a workplace.");
+        initMessage(Messages.YOU_WILL_BE_PAID_FOR_BREAKING, "You will be paid $$ for breaking %blocktype.", "Message displayed when a player is pricechecking for BREAK");
+        initMessage(Messages.YOU_WILL_BE_PAID_FOR_PLACING, "You will be paid $$ for placing %blocktype.", "Message displayed when a player is pricechecking for PLACEMENT");
+        initMessage(Messages.YOU_WILL_BE_PAID_DEFAULT_FOR_BREAKING, "This block does not have a set break price, you will be paid the default price of $$ for breaking %blocktype.", "Message displayed when a player is pricechecking if no specifc price is set for BREAK");
+        initMessage(Messages.YOU_WILL_BE_PAID_DEFAULT_FOR_PLACING, "This block does not have a set place price, you will be paid the default price of $$ for placeing %blocktype.", "Message displayed when a player is pricechecking if no specifc price is set for PLACEMENT");
+        initMessage(Messages.BOTH_POINTS_SELECTED, "Both points selected. You may now create your workplace or continue to set your points.", "Message displayed when both points of a workplace are selected");
+        initMessage(Messages.POINT_TWO_SELECTED, "Point two placed, now left click to make point one!", "Message displayed when second point is selected");
+        initMessage(Messages.POINT_ONE_SELECTED, "Point one placed, now right click to make point two!", "Message displayed when first point is selected");
+        initMessage(Messages.YOU_CANT_CREATE_A_WORKPLACE_IN_AN_EXISTING_ONE, "You cannot create your work place within someone else's work place", "Message displayed when workplace creating is done in an existing workplace");
+    }
+
 
     /**
      * Method to setup the config variables with default values
@@ -354,27 +354,20 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(BUFFER_SIZE, bufferSize);
         config.addDefault(PAYDAY_MESSAGE, payDayMessage);
         config.addDefault(PAYDAY_MESSAGE_ENABLED, payDayMessageEnabled);
-        config.addDefault(PAYDAY_EMPLOYER_MESSAGE, payDayEmployerMessage);
-        config.addDefault(PAYDAY_EMPLOYED_MESSAGE, payDayEmployedMessage);
         config.addDefault(PRICE_CHECK, priceCheck);
         config.addDefault(DISPLAY_PRICE_CHECK_MESSAGE, displayPriceCheckMessage);
         config.addDefault(DISPLAY_PAY_DAY_MESSAGE, displayPayDayMessage);
         config.addDefault(DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE, displayDisplayPayDayMessageMessage);
         config.addDefault(PRICESET_CMD, priceSetCmd);
         config.addDefault(DISPLAY_PRICE_SET_MESSAGE, displayPriceSetMessage);
-        config.addDefault(ON, on);
-        config.addDefault(OFF, off);
+        config.addDefault(ON_STRING, onString);
+        config.addDefault(OFF_STRING, offString);
         config.addDefault(NEW_PRICE, newPrice);
         config.addDefault(BREAK_STRING, breakString);
         config.addDefault(PLACE_STRING, placeString);
-        config.addDefault(PRICECHECK_MESSAGES_ON, priceCheckMessagesOn);
-        config.addDefault(PRICECHECK_MESSAGES_OFF, priceCheckMessagesOff);
-        config.addDefault(PAYDAY_MESSAGES_ONOFF, payDayMessagesOnOff);
         config.addDefault(PRICESET_CMD, priceSetCmd);
         config.addDefault(PRICESET_CMD_DESCRIPTION, priceSetCmdDescription);
         config.addDefault(PRICESET_CMD_PERM_DESCRIPTION, priceSetCmdPermDescription);
-        config.addDefault(CANT_BREAK_PLACE_AT_SAME_TIME, cantBreakPlaceAtSameTime);
-        config.addDefault(RIGHT_CLICK_BLOCK_TO_PRICESET, rightClickBlockToPriceSet);
         config.addDefault(WORKPLACE_CREATE_OPTION, workplaceCreateOption);
         config.addDefault(WORKPLACE_RENAME_OPTION, workplaceRenameOption);
         config.addDefault(WORKPLACE_INFO_OPTION, workplaceInfoOption);
@@ -385,29 +378,6 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(WORKPLACE_INFO_DESCRIPTION, workplaceInfoDescription);
         config.addDefault(WORKPLACE_DELETE_DESCRIPTION, workplaceDeleteDescription);
         config.addDefault(WORKPLACE_SET_DESCRIPTION, workplaceSetDescription);
-        config.addDefault(WORKPLACE_CREATE_HELP_MESSAGE, workplaceCreateHelpMessage);
-        config.addDefault(WORKPLACE_RENAME_HELP_MESSAGE, workplaceRenameHelpMessage);
-        config.addDefault(WORKPLACE_SET_HELP_MESSAGE, workplaceSetHelpMessage);
-        config.addDefault(WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE, workplaceSelectionOverlapHelpMessage);
-        config.addDefault(WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE, workplaceSelect2PointsHelpMessage);
-        config.addDefault(WORKPLACE_ALREADY_EXIST, workplaceAlreadyExist);
-        config.addDefault(WORKPLACE_CREATED_MESSAGE, workplaceCreatedMessage);
-        config.addDefault(WORKPLACE_DELETED_MESSAGE, workplaceDeletedMessage);
-        config.addDefault(YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE, youNeedToOwnTheWorkplaceMessage);
-        config.addDefault(NO_WORKPLACE_WITH_THIS_NAME_MESSAGE, noWorkplaceWithThisNameMessage);
-        config.addDefault(WORKPLACE_RENAMED_TO_MESSAGE, workplaceRenamedToMessage);
-        config.addDefault(WORKPLACE_NAME_MESSAGE, workplaceNameMessage);
-        config.addDefault(WORKPLACE_OWNER_MESSAGE, workplaceOwnerMessage);
-        config.addDefault(WORKPLACE_BREAK_TYPE_MESSAGE, workplaceBreakTypeMessage);
-        config.addDefault(WORKPLACE_BREAK_AMOUNT_MESSAGE, workplaceBreakAmountMessage);
-        config.addDefault(WORKPLACE_PLACE_TYPE_MESSAGE, workplacePlaceTypeMessage);
-        config.addDefault(WORKPLACE_PLACE_AMOUNT_MESSAGE, workplacePlaceAmountMessage);
-        config.addDefault(WRONG_BREAK_PLACE_TYPE_MESSAGE, wrongBreakPlaceTypeMessage);
-        config.addDefault(NOT_A_VALID_VARIABLE_MESSAGE, notAValidVariableMessage);
-        config.addDefault(VAR_SET_TO_NEW_VALUE_MESSAGE, varSetToNewValueMessage);
-        config.addDefault(YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE, youAreNotInAWorkplaceMessage);
-
-
     }
 
 
@@ -441,26 +411,32 @@ afterwards parsable again from the configuration class of bukkit
         bufferSize = config.getInt(BUFFER_SIZE);
         payDayMessage = config.getString(PAYDAY_MESSAGE);
         payDayMessageEnabled = config.getBoolean(PAYDAY_MESSAGE_ENABLED);
-        payDayEmployedMessage = config.getString(PAYDAY_EMPLOYED_MESSAGE);
-        payDayEmployerMessage = config.getString(PAYDAY_EMPLOYER_MESSAGE);
+
         priceCheck = config.getString(PRICE_CHECK);
         displayPriceCheckMessage = config.getString(DISPLAY_PRICE_CHECK_MESSAGE);
         displayPayDayMessage = config.getString(DISPLAY_PAY_DAY_MESSAGE);
         displayDisplayPayDayMessageMessage = config.getString(DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE);
         priceSetCmd = config.getString(PRICESET_CMD);
         displayPriceSetMessage = config.getString(DISPLAY_PRICE_SET_MESSAGE);
-        on = config.getString(ON);
-        off = config.getString(OFF);
+        onString = config.getString(ON_STRING);
+        offString = config.getString(OFF_STRING);
         newPrice = config.getString(NEW_PRICE);
         breakString = config.getString(BREAK_STRING);
         placeString = config.getString(PLACE_STRING);
-        priceCheckMessagesOn = config.getString(PRICECHECK_MESSAGES_ON);
-        priceCheckMessagesOff = config.getString(PRICECHECK_MESSAGES_OFF);
-        payDayMessagesOnOff = config.getString(PAYDAY_MESSAGES_ONOFF);
+
+        for (Messages node : Messages.values()) {
+            if (config.contains(node.toString())) {
+                setMessage(node, config.getString(node.toString()));
+                getPayedLogger.debug(node + ": " + getMessage(node));
+            } else {
+                getPayedLogger.warning(node + " doesn't exist in " + configFile);
+                getPayedLogger.warning("Using internal defaults!");
+            }
+        }
+
+
         priceSetCmdDescription = config.getString(PRICESET_CMD_DESCRIPTION);
         priceSetCmdPermDescription = config.getString(PRICESET_CMD_PERM_DESCRIPTION);
-        cantBreakPlaceAtSameTime = config.getString(CANT_BREAK_PLACE_AT_SAME_TIME);
-        rightClickBlockToPriceSet = config.getString(RIGHT_CLICK_BLOCK_TO_PRICESET);
         workplaceCreateOption = config.getString(WORKPLACE_CREATE_OPTION);
         workplaceRenameOption = config.getString(WORKPLACE_RENAME_OPTION);
         workplaceInfoOption = config.getString(WORKPLACE_INFO_OPTION);
@@ -471,28 +447,6 @@ afterwards parsable again from the configuration class of bukkit
         workplaceInfoDescription = config.getString(WORKPLACE_INFO_DESCRIPTION);
         workplaceDeleteDescription = config.getString(WORKPLACE_DELETE_DESCRIPTION);
         workplaceSetDescription = config.getString(WORKPLACE_SET_DESCRIPTION);
-        workplaceCreateHelpMessage = config.getString(WORKPLACE_CREATE_HELP_MESSAGE);
-        workplaceRenameHelpMessage = config.getString(WORKPLACE_RENAME_HELP_MESSAGE);
-        workplaceSetHelpMessage = config.getString(WORKPLACE_SET_HELP_MESSAGE);
-        workplaceSelectionOverlapHelpMessage = config.getString(WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE);
-        workplaceSelect2PointsHelpMessage = config.getString(WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE);
-        workplaceAlreadyExist = config.getString(WORKPLACE_ALREADY_EXIST);
-        workplaceCreatedMessage = config.getString(WORKPLACE_CREATED_MESSAGE);
-        workplaceDeletedMessage = config.getString(WORKPLACE_DELETED_MESSAGE);
-        youNeedToOwnTheWorkplaceMessage = config.getString(YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE);
-        noWorkplaceWithThisNameMessage = config.getString(NO_WORKPLACE_WITH_THIS_NAME_MESSAGE);
-        workplaceRenamedToMessage = config.getString(WORKPLACE_RENAMED_TO_MESSAGE);
-        workplaceNameMessage = config.getString(WORKPLACE_NAME_MESSAGE);
-        workplaceOwnerMessage = config.getString(WORKPLACE_OWNER_MESSAGE);
-        workplaceBreakTypeMessage = config.getString(WORKPLACE_BREAK_TYPE_MESSAGE);
-        workplaceBreakAmountMessage = config.getString(WORKPLACE_BREAK_AMOUNT_MESSAGE);
-        workplacePlaceTypeMessage = config.getString(WORKPLACE_PLACE_TYPE_MESSAGE);
-        workplacePlaceAmountMessage = config.getString(WORKPLACE_PLACE_AMOUNT_MESSAGE);
-        wrongBreakPlaceTypeMessage = config.getString(WRONG_BREAK_PLACE_TYPE_MESSAGE);
-        notAValidVariableMessage = config.getString(NOT_A_VALID_VARIABLE_MESSAGE);
-        varSetToNewValueMessage = config.getString(VAR_SET_TO_NEW_VALUE_MESSAGE);
-        youAreNotInAWorkplaceMessage = config.getString(YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE);
-
         getPayedLogger.debug("getPayedCmd", getPayedCmd);
         getPayedLogger.debug("helpOption", helpOption);
         getPayedLogger.debug("getPayedCmdDescription", getPayedCmdDescription);
@@ -513,24 +467,17 @@ afterwards parsable again from the configuration class of bukkit
         getPayedLogger.debug("paydayInterval", payDayInterval);
         getPayedLogger.debug("clearBufferOnPayday", clearBufferOnPayday);
         getPayedLogger.debug("bufferSize", bufferSize);
-        getPayedLogger.debug("payDayEmployedMessage", payDayEmployedMessage);
-        getPayedLogger.debug("payDayEmployerMessage", payDayEmployerMessage);
         getPayedLogger.debug(PRICE_CHECK, priceCheck);
         getPayedLogger.debug(DISPLAY_PRICE_CHECK_MESSAGE, displayPriceCheckMessage);
         getPayedLogger.debug(DISPLAY_PAY_DAY_MESSAGE, displayPayDayMessage);
         getPayedLogger.debug(DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE, displayDisplayPayDayMessageMessage);
         getPayedLogger.debug(PRICESET_CMD, priceSetCmd);
         getPayedLogger.debug(DISPLAY_PRICE_SET_MESSAGE, displayPriceSetMessage);
-        getPayedLogger.debug(ON, on);
-        getPayedLogger.debug(OFF, off);
+        getPayedLogger.debug(ON_STRING, onString);
+        getPayedLogger.debug(OFF_STRING, offString);
         getPayedLogger.debug(NEW_PRICE, newPrice);
         getPayedLogger.debug(BREAK_STRING, breakString);
         getPayedLogger.debug(PLACE_STRING, placeString);
-        getPayedLogger.debug(PRICECHECK_MESSAGES_ON, priceCheckMessagesOn);
-        getPayedLogger.debug(PRICECHECK_MESSAGES_OFF, priceCheckMessagesOff);
-        getPayedLogger.debug(PAYDAY_MESSAGES_ONOFF, payDayMessagesOnOff);
-        getPayedLogger.debug(CANT_BREAK_PLACE_AT_SAME_TIME, cantBreakPlaceAtSameTime);
-        getPayedLogger.debug(RIGHT_CLICK_BLOCK_TO_PRICESET, rightClickBlockToPriceSet);
         getPayedLogger.debug(WORKPLACE_CREATE_OPTION, workplaceCreateOption);
         getPayedLogger.debug(WORKPLACE_RENAME_OPTION, workplaceRenameOption);
         getPayedLogger.debug(WORKPLACE_INFO_OPTION, workplaceInfoOption);
@@ -541,27 +488,6 @@ afterwards parsable again from the configuration class of bukkit
         getPayedLogger.debug(WORKPLACE_INFO_DESCRIPTION, workplaceInfoDescription);
         getPayedLogger.debug(WORKPLACE_DELETE_DESCRIPTION, workplaceDeleteDescription);
         getPayedLogger.debug(WORKPLACE_SET_DESCRIPTION, workplaceSetDescription);
-        getPayedLogger.debug(WORKPLACE_CREATE_HELP_MESSAGE, workplaceCreateHelpMessage);
-        getPayedLogger.debug(WORKPLACE_RENAME_HELP_MESSAGE, workplaceRenameHelpMessage);
-        getPayedLogger.debug(WORKPLACE_SET_HELP_MESSAGE, workplaceSetHelpMessage);
-        getPayedLogger.debug(WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE, workplaceSelectionOverlapHelpMessage);
-        getPayedLogger.debug(WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE, workplaceSelect2PointsHelpMessage);
-        getPayedLogger.debug(WORKPLACE_ALREADY_EXIST, workplaceAlreadyExist);
-        getPayedLogger.debug(WORKPLACE_CREATED_MESSAGE, workplaceCreatedMessage);
-        getPayedLogger.debug(WORKPLACE_DELETED_MESSAGE, workplaceDeletedMessage);
-        getPayedLogger.debug(YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE, youNeedToOwnTheWorkplaceMessage);
-        getPayedLogger.debug(NO_WORKPLACE_WITH_THIS_NAME_MESSAGE, noWorkplaceWithThisNameMessage);
-        getPayedLogger.debug(WORKPLACE_RENAMED_TO_MESSAGE, workplaceRenamedToMessage);
-        getPayedLogger.debug(NO_WORKPLACE_WITH_THIS_NAME_MESSAGE, noWorkplaceWithThisNameMessage);
-        getPayedLogger.debug(WORKPLACE_NAME_MESSAGE, workplaceNameMessage);
-        getPayedLogger.debug(WORKPLACE_OWNER_MESSAGE, workplaceOwnerMessage);
-        getPayedLogger.debug(WORKPLACE_BREAK_TYPE_MESSAGE, workplaceBreakTypeMessage);
-        getPayedLogger.debug(WORKPLACE_BREAK_AMOUNT_MESSAGE, workplaceBreakAmountMessage);
-        getPayedLogger.debug(WORKPLACE_PLACE_TYPE_MESSAGE, workplacePlaceTypeMessage);
-        getPayedLogger.debug(WORKPLACE_PLACE_AMOUNT_MESSAGE, workplacePlaceAmountMessage);
-        getPayedLogger.debug(WRONG_BREAK_PLACE_TYPE_MESSAGE, wrongBreakPlaceTypeMessage);
-        getPayedLogger.debug(NOT_A_VALID_VARIABLE_MESSAGE, notAValidVariableMessage);
-        getPayedLogger.debug(YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE, youAreNotInAWorkplaceMessage);
 
 
         for (String blockID : config.getConfigurationSection("PriceList").getKeys(false)) {
@@ -575,7 +501,7 @@ afterwards parsable again from the configuration class of bukkit
                 breakPrice = 0.0;
             }
             double placePrice;
-            if (config.contains("PricList." + blockID + ".place")) {
+            if (config.contains("PriceList." + blockID + ".place")) {
                 placePrice = config.getDouble("PriceList." + blockID + ".place");
             } else {
                 getPayedLogger.warning("Place value missing for " + blockID);
@@ -589,11 +515,11 @@ afterwards parsable again from the configuration class of bukkit
             getPayedLogger.debug("PriceList:", blockID + ":" + breakPrice + ":" + placePrice);
         }
 
-        if (!defaultBreakType.equalsIgnoreCase("percent") || !defaultBreakType.equalsIgnoreCase("flat")) {
+        if (!defaultBreakType.equalsIgnoreCase("percent") && !defaultBreakType.equalsIgnoreCase("flat")) {
             getPayedLogger.warning(DEFAULT_BREAK_TYPE + " is not flat or percent, using percent!");
             defaultBreakType = "percent";
         }
-        if (!defaultPlaceType.equalsIgnoreCase("percent") || !defaultPlaceType.equalsIgnoreCase("flat")) {
+        if (!defaultPlaceType.equalsIgnoreCase("percent") && !defaultPlaceType.equalsIgnoreCase("flat")) {
             getPayedLogger.warning(DEFAULT_PLACE_TYPE + " is not flat or percent, using percent!");
             defaultPlaceType = "percent";
         }
@@ -614,7 +540,7 @@ afterwards parsable again from the configuration class of bukkit
 
         stream.println("#-------- Module Configuration");
         stream.println();
-        stream.println("# Please note: due to the ammount of translations for this module you find the");
+        stream.println("# Please note: due to the amount of translations for this module you find the");
         stream.println("#              translation feature at the end of the file.");
         stream.println();
 
@@ -624,20 +550,20 @@ afterwards parsable again from the configuration class of bukkit
 
 
         stream.println("# ID of the tool to mark a workplace (Default 284, Gold Shovel.");
-        stream.println(WORKPLACE_TOOL + ": '" + workPlaceTool + "'");
+        stream.println(WORKPLACE_TOOL + ": " + workPlaceTool);
         stream.println("# Calculation method for break payment (flat / percent).");
-        stream.println(DEFAULT_BREAK_TYPE + ": '" + defaultBreakType + "'");
+        stream.println(DEFAULT_BREAK_TYPE + ": \"" + defaultBreakType + "\"");
         stream.println("# Amount to pay for breaking blocks");
         stream.println(DEFAULT_BREAK_AMOUNT + ": " + defaultBreakAmount);
         stream.println("# Calculation method for place payment (flat / percent).");
-        stream.println(DEFAULT_PLACE_TYPE + ": '" + defaultPlaceType + "'");
+        stream.println(DEFAULT_PLACE_TYPE + ": \"" + defaultPlaceType + "\"");
         stream.println("# Amount to pay for placing blocks.");
         stream.println(DEFAULT_PLACE_AMOUNT + ": " + defaultPlaceAmount);
         stream.println("# The message displayed when the players enter a workplace.");
-        stream.println(WORKPLACE_GREETING + ": '" + workPlaceGreeting + "'");
+        stream.println(WORKPLACE_GREETING + ": \"" + workPlaceGreeting + "\"");
         stream.println("# The message displayed when the players leaves a workplace.");
-        stream.println(WORKPLACE_FAREWELL + ": '" + workPlaceGreeting + "'");
-        stream.println("# Time in seconds changes are save to disk.");
+        stream.println(WORKPLACE_FAREWELL + ": \"" + workPlaceFarewell + "\"");
+        stream.println("# Time in seconds changes are saved to disk.");
         stream.println(WORKPLACE_SAVE_INTERVAL + ": " + workPlaceSaveInterval);
         stream.println("# Ticks (20 Ticks = 1 Seconds to check if player entered / left a workplace.");
         stream.println("# If you notice lag being caused by this increase this value to check less often");
@@ -648,7 +574,7 @@ afterwards parsable again from the configuration class of bukkit
         stream.println();
         stream.println("# Set your message in the message field. Use the text $$ where you want to put your amount.");
         stream.println("# The currency units are automatically picked up");
-        stream.println(PAYDAY_MESSAGE + ": '" + payDayMessage + "'");
+        stream.println(PAYDAY_MESSAGE + ": \"" + payDayMessage + "\"");
         stream.println("# Broadcast the PayDay message to the players?");
         stream.println(PAYDAY_MESSAGE_ENABLED + ": " + payDayMessageEnabled);
         stream.println("# Time in Seconds for Payment");
@@ -656,7 +582,7 @@ afterwards parsable again from the configuration class of bukkit
         stream.println("# Anti-Place-Break-Exploit, stores blocks inside the buffer");
         stream.println("# 1000 is a good value. The buffer uses a sliding window.");
         stream.println(BUFFER_SIZE + ": " + bufferSize);
-        stream.println("# Clear the buffer every time on payday (saves some memory from time to time");
+        stream.println("# Clear the buffer every time onString payday (saves some memory from time to time");
         stream.println(CLEAR_BUFFER_ON_PAYDAY + ": " + clearBufferOnPayday);
 
 
@@ -695,139 +621,85 @@ afterwards parsable again from the configuration class of bukkit
         stream.println("# Almost everything player visible can be translated!");
         stream.println("# Please change to your liking and use the following variables");
         stream.println("# %player = playername, %cmd = command, %help = help option");
-        stream.println("# $$ = amount and currency , %onOff = will become on or off");
+        stream.println("# $$ = amount and currency , %onOff = will become onString or offString");
         stream.println("# %employer = owner of the workplace");
         stream.println("# %breakPlace = will become break or place");
         stream.println("# %workplace = will become workplace name");
         stream.println("# %oldname / %newname = old / new name of the workplace");
         stream.println("# %varname = variable name, %newvalue = new value of variable");
-        stream.println();
-        stream.println("# NOTE: You need to use '' if you want to use ' in this text!");
+        stream.println("# %blocktype = type of block");
         stream.println();
         stream.println("# The alias for the help option.");
-        stream.println(HELP_OPTION + ": '" + helpOption + "'");
+        stream.println(HELP_OPTION + ": \"" + helpOption + "\"");
         stream.println("# The help message displayed.");
-        stream.println(DISPLAY_HELP_MESSAGE + ": '" + displayHelpMessage + "'");
+        stream.println(DISPLAY_HELP_MESSAGE + ": \"" + displayHelpMessage + "\"");
         stream.println();
         stream.println("# The alias command for /" + TMP + CMD_GETPAYED + " WITHOUT the / !!!");
-        stream.println(GETPAYED_CMD + "d: '" + getPayedCmd + "'");
+        stream.println(GETPAYED_CMD + ": \"" + getPayedCmd + "\"");
         stream.println("# The command description.");
-        stream.println(GETPAYED_CMD_DESCRIPTION + ": '" + getPayedCmdDescription + "'");
+        stream.println(GETPAYED_CMD_DESCRIPTION + ": \"" + getPayedCmdDescription + "\"");
         stream.println("# The command permissions description.");
-        stream.println(GETPAYED_CMD_PERM_DESCRIPTION + ": '" + getPayedCmdPermDescription + "'");
+        stream.println(GETPAYED_CMD_PERM_DESCRIPTION + ": \"" + getPayedCmdPermDescription + "\"");
         stream.println("# # The alias command for /" + TMP + CMD_WORKPLACE + " WITHOUT the / !!!");
-        stream.println(WORKPLACE_CMD + ": '" + workPlaceCmd + "'");
+        stream.println(WORKPLACE_CMD + ": \"" + workPlaceCmd + "\"");
         stream.println("# The command description.");
-        stream.println(WORKPLACE_CMD_DESCRIPTION + ": '" + workPlaceCmdDescription + "'");
+        stream.println(WORKPLACE_CMD_DESCRIPTION + ": \"" + workPlaceCmdDescription + "\"");
         stream.println("# The command permissions description.");
-        stream.println(WORKPLACE_CMD_PERM_DESCRIPTION + ": '" + workPlaceCmdPermDescription + "'");
+        stream.println(WORKPLACE_CMD_PERM_DESCRIPTION + ": \"" + workPlaceCmdPermDescription + "\"");
         stream.println("# The alias command for /" + TMP + CMD_PRICESET + " WITHOUT the / !!!.");
-        stream.println(PRICESET_CMD + ": '" + priceSetCmd + "'");
+        stream.println(PRICESET_CMD + ": \"" + priceSetCmd + "\"");
         stream.println("# The command description.");
-        stream.println(PRICESET_CMD_DESCRIPTION + ": '" + priceSetCmdDescription + "'");
+        stream.println(PRICESET_CMD_DESCRIPTION + ": \"" + priceSetCmdDescription + "\"");
         stream.println("# The command permissions description.");
-        stream.println(PRICESET_CMD_PERM_DESCRIPTION + ": '" + priceSetCmdPermDescription + "'");
+        stream.println(PRICESET_CMD_PERM_DESCRIPTION + ": \"" + priceSetCmdPermDescription + "\"");
         stream.println();
         stream.println("# The alias for the pricecheck option.");
-        stream.println(PRICE_CHECK + ": '" + priceCheck + "'");
+        stream.println(PRICE_CHECK + ": \"" + priceCheck + "\"");
         stream.println("# The pricecheck description.");
-        stream.println(DISPLAY_PRICE_CHECK_MESSAGE + ": '" + displayPriceCheckMessage + "'");
+        stream.println(DISPLAY_PRICE_CHECK_MESSAGE + ": \"" + displayPriceCheckMessage + "\"");
         stream.println("# The alias for the paydaymessage option.");
-        stream.println(DISPLAY_PAY_DAY_MESSAGE + ": '" + displayPayDayMessage + "'");
+        stream.println(DISPLAY_PAY_DAY_MESSAGE + ": \"" + displayPayDayMessage + "\"");
         stream.println("# The paydaymessage description.");
-        stream.println(DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE + ": '" + displayDisplayPayDayMessageMessage + "'");
+        stream.println(DISPLAY_DISPLAY_PAY_DAY_MESSAGE_MESSAGE + ": \"" + displayDisplayPayDayMessageMessage + "\"");
         stream.println("# The alias for the create option.");
-        stream.println(WORKPLACE_CREATE_OPTION + ": '" + workplaceCreateOption + "'");
+        stream.println(WORKPLACE_CREATE_OPTION + ": \"" + workplaceCreateOption + "\"");
         stream.println("# The create description.");
-        stream.println(WORKPLACE_CREATE_DESCRIPTION + ": '" + workplaceCreateDescription + "'");
+        stream.println(WORKPLACE_CREATE_DESCRIPTION + ": \"" + workplaceCreateDescription + "\"");
         stream.println("# The alias for the rename option.");
-        stream.println(WORKPLACE_RENAME_OPTION + ": '" + workplaceRenameOption + "'");
+        stream.println(WORKPLACE_RENAME_OPTION + ": \"" + workplaceRenameOption + "\"");
         stream.println("# The rename description.");
-        stream.println(WORKPLACE_RENAME_DESCRIPTION + ": '" + workplaceRenameDescription + "'");
+        stream.println(WORKPLACE_RENAME_DESCRIPTION + ": \"" + workplaceRenameDescription + "\"");
         stream.println("# The alias for the info option.");
-        stream.println(WORKPLACE_INFO_OPTION + ": '" + workplaceInfoOption + "'");
+        stream.println(WORKPLACE_INFO_OPTION + ": \"" + workplaceInfoOption + "\"");
         stream.println("# The info description.");
-        stream.println(WORKPLACE_INFO_DESCRIPTION + ": '" + workplaceInfoDescription + "'");
+        stream.println(WORKPLACE_INFO_DESCRIPTION + ": \"" + workplaceInfoDescription + "\"");
         stream.println("# The alias for the delete option.");
-        stream.println(WORKPLACE_DELETE_OPTION + ": '" + workplaceDeleteOption + "'");
+        stream.println(WORKPLACE_DELETE_OPTION + ": \"" + workplaceDeleteOption + "\"");
         stream.println("# The delete description.");
-        stream.println(WORKPLACE_DELETE_DESCRIPTION + ": '" + workplaceDeleteDescription + "'");
+        stream.println(WORKPLACE_DELETE_DESCRIPTION + ": \"" + workplaceDeleteDescription + "\"");
         stream.println("# The alias for the set option.");
-        stream.println(WORKPLACE_SET_OPTION + ": '" + workplaceSetOption + "'");
+        stream.println(WORKPLACE_SET_OPTION + ": \"" + workplaceSetOption + "\"");
         stream.println("# The set description.");
-        stream.println(WORKPLACE_SET_DESCRIPTION + ": '" + workplaceSetDescription + "'");
+        stream.println(WORKPLACE_SET_DESCRIPTION + ": \"" + workplaceSetDescription + "\"");
 
         stream.println();
         stream.println("# The priceset description.");
-        stream.println(DISPLAY_PRICE_SET_MESSAGE + ": '" + displayPriceSetMessage + "'");
-        stream.println("# on translatation.");
-        stream.println(ON + ": '" + on + "'");
-        stream.println("# off translatation.");
-        stream.println(OFF + ": '" + off + "'");
+        stream.println(DISPLAY_PRICE_SET_MESSAGE + ": \"" + displayPriceSetMessage + "\"");
+        stream.println("# onString translatation.");
+        stream.println(ON_STRING + ": \"" + onString + "\"");
+        stream.println("# offString translatation.");
+        stream.println(OFF_STRING + ": \"" + offString + "\"");
         stream.println("#  <newPrice>  translatation.");
-        stream.println(NEW_PRICE + ": '" + newPrice + "'");
+        stream.println(NEW_PRICE + ": \"" + newPrice + "\"");
         stream.println("# break translatation.");
-        stream.println(BREAK_STRING + ": '" + breakString + "'");
+        stream.println(BREAK_STRING + ": \"" + breakString + "\"");
         stream.println("# place translatation.");
-        stream.println(PLACE_STRING + ": '" + PLACE_STRING + "'");
+        stream.println(PLACE_STRING + ": \"" + PLACE_STRING + "\"");
 
-
-        stream.println("# Message displayed when pay for work in your workplace.");
-        stream.println(PAYDAY_EMPLOYER_MESSAGE + ": '" + payDayEmployerMessage + "'");
-        stream.println("# Message displayed when you work in an workplace.");
-        stream.println(PAYDAY_EMPLOYED_MESSAGE + ": '" + payDayEmployedMessage + "'");
-        stream.println("# Pricecheck is ON message.");
-        stream.println(PRICECHECK_MESSAGES_ON + ": '" + priceCheckMessagesOn + "'");
-        stream.println("# Pricecheck is OFF message.");
-        stream.println(PRICECHECK_MESSAGES_OFF + ": '" + priceCheckMessagesOff + "'");
-        stream.println("# Payday messages on / off");
-        stream.println(PAYDAY_MESSAGES_ONOFF + ": '" + payDayMessagesOnOff + "'");
-        stream.println("# Can't place and break when you do priceset at the same time");
-        stream.println(CANT_BREAK_PLACE_AT_SAME_TIME + ": '" + cantBreakPlaceAtSameTime + "'");
-        stream.println("# Right Click to priceset a block with break or place");
-        stream.println(RIGHT_CLICK_BLOCK_TO_PRICESET + ": '" + rightClickBlockToPriceSet + "'");
-        stream.println("# Help Message displayed when the workplace name is missing.");
-        stream.println(WORKPLACE_CREATE_HELP_MESSAGE + ": '" + workplaceCreateHelpMessage + "'");
-        stream.println("# Help Message displayed when the <oldname> and / or <newname> are missing.");
-        stream.println(WORKPLACE_RENAME_HELP_MESSAGE + ": '" + workplaceRenameHelpMessage + "'");
-        stream.println("# Help Messages displayed when variable and / or option are missing.");
-        stream.println(WORKPLACE_SET_HELP_MESSAGE + ": '" + workplaceSetHelpMessage + "'");
-        stream.println("# Help Messages displayed when workplaces overlap.");
-        stream.println(WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE + ": '" + workplaceSelectionOverlapHelpMessage + "'");
-        stream.println("# Help Messages displayed when not enough points where selected.");
-        stream.println(WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE + ": '" + workplaceSelect2PointsHelpMessage + "'");
-        stream.println("# Help Messages displayed when workplace already exists.");
-        stream.println(WORKPLACE_ALREADY_EXIST + ": '" + workplaceAlreadyExist + "'");
-        stream.println("# Message displayed when workplace is created.");
-        stream.println(WORKPLACE_CREATED_MESSAGE + ": '" + workplaceCreatedMessage + "'");
-        stream.println("# Message displayed when workplace is deleted.");
-        stream.println(WORKPLACE_DELETED_MESSAGE + ": '" + workplaceDeletedMessage + "'");
-        stream.println("# Message displayed when workplace isn't owned by player.");
-        stream.println(YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE + ": '" + youNeedToOwnTheWorkplaceMessage + "'");
-        stream.println("# Message displayed when workplace doesn't exit.");
-        stream.println(NO_WORKPLACE_WITH_THIS_NAME_MESSAGE + ": '" + noWorkplaceWithThisNameMessage + "'");
-        stream.println("# Message displayed when workplace is renamed.");
-        stream.println(WORKPLACE_RENAMED_TO_MESSAGE + ": '" + workplaceRenamedToMessage + "'");
-        stream.println("# Info Message displayed for Name of workplace.");
-        stream.println(WORKPLACE_NAME_MESSAGE + ": '" + workplaceNameMessage + "'");
-        stream.println("# Info Message displayed for owner of workplace.");
-        stream.println(WORKPLACE_OWNER_MESSAGE + ": '" + workplaceOwnerMessage + "'");
-        stream.println("# Info Message displayed for break type of workplace.");
-        stream.println(WORKPLACE_BREAK_TYPE_MESSAGE + ": '" + workplaceBreakTypeMessage + "'");
-        stream.println("# Info Message displayed for break amount of workplace.");
-        stream.println(WORKPLACE_BREAK_AMOUNT_MESSAGE + ": '" + workplaceBreakAmountMessage + "'");
-        stream.println("# Info Message displayed for place type of workplace.");
-        stream.println(WORKPLACE_PLACE_TYPE_MESSAGE + ": '" + workplacePlaceTypeMessage + "'");
-        stream.println("# Info Message displayed for place amount of workplace.");
-        stream.println(WORKPLACE_PLACE_AMOUNT_MESSAGE + ": '" + workplacePlaceAmountMessage + "'");
-        stream.println("# Message displayed when wrong type entered.");
-        stream.println(WRONG_BREAK_PLACE_TYPE_MESSAGE + ": '" + wrongBreakPlaceTypeMessage + "'");
-        stream.println("# Message displayed when variable name is wrong.");
-        stream.println(NOT_A_VALID_VARIABLE_MESSAGE + ": '" + notAValidVariableMessage + "'");
-        stream.println("# Message displayed when variable newly set.");
-        stream.println(VAR_SET_TO_NEW_VALUE_MESSAGE + ": '" + varSetToNewValueMessage + "'");
-        stream.println("# Message displayed when player is not in a workplace.");
-        stream.println(YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE + ": '" + youAreNotInAWorkplaceMessage + "'");
+        for (Messages node : Messages.values()) {
+            stream.println("# " + getComment(node));
+            stream.println(node + ": \"" + getMessage(node) + "\"");
+        }
 
 
     }
@@ -864,94 +736,6 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
-
-    public String getNotAValidVariableMessage() {
-        return notAValidVariableMessage;
-    }
-
-    public String getNoWorkplaceWithThisNameMessage() {
-        return noWorkplaceWithThisNameMessage;
-    }
-
-    public String getVarSetToNewValueMessage() {
-        return varSetToNewValueMessage;
-    }
-
-    public String getWorkplaceBreakAmountMessage() {
-        return workplaceBreakAmountMessage;
-    }
-
-    public String getWorkplaceBreakTypeMessage() {
-        return workplaceBreakTypeMessage;
-    }
-
-    public String getWorkplaceDeletedMessage() {
-        return workplaceDeletedMessage;
-    }
-
-    public String getWorkplaceNameMessage() {
-        return workplaceNameMessage;
-    }
-
-    public String getWorkplaceOwnerMessage() {
-        return workplaceOwnerMessage;
-    }
-
-    public String getWorkplacePlaceAmountMessage() {
-        return workplacePlaceAmountMessage;
-    }
-
-    public String getWorkplacePlaceTypeMessage() {
-        return workplacePlaceTypeMessage;
-    }
-
-    public String getWorkplaceRenamedToMessage() {
-        return workplaceRenamedToMessage;
-    }
-
-    public String getWrongBreakPlaceTypeMessage() {
-        return wrongBreakPlaceTypeMessage;
-    }
-
-    public String getYouAreNotInAWorkplaceMessage() {
-        return youAreNotInAWorkplaceMessage;
-    }
-
-    public String getYouNeedToOwnTheWorkplaceMessage() {
-        return youNeedToOwnTheWorkplaceMessage;
-    }
-
-    public String getWorkplaceCreatedMessage() {
-        return workplaceCreatedMessage;
-    }
-
-    public String getWorkplaceAlreadyExist() {
-        return workplaceAlreadyExist;
-    }
-
-    public String getWorkplaceSelect2PointsHelpMessage() {
-        return workplaceSelect2PointsHelpMessage;
-    }
-
-    public String getWorkplaceSelectionOverlapHelpMessage() {
-        return workplaceSelectionOverlapHelpMessage;
-    }
-
-    public String getBREAK_STRING() {
-        return BREAK_STRING;
-    }
-
-    public String getWorkplaceCreateHelpMessage() {
-        return workplaceCreateHelpMessage;
-    }
-
-    public String getWorkplaceRenameHelpMessage() {
-        return workplaceRenameHelpMessage;
-    }
-
-    public String getWorkplaceSetHelpMessage() {
-        return workplaceSetHelpMessage;
-    }
 
     public String getWorkplaceCreateDescription() {
         return workplaceCreateDescription;
@@ -997,13 +781,6 @@ afterwards parsable again from the configuration class of bukkit
         return PERM_WORKPLACE_CONFIGURE;
     }
 
-    public String getCantBreakPlaceAtSameTime() {
-        return cantBreakPlaceAtSameTime;
-    }
-
-    public String getRightClickBlockToPriceSet() {
-        return rightClickBlockToPriceSet;
-    }
 
     public String getPERM_GETPAYED() {
         return PERM_GETPAYED;
@@ -1025,17 +802,6 @@ afterwards parsable again from the configuration class of bukkit
         return priceSetCmdPermDescription;
     }
 
-    public String getPayDayMessagesOnOff() {
-        return payDayMessagesOnOff;
-    }
-
-    public String getPriceCheckMessagesOff() {
-        return priceCheckMessagesOff;
-    }
-
-    public String getPriceCheckMessagesOn() {
-        return priceCheckMessagesOn;
-    }
 
     public String getDisplayDisplayPayDayMessageMessage() {
         return displayDisplayPayDayMessageMessage;
@@ -1057,12 +823,12 @@ afterwards parsable again from the configuration class of bukkit
         return newPrice;
     }
 
-    public String getOff() {
-        return off;
+    public String getOffString() {
+        return offString;
     }
 
-    public String getOn() {
-        return on;
+    public String getOnString() {
+        return onString;
     }
 
     public String getPlaceString() {
@@ -1083,6 +849,51 @@ afterwards parsable again from the configuration class of bukkit
 
     public boolean isNotDefaultPrice(Block block) {
         return blockPrices.containsKey(block.getType().name());
+    }
+
+    public void removeBlockFromBlockPrices(Block block) {
+        blockPrices.remove(block.getType().name());
+    }
+
+    public void removeBlockFromBlockPrices(String block) {
+        blockPrices.remove(block);
+    }
+
+    public void setBlockPrices(Block block, Map breakPlace) {
+        blockPrices.put(block.getType().name(), breakPlace);
+    }
+
+    public void setBlockPrices(String block, Map breakPlace) {
+        blockPrices.put(block, breakPlace);
+    }
+
+    public void setPlaceBlockPrice(Block block, double price) {
+        blockPrices.get(block.getType().name()).remove("place");
+        blockPrices.get(block.getType().name()).put("place", price);
+    }
+
+    public void setPlaceBlockPrice(String block, double price) {
+        blockPrices.get(block).remove("place");
+        blockPrices.get(block).put("place", price);
+    }
+
+    public void setBreakBlockPrice(Block block, double price) {
+        blockPrices.get(block.getType().name()).remove("break");
+        blockPrices.get(block.getType().name()).put("break", price);
+    }
+
+
+    public void setBreakBlockPrice(String block, double price) {
+        blockPrices.get(block).remove("break");
+        blockPrices.get(block).put("break", price);
+    }
+
+    public boolean blockPricesContainsBlock(Block block) {
+        return blockPrices.containsKey(block.getType().name());
+    }
+
+    public boolean blockPricesContainsBlock(String block) {
+        return blockPrices.containsKey(block);
     }
 
     public double getBlockBreakPrice(Block block) {
@@ -1106,13 +917,6 @@ afterwards parsable again from the configuration class of bukkit
         return MODULE_NAME;
     }
 
-    public String getPayDayEmployerMessage() {
-        return payDayEmployerMessage;
-    }
-
-    public String getPayDayEmployedMessage() {
-        return payDayEmployedMessage;
-    }
 
     public void clearBlockPrices() {
         blockPrices.clear();
@@ -1123,7 +927,7 @@ afterwards parsable again from the configuration class of bukkit
     }
 
     public int getWorkPlaceSaveInterval() {
-        return workPlaceSaveInterval;
+        return workPlaceSaveInterval * 20;
     }
 
     public int getEntryExitRefreshRate() {
@@ -1131,7 +935,7 @@ afterwards parsable again from the configuration class of bukkit
     }
 
     public int getPayDayInterval() {
-        return payDayInterval;
+        return payDayInterval * 20;
     }
 
     public boolean isClearBufferOnPayday() {
@@ -1317,6 +1121,10 @@ afterwards parsable again from the configuration class of bukkit
 
 // Checking if config file exists, if not create it
 
+        // first init the correct values for the translations
+
+        setupTranslations();
+
         if (!(new File(main.getDataFolder(), configFile)).exists()) {
             getPayedLogger.info("Creating default configuration file");
             defaultConfig();
@@ -1365,7 +1173,10 @@ afterwards parsable again from the configuration class of bukkit
     private void defaultConfig() {
         setupCustomDefaultVariables();
         if (!writeConfig()) {
+            getPayedLogger.severe("Problems writing default config!");
             getPayedLogger.info("Using internal Defaults!");
+        } else {
+            getPayedLogger.debug("DefaultConfig written");
         }
         config.addDefault("configVer", configVer);
         customDefaultConfig();
@@ -1408,7 +1219,7 @@ afterwards parsable again from the configuration class of bukkit
      * @see #writeCustomConfig(java.io.PrintWriter)
      */
 
-    boolean writeConfig() {
+    public boolean writeConfig() {
         getPayedLogger.debug("creating config");
         boolean success = false;
         try {
@@ -1428,7 +1239,7 @@ afterwards parsable again from the configuration class of bukkit
             stream.println("# For detailed assistance please visit: " + mainConfig.getPluginSlug());
             stream.println();
             stream.println("# Configuration Version");
-            stream.println("configVer: '" + configVer + "'");
+            stream.println("configVer: \"" + configVer + "\"");
             stream.println();
 // Getting the custom config information from the top of the class
             getPayedLogger.debug("going for customConfig");
@@ -1443,7 +1254,7 @@ afterwards parsable again from the configuration class of bukkit
         } catch (FileNotFoundException e) {
             getPayedLogger.warning("Error saving the " + configFile + ".");
         }
-        getPayedLogger.debug("DefaultConfig written", success);
+
         return success;
     }
 
@@ -1494,11 +1305,20 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     public String reloadConfig() {
+        configAvailable = false;
+        try {
+            config.load(pluginPath + configFile);
+            configAvailable = true;
+        } catch (IOException e) {
+            getPayedLogger.severe("Can't read the " + configFile + " File!", e);
+        } catch (InvalidConfigurationException e) {
+            getPayedLogger.severe("Problem with the configuration in " + configFile + "!", e);
+        }
         String msg;
         if (configAvailable) {
             loadConfig();
             getPayedLogger.info("Config reloaded");
-            msg = "Config was reloaded";
+            msg = "GetPayed Config was reloaded";
         } else {
             getPayedLogger.severe("Reloading Config before it exists.");
             getPayedLogger.severe("Flog the developer!");
@@ -1520,6 +1340,41 @@ afterwards parsable again from the configuration class of bukkit
             saved = writeConfig();
         }
         return saved;
+    }
+
+    private void setMessage(Messages node, String contents) {
+        messageTranslations.put(node, contents);
+    }
+
+    /**
+     * Method to set node, default contents and comment for translation
+     */
+
+    private void initMessage(Messages node, String contents, String comment) {
+        messageTranslations.put(node, contents);
+        messageComments.put(node, comment);
+    }
+
+    /**
+     * Methode to return the content of the MessagesNode
+     *
+     * @param node
+     *
+     * @return
+     */
+    public String getMessage(Messages node) {
+        return messageTranslations.get(node);
+    }
+
+    /**
+     * Methode to return the comment of the MessagesNode
+     *
+     * @param node
+     *
+     * @return
+     */
+    private String getComment(Messages node) {
+        return messageComments.get(node);
     }
 
 }

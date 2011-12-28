@@ -12,10 +12,7 @@ import org.simiancage.bukkit.TheMonkeyPack.threads.GetPayedPayDay;
 import org.simiancage.bukkit.TheMonkeyPack.threads.GetPayedSaveWorkPlaces;
 import org.simiancage.bukkit.TheMonkeyPack.threads.GetPayedWorkPlaceCheck;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -38,10 +35,7 @@ public class GetPayedHelper {
     protected GetPayedHelper getPayedHelper;
     static GetPayedHelper instance;
 
-    private List<Location> blackList;
-    /*    protected ArrayList<Integer> blackListX = new ArrayList();
-protected ArrayList<Integer> blackListY = new ArrayList();
-protected ArrayList<Integer> blackListZ = new ArrayList();*/
+    private List<Location> blackList = new ArrayList<Location>();
     protected Map<String, Double> playerMap = new HashMap();
     protected Map<String, Collection> configArea;
 
@@ -54,18 +48,20 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
     protected ArrayList<Integer> workPlacesX2 = new ArrayList();
     protected ArrayList<Integer> workPlacesZ2 = new ArrayList();
     protected Map<Integer, Map<String, Object>> workPlacesInfo = new HashMap();
-    protected GetPayedWorkPlaceCheck workPlaceCheck = new GetPayedWorkPlaceCheck(main);
+    protected GetPayedWorkPlaceCheck workPlaceCheck;
     protected Map<String, Integer> playersInWorkPlace = new HashMap();
     protected Map<String, Map<String, Double>> playerPayments = new HashMap();
-    protected GetPayedSaveWorkPlaces workPlaceSaveRoutine = new GetPayedSaveWorkPlaces(main);
-    protected GetPayedPayDay payDayTask = new GetPayedPayDay(main);
+    protected GetPayedSaveWorkPlaces workPlaceSaveRoutine;
+    protected GetPayedPayDay payDayTask;
     protected Map<String, Integer> workPlaceNames = new HashMap();
     protected int currentWPTaskId;
     protected int currentWPSaveTaskId;
     protected int currentTaskId = -1;
     private final String GETPAYED_ITEMS_FILE = "GetPayedItems.txt";
-    File itemsFile = new File(main.getDataFolder() + GETPAYED_ITEMS_FILE);
+    private final String WORKPLACES_FILE = "GetPayedWorkPlaces.dat";
+
     private Map<String, String> waitForBreakPlace = new HashMap<String, String>();
+    private Map<String, Double> newPriceSet = new HashMap<String, Double>();
 
 
     public Map<Integer, String> items = new HashMap();
@@ -78,6 +74,7 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
         mainConfig = main.getMainConfig();
         getPayedConfig = GetPayedConfig.getInstance();
         getPayedLogger = getPayedConfig.getGetPayedLogger();
+
     }
 
     public static GetPayedHelper getInstance(TheMonkeyPack plugin) {
@@ -89,11 +86,9 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
 
 
     public void onDisable() {
+        workPlaceSaveRoutine.run();
         main.getServer().getScheduler().cancelTasks(main);
         main.getServer().getScheduler().scheduleAsyncDelayedTask(main, workPlaceSaveRoutine, 1L);
-/*        blackListX = new ArrayList();
-        blackListY = new ArrayList();
-        blackListZ = new ArrayList();*/
         playerMap = new HashMap();
         getPayedConfig.clearBlockPrices();
         configArea = new HashMap();
@@ -113,6 +108,10 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
     }
 
     public void onEnable() {
+        workPlaceCheck = new GetPayedWorkPlaceCheck(main);
+        workPlaceSaveRoutine = new GetPayedSaveWorkPlaces(main);
+        payDayTask = new GetPayedPayDay(main);
+        File itemsFile = new File(main.getDataFolder() + System.getProperty("file.separator") + GETPAYED_ITEMS_FILE);
 
         for (Material material : Material.values()) {
             items.put(material.getId(), material.name());
@@ -134,11 +133,39 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
             outItems.close();
             outItemsFile.flush();
             outItemsFile.close();
+            getPayedLogger.debug("Written " + itemsFile.toString());
         } catch (IOException ex) {
             getPayedLogger.severe("Problems creating the " + GETPAYED_ITEMS_FILE + " file", ex);
         }
 
-        currentTaskId = main.getServer().getScheduler().scheduleAsyncDelayedTask(main, payDayTask, getPayedConfig.getPayDayInterval() * 20);
+        for (Player player : main.getServer().getOnlinePlayers()) {
+            addPlayerToPriceCheckOn(player, false);
+            addPlayerToPayDayMessageOn(player, getPayedConfig.isPayDayMessageEnabled());
+        }
+
+        File workPlaceSaveFile = new File(main.getDataFolder() + System.getProperty("file.separator") + WORKPLACES_FILE);
+        try {
+            if (workPlaceSaveFile.exists()) {
+                FileInputStream input = new FileInputStream(workPlaceSaveFile);
+                ObjectInputStream or = new ObjectInputStream(input);
+                workPlacesX1 = ((ArrayList) or.readObject());
+                workPlacesX2 = ((ArrayList) or.readObject());
+                workPlacesZ1 = ((ArrayList) or.readObject());
+                workPlacesZ2 = ((ArrayList) or.readObject());
+                workPlacesInfo = ((HashMap) or.readObject());
+                workPlaceNames = ((HashMap) or.readObject());
+                or.close();
+                input.close();
+            }
+        } catch (IOException ex) {
+            getPayedLogger.severe("Problems with the Workplace File", ex);
+        } catch (NumberFormatException ex) {
+            getPayedLogger.severe("Problems with the Workplace File", ex);
+        } catch (ClassNotFoundException ex) {
+            getPayedLogger.severe("Problems with the Workplace File", ex);
+        }
+
+        currentTaskId = main.getServer().getScheduler().scheduleAsyncDelayedTask(main, payDayTask, getPayedConfig.getPayDayInterval());
         currentWPTaskId = main.getServer().getScheduler().scheduleAsyncDelayedTask(main, workPlaceCheck, getPayedConfig.getEntryExitRefreshRate());
         currentWPSaveTaskId = main.getServer().getScheduler().scheduleAsyncDelayedTask(main, workPlaceSaveRoutine, getPayedConfig.getWorkPlaceSaveInterval());
 
@@ -146,27 +173,41 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
     }
 
 
-    public int isPositionInWorkPlace(Location loc) {
-        for (int j = 0; j < workPlacesX1.size(); j++) {
-            if (loc.getX() < ((Integer) workPlacesX1.get(j)).intValue()) {
-                continue;
-            }
-            if (loc.getX() > ((Integer) workPlacesX2.get(j)).intValue()) {
-                continue;
-            }
-            if (loc.getZ() < ((Integer) workPlacesZ1.get(j)).intValue()) {
-                continue;
-            }
-            if (loc.getZ() <= ((Integer) workPlacesZ2.get(j)).intValue()) {
-                return j;
-            }
+// Getters & Setters
 
-        }
 
-        return -1;
+    public String getWORKPLACES_FILE() {
+        return WORKPLACES_FILE;
     }
 
-// Getters & Setters
+    public void removePlayerFromBreakPlace(Player player) {
+        waitForBreakPlace.remove(player.getName());
+    }
+
+    public void setNewPriceSet(Player player, double newPrice) {
+        newPriceSet.put(player.getName(), newPrice);
+    }
+
+    public double getNewPriceSet(Player player) {
+        double newPrice = 0.0D;
+        if (newPriceSet.containsKey(player.getName())) {
+            newPrice = newPriceSet.get(player.getName());
+        }
+        return newPrice;
+    }
+
+    public boolean containsItem(int itemID) {
+        return items.containsKey(itemID);
+    }
+
+    public String getItemViaIndex(int index) {
+        return orderingList.get(index);
+    }
+
+
+    public int sizeOfOrderingList() {
+        return orderingList.size();
+    }
 
     public int getPlayerWorkPlaceIndex(Player player) {
         return playersInWorkPlace.get(player.getName());
@@ -195,6 +236,16 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
 
     public int getWorkPlaceNamesIndex(String workplace) {
         return workPlaceNames.get(workplace);
+    }
+
+
+    public void addSelectionToWorkplaceTempPoints(Player player, Map points) {
+        workPlaceTempPoints.put(player.getName(), points);
+    }
+
+
+    public boolean isPlayerSettingWorkplaceTempPoints(Player player) {
+        return workPlaceTempPoints.containsKey(player.getName());
     }
 
     public void removePlayersTempSelectionPoints(Player player) {
@@ -255,11 +306,19 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
     }
 
     public boolean waitingForBreak(Player player) {
-        return waitForBreakPlace.get(player.getName()).equalsIgnoreCase("break");
+        boolean isWaiting = false;
+        if (waitForBreakPlace.containsKey(player.getName())) {
+            isWaiting = waitForBreakPlace.get(player.getName()).equalsIgnoreCase("break");
+        }
+        return isWaiting;
     }
 
     public boolean waitingForPlace(Player player) {
-        return waitForBreakPlace.get(player.getName()).equalsIgnoreCase("place");
+        boolean isWaiting = false;
+        if (waitForBreakPlace.containsKey(player.getName())) {
+            isWaiting = waitForBreakPlace.get(player.getName()).equalsIgnoreCase("place");
+        }
+        return isWaiting;
     }
 
     public void setWaitForBreakPlace(Player player, String breakPlace) {
@@ -307,11 +366,15 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
         playersInWorkPlace.remove(player.getName());
     }
 
+    public boolean isPlayerPriceChecking(Player player) {
+        return priceCheckOn.get(player.getName());
+    }
+
     public void removePlayerFromPriceCheckOn(Player player) {
         priceCheckOn.remove(player.getName());
     }
 
-    public void addPlayerToPriceCheckOn(Player player, boolean on) {
+    public void addPlayerToPriceCheckOn(Player player, Boolean on) {
         priceCheckOn.put(player.getName(), on);
 
     }
@@ -320,7 +383,7 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
         paydayMessageOn.remove(player.getName());
     }
 
-    public void addPlayerToPayDayMessageOn(Player player, boolean on) {
+    public void addPlayerToPayDayMessageOn(Player player, Boolean on) {
         paydayMessageOn.put(player.getName(), on);
     }
 
@@ -377,7 +440,11 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
     }
 
     public boolean isPaydayMessageOn(Player player) {
-        return paydayMessageOn.get(player.getName());
+        boolean isOn = false;
+        if (paydayMessageOn.containsKey(player.getName())) {
+            isOn = paydayMessageOn.get(player.getName());
+        }
+        return isOn;
     }
 
     public Map<String, Map<String, Double>> getPlayerPayments() {
@@ -510,6 +577,26 @@ protected ArrayList<Integer> blackListZ = new ArrayList();*/
             playersInWorkPlace.put((String) keys[i], (Integer) infoObjects[i]);
         }
 
+    }
+
+    public int isPositionInWorkPlace(Location loc) {
+        for (int j = 0; j < workPlacesX1.size(); j++) {
+            if (loc.getX() < workPlacesX1.get(j)) {
+                continue;
+            }
+            if (loc.getX() > workPlacesX2.get(j)) {
+                continue;
+            }
+            if (loc.getZ() < workPlacesZ1.get(j)) {
+                continue;
+            }
+            if (loc.getZ() <= workPlacesZ2.get(j)) {
+                return j;
+            }
+
+        }
+
+        return -1;
     }
 }
 

@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
+import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig.Messages;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.GetPayedHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.GetPayedLogger;
@@ -66,13 +67,12 @@ public class GetPayedPayDay
             if (player == null) {
                 continue;
             }
-
             main.getEconomy().depositPlayer(player.getName(), (Double) playerPay.getValue());
 
             if (!getPayedConfig.isPayDayMessageEnabled()) {
                 continue;
             }
-            if (!(getPayedHelper.isPaydayMessageOn(player))) {
+            if (!getPayedHelper.isPaydayMessageOn(player)) {
                 continue;
             }
             String userMessage = getPayedConfig.getPayDayMessage();
@@ -110,7 +110,7 @@ public class GetPayedPayDay
 
                 main.getEconomy().depositPlayer(employeePay.getKey().toString(), (Double) employeePay.getValue());
                 if (employee.isOnline()) {
-                    String employerMessage = getPayedConfig.getPayDayEmployedMessage();
+                    String employerMessage = getPayedConfig.getMessage(Messages.PAYDAY_EMPLOYED_MESSAGE);
                     employerMessage = MODULE + "[" + moduleName + "] " + DEFAULT + employerMessage.replace("$$", main.getEconomy().format((Double) employeePay.getValue()));
                     employerMessage = employerMessage.replace("%employer", employer.getDisplayName());
                     employee.sendMessage(employerMessage);
@@ -123,7 +123,7 @@ public class GetPayedPayDay
             main.getEconomy().withdrawPlayer(employer.getName(), employerPaidOut);
 
             if (employer.isOnline()) {
-                String employeeMessage = getPayedConfig.getPayDayEmployerMessage();
+                String employeeMessage = getPayedConfig.getMessage(Messages.PAYDAY_EMPLOYER_MESSAGE);
                 employeeMessage = MODULE + "[" + moduleName + "] " + DEFAULT + employeeMessage.replace("$$", main.getEconomy().format(employerPaidOut));
                 employer.sendMessage(employeeMessage);
             }
@@ -137,6 +137,6 @@ public class GetPayedPayDay
 
         getPayedHelper.clearPlayerMap();
         getPayedHelper.clearPlayerPayments();
-        getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval() * 20));
+        getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getPayDayTask(), getPayedConfig.getPayDayInterval()));
     }
 }

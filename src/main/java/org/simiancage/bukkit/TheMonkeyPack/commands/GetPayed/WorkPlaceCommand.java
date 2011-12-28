@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
+import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig.Messages;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.GetPayedHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.GetPayedLogger;
@@ -21,6 +22,8 @@ import java.util.Map;
  * Date: 23.12.11
  * Time: 23:56
  */
+
+// contains code from http://forums.bukkit.org/threads/20984/
 
 public class WorkPlaceCommand extends Commands implements CommandExecutor {
 
@@ -47,34 +50,12 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
     private String workplaceSetOption;
     private String workplaceSetDescription;
     private String workplaceConfigurePerm;
-    private String workplaceCreateHelpMessage;
-    private String workplaceRenameHelpMessage;
-    private String workplaceSetHelpMessage;
-    private String workplaceSelectionOverlapHelpMessage;
-    private String workplaceSelect2PointsHelpMessage;
-    private String workplaceAlreadyExist;
-    private String workplaceCreatedMessage;
-    private String workplaceDeletedMessage;
-    private String youNeedToOwnTheWorkplaceMessage;
-    private String noWorkplaceWithThisNameMessage;
-    private String workplaceRenamedToMessage;
-    private String workplaceNameMessage;
-    private String workplaceOwnerMessage;
-    private String workplaceBreakTypeMessage;
-    private String workplaceBreakAmountMessage;
-    private String workplacePlaceTypeMessage;
-    private String workplacePlaceAmountMessage;
-    private String wrongBreakPlaceTypeMessage;
-    private String notAValidVariableMessage;
-    private String varSetToNewValueMessage;
-    private String youAreNotInAWorkplaceMessage;
 
 
     public WorkPlaceCommand(TheMonkeyPack instance) {
         super(instance);
         main = (TheMonkeyPack) instance;
         mainConfig = main.getMainConfig();
-        getPayedHelper = getPayedConfig.getGetPayedHelper();
         helpOption = getPayedConfig.getHelpOption();
         displayHelpMessage = getPayedConfig.getDisplayHelpMessage();
         workplaceCmd = getPayedConfig.getWorkPlaceCmd();
@@ -92,29 +73,6 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
         workplaceSetOption = getPayedConfig.getWorkplaceSetOption();
         workplaceSetDescription = getPayedConfig.getWorkplaceSetDescription();
         workplaceConfigurePerm = getPayedConfig.getPERM_WORKPLACE_CONFIGURE();
-        workplaceCreateHelpMessage = getPayedConfig.getWorkplaceCreateHelpMessage();
-        workplaceRenameHelpMessage = getPayedConfig.getWorkplaceRenameHelpMessage();
-        workplaceSetHelpMessage = getPayedConfig.getWorkplaceSetHelpMessage();
-        workplaceSelectionOverlapHelpMessage = getPayedConfig.getWorkplaceSelectionOverlapHelpMessage();
-        workplaceSelect2PointsHelpMessage = getPayedConfig.getWorkplaceSelect2PointsHelpMessage();
-        workplaceAlreadyExist = getPayedConfig.getWorkplaceAlreadyExist();
-        workplaceCreatedMessage = getPayedConfig.getWorkplaceCreatedMessage();
-        workplaceDeletedMessage = getPayedConfig.getWorkplaceDeletedMessage();
-        youNeedToOwnTheWorkplaceMessage = getPayedConfig.getYouNeedToOwnTheWorkplaceMessage();
-        noWorkplaceWithThisNameMessage = getPayedConfig.getNoWorkplaceWithThisNameMessage();
-        workplaceRenamedToMessage = getPayedConfig.getWorkplaceRenamedToMessage();
-        workplaceNameMessage = getPayedConfig.getWorkplaceNameMessage();
-        workplaceOwnerMessage = getPayedConfig.getWorkplaceOwnerMessage();
-        workplaceBreakTypeMessage = getPayedConfig.getWorkplaceBreakTypeMessage();
-        workplaceBreakAmountMessage = getPayedConfig.getWorkplaceBreakAmountMessage();
-        workplacePlaceTypeMessage = getPayedConfig.getWorkplacePlaceTypeMessage();
-        workplacePlaceAmountMessage = getPayedConfig.getWorkplacePlaceAmountMessage();
-        wrongBreakPlaceTypeMessage = getPayedConfig.getWrongBreakPlaceTypeMessage();
-        notAValidVariableMessage = getPayedConfig.getNotAValidVariableMessage();
-        varSetToNewValueMessage = getPayedConfig.getVarSetToNewValueMessage();
-        youAreNotInAWorkplaceMessage = getPayedConfig.getYouAreNotInAWorkplaceMessage();
-
-
         this.setCommandName(workplaceCmd);
         this.setCommandDesc(cmdDescription);
         this.setCommandUsage(COMMAND_COLOR + "/" + workplaceCmd + OPTIONAL_COLOR + " [option] [option");
@@ -122,6 +80,7 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
         this.setPermission(workplacePerm, cmdPermDescription);
         this.setHasSubCommands(true);
         getPayedLogger = getPayedConfig.getGetPayedLogger();
+        getPayedHelper = getPayedConfig.getGetPayedHelper();
         main.registerPlayerCommand(this.getCommandName(), this);
         mainLogger.debug(workplaceCmd + " command registered");
     }
@@ -129,7 +88,7 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
 
     @Override
     public void runCommand(CommandSender sender, String label, String[] args) {
-
+        getPayedHelper = getPayedConfig.getGetPayedHelper();
         Player player = null;
         String pname = "(Console)";
         if ((sender instanceof Player)) {
@@ -143,42 +102,17 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
         }
 
         // not enough arguments as we need always at least 2
-        if (args.length == 0 && !args[0].equalsIgnoreCase(workplaceInfoOption)) {
+        if (args.length == 0) {
             displayHelp(player, this);
             return;
         }
 
+
         String command = args[0];
 
-        if (command.equalsIgnoreCase(workplaceCreateOption)) {
-            if (args.length < 1) {
-                main.sendPlayerMessage(player, workplaceCreateHelpMessage);
-                return;
-            }
-            workplaceCreate(player, args[1]);
-            return;
-        }
-
-        if (command.equalsIgnoreCase(workplaceRenameOption)) {
-            if (args.length < 2) {
-                main.sendPlayerMessage(player, WARNING_MESSAGES + workplaceRenameHelpMessage);
-                return;
-            }
-            workplaceRename(player, args[1], args[2]);
-            return;
-        }
-
-        if (command.equalsIgnoreCase(workplaceDeleteOption)) {
-            if (args.length < 1) {
-                main.sendPlayerMessage(player, workplaceCreateHelpMessage);
-                return;
-            }
-            workplaceDelete(player, args[1]);
-            return;
-        }
 
         if (command.equalsIgnoreCase(workplaceInfoOption)) {
-            if (args.length > 0) {
+            if (args.length > 1) {
                 displayHelp(player, this);
                 return;
             }
@@ -186,6 +120,122 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
             return;
         }
 
+        boolean hasWorkplaceConfigure = main.hasPermission(player, workplaceConfigurePerm);
+
+        if (command.equalsIgnoreCase(workplaceCreateOption)) {
+            if (!hasWorkplaceConfigure) {
+                permDenied(player, this, workplaceCreateOption, workplaceConfigurePerm);
+                return;
+            }
+            if (args.length < 2) {
+                main.sendPlayerMessage(player, INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_CREATE_HELP_MESSAGE));
+                return;
+            }
+            workplaceCreate(player, args[1]);
+            return;
+        }
+
+        if (command.equalsIgnoreCase(workplaceRenameOption)) {
+            if (!hasWorkplaceConfigure) {
+                permDenied(player, this, workplaceRenameOption, workplaceConfigurePerm);
+                return;
+            }
+            if (args.length < 3) {
+                main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_RENAME_HELP_MESSAGE));
+                return;
+            }
+            workplaceRename(player, args[1], args[2]);
+            return;
+        }
+
+        if (command.equalsIgnoreCase(workplaceDeleteOption)) {
+            if (!hasWorkplaceConfigure) {
+                permDenied(player, this, workplaceDeleteOption, workplaceConfigurePerm);
+                return;
+            }
+            if (args.length < 2) {
+                main.sendPlayerMessage(player, INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_CREATE_HELP_MESSAGE));
+                return;
+            }
+            workplaceDelete(player, args[1]);
+            return;
+        }
+
+
+        if (command.equalsIgnoreCase(workplaceSetOption)) {
+            if (!hasWorkplaceConfigure) {
+                permDenied(player, this, workplaceSetOption, workplaceConfigurePerm);
+                return;
+            }
+            if (args.length < 3) {
+                main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_SET_HELP_MESSAGE));
+                return;
+            }
+            workplaceSet(player, args[1], args[2]);
+            return;
+        }
+
+        displayHelp(player, this);
+        return;
+
+    }
+
+    public void workplaceSet(Player player, String varName, String newValue) {
+
+        if (getPayedHelper.isPlayerInWorksPlace(player)) {
+
+            int workplaceIndex = getPayedHelper.getPlayerWorkPlaceIndex(player);
+            Map<String, Object> info = getPayedHelper.getWorkPlaceInfoRecord(workplaceIndex);
+            if (checkIfOwnerOrAdmin(player, info)) {
+                return;
+            }
+
+            if ((varName.equalsIgnoreCase("breakAmount")) || (varName.equalsIgnoreCase("placeAmount"))) {
+
+                info.remove(varName);
+                if (varName.equalsIgnoreCase("breakAmount")) {
+                    info.put("breakAmount", Double.parseDouble(newValue));
+                } else {
+                    info.put("placeAmount", Double.parseDouble(newValue));
+                }
+            } else if ((varName.equalsIgnoreCase("breakType")) || (varName.equalsIgnoreCase("placeType"))) {
+                if ((newValue.equalsIgnoreCase("percent")) || (newValue.equalsIgnoreCase("flat"))) {
+
+                    info.remove(varName);
+                    String tempName = "";
+                    String tempValue = "";
+
+                    if (varName.equalsIgnoreCase("BreakType")) {
+                        tempName = "breakType";
+                    } else {
+                        tempName = "placeType";
+                    }
+
+                    if (newValue.equalsIgnoreCase("percent")) {
+                        tempValue = "percent";
+                    } else {
+                        tempValue = "flat";
+                    }
+
+                    info.put(tempName, tempValue);
+                } else {
+                    main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WRONG_BREAK_PLACE_TYPE_MESSAGE));
+                    return;
+                }
+            } else {
+                main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.NOT_A_VALID_VARIABLE_MESSAGE));
+                return;
+            }
+            String msg = getPayedConfig.getMessage(Messages.VAR_SET_TO_NEW_VALUE_MESSAGE).replace("%varname", varName);
+            msg = msg.replace("%newvalue", newValue);
+            main.sendPlayerMessage(player, INFO_MESSAGES + msg);
+
+        } else {
+            main.sendPlayerMessage(player, INFO_MESSAGES + getPayedConfig.getMessage(Messages.YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE));
+
+        }
+
+        return;
 
     }
 
@@ -196,22 +246,22 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
             Map temp = getPayedHelper.getWorkPlaceInfoRecord(getPayedHelper.getPlayerWorkPlaceIndex(player));
             String msg = INFO_MESSAGES + "-----------------------------------------------------";
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplaceNameMessage + ": " + DEFAULT_COLOR + temp.get("Name");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_NAME_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("Name");
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplaceOwnerMessage + ": " + DEFAULT_COLOR + temp.get("OwnedBy");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_OWNER_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("OwnedBy");
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplaceBreakTypeMessage + ": " + DEFAULT_COLOR + temp.get("BreakType");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_BREAK_TYPE_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("breakType");
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplaceBreakAmountMessage + ": " + DEFAULT_COLOR + temp.get("BreakAmount");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_BREAK_AMOUNT_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("breakAmount");
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplacePlaceTypeMessage + ": " + DEFAULT_COLOR + temp.get("PlaceType");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_PLACE_TYPE_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("placeType");
             main.sendPlayerMessage(player, msg);
-            msg = INFO_MESSAGES + workplacePlaceAmountMessage + ": " + DEFAULT_COLOR + temp.get("PlaceAmount");
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_PLACE_AMOUNT_MESSAGE) + ": " + DEFAULT_COLOR + temp.get("placeAmount");
             main.sendPlayerMessage(player, msg);
             msg = INFO_MESSAGES + "-----------------------------------------------------";
             main.sendPlayerMessage(player, msg);
         } else {
-            main.sendPlayerMessage(player, INFO_MESSAGES + youAreNotInAWorkplaceMessage);
+            main.sendPlayerMessage(player, INFO_MESSAGES + getPayedConfig.getMessage(Messages.YOU_ARE_NOT_IN_A_WORKPLACE_MESSAGE));
         }
 
         return;
@@ -224,11 +274,8 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
         if (getPayedHelper.workplaceAlreadyExist(workplaceName)) {
             int workplaceIndex = getPayedHelper.getWorkPlaceNamesIndex(workplaceName);
             Map<String, Object> info = getPayedHelper.getWorkPlaceInfoRecord(workplaceIndex);
-            if (!main.hasPermission(player, mainConfig.getPERM_ADMIN_WORKPLACE())) {
-                if (!(info.get("OwnedBy").toString().equalsIgnoreCase(player.getName()))) {
-                    main.sendPlayerMessage(player, WARNING_MESSAGES + youNeedToOwnTheWorkplaceMessage);
-                    return;
-                }
+            if (checkIfOwnerOrAdmin(player, info)) {
+                return;
             }
 
 
@@ -258,12 +305,12 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
                 getPayedHelper.shrinkData(workplaceIndex);
             }
 
-            main.sendPlayerMessage(player, INFO_MESSAGES + workplaceDeletedMessage.replace("%workplace", workplaceName));
+            main.sendPlayerMessage(player, INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_DELETED_MESSAGE).replace("%workplace", workplaceName));
 
             getPayedHelper.setCurrentWPTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getWorkPlaceCheck(), getPayedConfig.getEntryExitRefreshRate()));
             getPayedHelper.setCurrentWPSaveTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getWorkPlaceSaveRoutine(), getPayedConfig.getWorkPlaceSaveInterval()));
         } else {
-            main.sendPlayerMessage(player, WARNING_MESSAGES + noWorkplaceWithThisNameMessage);
+            main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.NO_WORKPLACE_WITH_THIS_NAME_MESSAGE));
         }
         return;
 
@@ -275,11 +322,8 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
         if (getPayedHelper.workplaceAlreadyExist(oldWorkplaceName)) {
             int workplaceIndex = getPayedHelper.getWorkPlaceNamesIndex(oldWorkplaceName);
             Map<String, Object> info = getPayedHelper.getWorkPlaceInfoRecord(workplaceIndex);
-            if (!main.hasPermission(player, mainConfig.getPERM_ADMIN_WORKPLACE())) {
-                if (!(info.get("OwnedBy").toString().equalsIgnoreCase(player.getName()))) {
-                    main.sendPlayerMessage(player, WARNING_MESSAGES + youNeedToOwnTheWorkplaceMessage);
-                    return;
-                }
+            if (checkIfOwnerOrAdmin(player, info)) {
+                return;
             }
 
             if (main.getServer().getScheduler().isCurrentlyRunning(getPayedHelper.getCurrentWPSaveTaskId())) {
@@ -297,15 +341,25 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
 
             getPayedHelper.removeWorkPlaceNames(oldWorkplaceName);
             getPayedHelper.addWorkPlaceNames(newWorkplaceName, workplaceIndex);
-            String msg = INFO_MESSAGES + workplaceRenamedToMessage.replace("%oldname", oldWorkplaceName);
+            String msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_RENAMED_TO_MESSAGE).replace("%oldname", oldWorkplaceName);
             msg = msg.replace("%newname", newWorkplaceName);
             main.sendPlayerMessage(player, msg);
             getPayedHelper.setCurrentTaskId(main.getServer().getScheduler().scheduleAsyncDelayedTask(main, getPayedHelper.getWorkPlaceSaveRoutine(), getPayedConfig.getWorkPlaceSaveInterval()));
         } else {
-            main.sendPlayerMessage(player, WARNING_MESSAGES + noWorkplaceWithThisNameMessage);
+            main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.NO_WORKPLACE_WITH_THIS_NAME_MESSAGE));
 
         }
 
+    }
+
+    private boolean checkIfOwnerOrAdmin(Player player, Map<String, Object> info) {
+        if (!main.hasPermission(player, mainConfig.getPERM_ADMIN_WORKPLACE())) {
+            if (!(info.get("OwnedBy").toString().equalsIgnoreCase(player.getName()))) {
+                main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.YOU_NEED_TO_OWN_THE_WORKPLACE_MESSAGE));
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -348,29 +402,29 @@ public class WorkPlaceCommand extends Commands implements CommandExecutor {
                         infoTemp.put("Name", workplaceName);
                         infoTemp.put("Welcome", INFO_MESSAGES + getPayedConfig.getWorkPlaceGreeting());
                         infoTemp.put("Exit", INFO_MESSAGES + getPayedConfig.getWorkPlaceFarewell());
-                        infoTemp.put("BreakType", getPayedConfig.getDefaultBreakType());
-                        infoTemp.put("BreakAmount", getPayedConfig.getDefaultBreakAmount());
-                        infoTemp.put("PlaceType", getPayedConfig.getDefaultPlaceType());
-                        infoTemp.put("PlaceAmount", getPayedConfig.getDefaultPlaceAmount());
+                        infoTemp.put("breakType", getPayedConfig.getDefaultBreakType());
+                        infoTemp.put("breakAmount", getPayedConfig.getDefaultBreakAmount());
+                        infoTemp.put("placeType", getPayedConfig.getDefaultPlaceType());
+                        infoTemp.put("placeAmount", getPayedConfig.getDefaultPlaceAmount());
                         infoTemp.put("OwnedBy", player.getName());
                         getPayedHelper.addWorkPlaceInfoRecord(getPayedHelper.getNextWorkplace(), infoTemp);
                         getPayedHelper.addWorkPlaceNames(workplaceName, getPayedHelper.getNextWorkplace());
                         getPayedHelper.removePlayersTempSelectionPoints(player);
-                        msg = INFO_MESSAGES + workplaceCreatedMessage.replace("%workplace", workplaceName);
+                        msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_CREATED_MESSAGE).replace("%workplace", workplaceName);
                         main.sendPlayerMessage(player, msg);
                     } else {
-                        main.sendPlayerMessage(player, WARNING_MESSAGES + workplaceSelectionOverlapHelpMessage);
+                        main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_SELECTION_OVERLAP_HELP_MESSAGE));
                         getPayedHelper.removePlayersTempSelectionPoints(player);
                     }
                 } else {
-                    main.sendPlayerMessage(player, WARNING_MESSAGES + workplaceSelect2PointsHelpMessage);
+                    main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE));
                 }
             } else {
-                main.sendPlayerMessage(player, WARNING_MESSAGES + workplaceAlreadyExist);
+                main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_ALREADY_EXIST));
 
             }
         } else {
-            main.sendPlayerMessage(player, WARNING_MESSAGES + workplaceSelect2PointsHelpMessage);
+            main.sendPlayerMessage(player, WARNING_MESSAGES + getPayedConfig.getMessage(Messages.WORKPLACE_SELECT_2_POINTS_HELP_MESSAGE));
 
         }
 

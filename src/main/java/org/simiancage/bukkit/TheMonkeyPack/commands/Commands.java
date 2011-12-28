@@ -27,13 +27,13 @@ public abstract class Commands implements CommandExecutor {
     protected String commandName;
     protected boolean hasSubCommands;
 
-    protected final ChatColor DEFAULT_COLOR = ChatColor.WHITE;
-    protected final ChatColor SUB_COLOR = ChatColor.AQUA;
-    protected final ChatColor COMMAND_COLOR = ChatColor.RED;
-    protected final ChatColor OPTIONAL_COLOR = ChatColor.GREEN;
-    protected final ChatColor PERMISSION_COLOR = ChatColor.LIGHT_PURPLE;
-    protected final ChatColor INFO_MESSAGES = ChatColor.AQUA;
-    protected final ChatColor WARNING_MESSAGES = ChatColor.GOLD;
+    public static final ChatColor DEFAULT_COLOR = ChatColor.WHITE;
+    public static final ChatColor SUB_COLOR = ChatColor.AQUA;
+    public static final ChatColor COMMAND_COLOR = ChatColor.RED;
+    public static final ChatColor OPTIONAL_COLOR = ChatColor.GREEN;
+    public static final ChatColor PERMISSION_COLOR = ChatColor.LIGHT_PURPLE;
+    public static final ChatColor INFO_MESSAGES = ChatColor.AQUA;
+    public static final ChatColor WARNING_MESSAGES = ChatColor.GOLD;
     protected String PERM_DENIED = "You need the permission: %perm to use the %cmd command which %Description !";
     protected String WRONG_SYNTAX = "You used the wrong syntax for the command: %cmd";
     protected String ALLOWS_YOU_TO = "which allows you to ";
@@ -42,7 +42,7 @@ public abstract class Commands implements CommandExecutor {
 
 
     protected TheMonkeyPack main;
-    private MainConfig mainConfig;
+    protected MainConfig mainConfig;
     protected MainLogger mainLogger;
 
 

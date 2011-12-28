@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
+import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig.Messages;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.GetPayedHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.GetPayedLogger;
 
@@ -37,16 +38,12 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
     private String displayDisplayPayDayMessageMessage;
     private String on;
     private String off;
-    private String priceCheckMessagesOn;
-    private String priceCheckMessagesOff;
-    private String payDayMessagesOnOff;
     private String getPayedPerm;
 
 
     public GetPayedCommand(TheMonkeyPack instance) {
         super(instance);
-        main = (TheMonkeyPack) instance;
-        getPayedHelper = getPayedConfig.getGetPayedHelper();
+        main = instance;
         getPayedCmd = getPayedConfig.getGetPayedCmd();
         helpOption = getPayedConfig.getHelpOption();
         cmdDescription = getPayedConfig.getGetPayedCmdDescription();
@@ -56,11 +53,8 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
         displayPriceCheckMessage = getPayedConfig.getDisplayPriceCheckMessage();
         displayPayDayMessage = getPayedConfig.getDisplayPayDayMessage();
         displayDisplayPayDayMessageMessage = getPayedConfig.getDisplayDisplayPayDayMessageMessage();
-        on = getPayedConfig.getOn();
-        off = getPayedConfig.getOff();
-        priceCheckMessagesOn = getPayedConfig.getPriceCheckMessagesOn();
-        priceCheckMessagesOff = getPayedConfig.getPriceCheckMessagesOff();
-        payDayMessagesOnOff = getPayedConfig.getPayDayMessagesOnOff();
+        on = getPayedConfig.getOnString();
+        off = getPayedConfig.getOffString();
         getPayedPerm = getPayedConfig.getPERM_GETPAYED();
         this.setCommandName(getPayedCmd);
         this.setCommandDesc(cmdDescription);
@@ -114,7 +108,7 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
 
     @Override
     public void runCommand(CommandSender sender, String label, String[] args) {
-
+        getPayedHelper = getPayedConfig.getGetPayedHelper();
         Player player = null;
         String pname = "(Console)";
         if ((sender instanceof Player)) {
@@ -147,24 +141,26 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
 
 // somebody is using the pricecheck option
         if (command.equalsIgnoreCase(priceCheck)) {
-
-            if (args.length == 0) {
-                displayHelp(player, this);
-                return;
+            String onOff = off;
+            if (args.length < 2) {
+                if (getPayedHelper.isPlayerPriceChecking(player)) {
+                    onOff = on;
+                }
+            } else {
+                onOff = args[1];
             }
 
-            String onOff = args[1];
             if (onOff.equalsIgnoreCase(on)) {
                 getPayedHelper.removePlayerFromPriceCheckOn(player);
                 getPayedHelper.addPlayerToPriceCheckOn(player, true);
-                msg = INFO_MESSAGES + priceCheckMessagesOn;
+                msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.PRICECHECK_MESSAGES_ON);
                 main.sendPlayerMessage(player, msg);
                 return;
             }
             if (onOff.equalsIgnoreCase(off)) {
                 getPayedHelper.removePlayerFromPriceCheckOn(player);
                 getPayedHelper.addPlayerToPriceCheckOn(player, false);
-                msg = INFO_MESSAGES + priceCheckMessagesOff;
+                msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.PRICECHECK_MESSAGES_OFF);
                 main.sendPlayerMessage(player, msg);
                 return;
             }
@@ -176,15 +172,18 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
 // somebody is using the paydaymessage option
 
         if (command.equalsIgnoreCase(displayPayDayMessage)) {
-            if (args.length == 0) {
-                displayHelp(player, this);
-                return;
+            String onOff = off;
+            if (args.length < 2) {
+                if (getPayedHelper.isPaydayMessageOn(player)) {
+                    onOff = on;
+                }
+            } else {
+                onOff = args[1];
             }
-            String onOff = args[1];
             if (onOff.equalsIgnoreCase(on)) {
                 getPayedHelper.removePlayerFromPayDayMessageOn(player);
                 getPayedHelper.addPlayerToPayDayMessageOn(player, true);
-                msg = INFO_MESSAGES + payDayMessagesOnOff;
+                msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.PAYDAY_MESSAGES_ONOFF);
                 msg = msg.replace("%onOff", on);
                 main.sendPlayerMessage(player, msg);
                 return;
@@ -192,7 +191,7 @@ public class GetPayedCommand extends Commands implements CommandExecutor {
             if (onOff.equalsIgnoreCase(off)) {
                 getPayedHelper.removePlayerFromPayDayMessageOn(player);
                 getPayedHelper.addPlayerToPayDayMessageOn(player, false);
-                msg = INFO_MESSAGES + payDayMessagesOnOff;
+                msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.PAYDAY_MESSAGES_ONOFF);
                 msg = msg.replace("%onOff", off);
                 main.sendPlayerMessage(player, msg);
                 return;

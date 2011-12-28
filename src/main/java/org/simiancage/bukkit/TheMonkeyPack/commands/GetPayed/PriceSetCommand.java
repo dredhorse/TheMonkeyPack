@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
+import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig.Messages;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.GetPayedHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.GetPayedLogger;
 
@@ -17,6 +18,8 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.GetPayedLogger;
  * Date: 23.12.11
  * Time: 23:56
  */
+
+// contains code from http://forums.bukkit.org/threads/20984/
 
 public class PriceSetCommand extends Commands implements CommandExecutor {
 
@@ -34,8 +37,6 @@ public class PriceSetCommand extends Commands implements CommandExecutor {
     private String displayHelpMessage;
     private String cmdDescription;
     private String cmdPermDescription;
-    private String cantBreakPlaceAtSameTime;
-    private String rightClickBlockToSetPrice;
     private String on;
     private String off;
 
@@ -48,10 +49,8 @@ public class PriceSetCommand extends Commands implements CommandExecutor {
         cmdDescription = getPayedConfig.getPriceSetCmdDescription();
         cmdPermDescription = getPayedConfig.getPriceSetCmdPermDescription();
         displayHelpMessage = getPayedConfig.getDisplayHelpMessage();
-        cantBreakPlaceAtSameTime = getPayedConfig.getCantBreakPlaceAtSameTime();
-        rightClickBlockToSetPrice = getPayedConfig.getRightClickBlockToPriceSet();
-        on = getPayedConfig.getOn();
-        off = getPayedConfig.getOff();
+        on = getPayedConfig.getOnString();
+        off = getPayedConfig.getOffString();
         priceSetCmd = getPayedConfig.getPriceSetCmd();
         displayPriceSetMessage = getPayedConfig.getDisplayPriceSetMessage();
         newPrice = getPayedConfig.getNewPrice();
@@ -72,15 +71,12 @@ public class PriceSetCommand extends Commands implements CommandExecutor {
 
     @Override
     public void runCommand(CommandSender sender, String label, String[] args) {
-
+        getPayedHelper = getPayedConfig.getGetPayedHelper();
         Player player = null;
         String pname = "(Console)";
         if ((sender instanceof Player)) {
             player = (Player) sender;
             pname = player.getName();
-            if (args.length == 0) {
-                displayHelp(player, this);
-            }
         }
 
         if (player == null) {
@@ -99,38 +95,44 @@ public class PriceSetCommand extends Commands implements CommandExecutor {
             displayHelp(player, this);
             return;
         }
+        double newBlockPrice;
         String breakPlace = args[0];
         try {
-            double newBlockPrice = Double.parseDouble(args[1]);
+            newBlockPrice = Double.parseDouble(args[1]);
         } catch (NumberFormatException ex) {
             displayHelp(player, this);
             return;
         }
 
+
         String msg;
         if (breakPlace.equalsIgnoreCase(breakString)) {
             if (getPayedHelper.waitingForPlace(player)) {
-                msg = WARNING_MESSAGES + cantBreakPlaceAtSameTime;
+                msg = WARNING_MESSAGES + getPayedConfig.getMessage(Messages.CANT_BREAK_PLACE_AT_SAME_TIME);
                 msg = msg.replace("%breakPlace", placeString);
                 msg = msg.replace("%onOff", off);
                 main.sendPlayerMessage(player, msg);
             }
             getPayedHelper.setWaitForBreakPlace(player, "break");
-            msg = INFO_MESSAGES + rightClickBlockToSetPrice;
-            msg.replace("%breakPlace", breakString);
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.RIGHT_CLICK_BLOCK_TO_PRICESET);
+            msg = msg.replace("%breakPlace", breakString);
+            main.sendPlayerMessage(player, msg);
+            getPayedHelper.setNewPriceSet(player, newBlockPrice);
             return;
         }
 
         if (breakPlace.equalsIgnoreCase(placeString)) {
             if (getPayedHelper.waitingForBreak(player)) {
-                msg = WARNING_MESSAGES + cantBreakPlaceAtSameTime;
+                msg = WARNING_MESSAGES + getPayedConfig.getMessage(Messages.CANT_BREAK_PLACE_AT_SAME_TIME);
                 msg = msg.replace("%breakPlace", breakString);
                 msg = msg.replace("%onOff", off);
                 main.sendPlayerMessage(player, msg);
             }
             getPayedHelper.setWaitForBreakPlace(player, "place");
-            msg = INFO_MESSAGES + rightClickBlockToSetPrice;
-            msg.replace("%breakPlace", placeString);
+            msg = INFO_MESSAGES + getPayedConfig.getMessage(Messages.RIGHT_CLICK_BLOCK_TO_PRICESET);
+            msg = msg.replace("%breakPlace", placeString);
+            getPayedHelper.setNewPriceSet(player, newBlockPrice);
+            main.sendPlayerMessage(player, msg);
             return;
         }
         displayHelp(player, this);

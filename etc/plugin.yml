@@ -1,6 +1,6 @@
 name: TheMonkeyPack
 main: org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack
-version: 0.1
+version: 0.2
 website: http://dev.bukkit.org/server-mods/themonkeypack/
 author: Don Redhorse
 description: Lot's of stuff.... neat stuff
@@ -23,3 +23,7 @@ commands:
         description: configure the workplace
         usage: |
             /<command> [option]
+    tmppriceset:
+        description: sets the break and place price of the block you rightclick
+        usage: |
+            /<command> <break|place> <amount>
