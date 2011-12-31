@@ -1,6 +1,6 @@
 name: TheMonkeyPack
 main: org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack
-version: 0.2
+version: 0.3
 website: http://dev.bukkit.org/server-mods/themonkeypack/
 author: Don Redhorse
 description: Lot's of stuff.... neat stuff
@@ -27,3 +27,12 @@ commands:
         description: sets the break and place price of the block you rightclick
         usage: |
             /<command> <break|place> <amount>
+    tmptnt:
+        description: get information about TNT Control
+        usage: |
+            /<command>
+
+    tmptntreclaim:
+        description: toggle reclaiming TNT by punching it
+        usage: |
+            /<command> [option]

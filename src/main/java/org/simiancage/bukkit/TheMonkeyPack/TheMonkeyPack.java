@@ -22,10 +22,8 @@ import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.BlockListenerTMP;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerChatListener;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerListenerTMP;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
+import org.simiancage.bukkit.TheMonkeyPack.configs.TNTControlConfig;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.*;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
 import java.util.HashMap;
@@ -42,6 +40,7 @@ public class TheMonkeyPack extends JavaPlugin {
     private boolean economyEnabled;
     private KitConfig kitConfig;
     private GetPayedConfig getPayedConfig;
+    private TNTControlConfig tntControlConfig;
     private Economy economy = null;
     HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
 
@@ -75,6 +74,11 @@ public class TheMonkeyPack extends JavaPlugin {
             addRegisteredListener();
         }
 
+        for (Type event : mainConfig.getEntityListenerEvents()) {
+            getServer().getPluginManager().registerEvent(event, new EntityListenerTMP(this), Priority.High, this);
+            addRegisteredListener();
+        }
+
         mainLogger.debug(registeredCommands + " Commands registered");
         mainLogger.debug(registeredListeners + " Listeners registered");
         if (mainConfig.isEnableKits()) {
@@ -83,6 +87,11 @@ public class TheMonkeyPack extends JavaPlugin {
         if (mainConfig.isEnableGetPayed()) {
             getPayedConfig = GetPayedConfig.getInstance();
             getPayedConfig.getGetPayedHelper().onEnable();
+        }
+
+        if (mainConfig.isEnableTNTControl()) {
+            tntControlConfig = TNTControlConfig.getInstance();
+            tntControlConfig.getTNTControlHelper().onEnable();
         }
 
         // ToDo add more configs for other Modules on Top
@@ -96,6 +105,10 @@ public class TheMonkeyPack extends JavaPlugin {
         }
         if (mainConfig.isEnableGetPayed()) {
             getPayedConfig.getGetPayedHelper().onDisable();
+        }
+
+        if (mainConfig.isEnableTNTControl()) {
+            tntControlConfig.getTNTControlHelper().onDisable();
         }
         registeredCommands = 0;
         registeredListeners = 0;

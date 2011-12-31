@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
 import org.simiancage.bukkit.TheMonkeyPack.events.GPPlayerEvent;
+import org.simiancage.bukkit.TheMonkeyPack.events.TCPlayerEvent;
 import org.simiancage.bukkit.TheMonkeyPack.interfaces.Listeners;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
@@ -23,6 +24,7 @@ public class PlayerListenerTMP extends PlayerListener implements Listeners {
     private MainLogger mainLogger;
     private MainConfig mainConfig;
     private GPPlayerEvent gpPlayerEvent;
+    private TCPlayerEvent tcPlayerEvent;
 
 
     public PlayerListenerTMP(TheMonkeyPack plugin) {
@@ -61,6 +63,10 @@ public class PlayerListenerTMP extends PlayerListener implements Listeners {
         if (mainConfig.isGetPayedActive()) {
             gpPlayerEvent = GPPlayerEvent.getInstance(main);
             gpPlayerEvent.getPayedPlayerQuit(event);
+        }
+        if (mainConfig.isEnableTNTControl()) {
+            tcPlayerEvent = TCPlayerEvent.getInstance(main);
+            tcPlayerEvent.tntControlPlayerQuit(event);
         }
     }
 

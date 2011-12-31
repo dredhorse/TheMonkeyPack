@@ -1,0 +1,112 @@
+# TheMonkeyPack 0.3 by [Don Redhorse]
+#
+# Configuration File for module [TNTControl]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# --- TNT Configuration
+
+# Level up to which players with the tmp.tnt.allowed permission 
+# are allowed to place and activate TNT. 
+tntBlastLimit: 54
+# Yield of the TNT Blast in percent (WITHOUT % !!) 
+tntBlastYield: 30
+# Radius of the TNT Blast in blocks
+tntBlastRadius: 4
+# Will TNT Blast cause a fire?
+tntBlastCauseFire: false
+# Allow placement of TNT on the surface. Note: This will prohibit placing / activating TNT even if the surface
+# is below Level 54 and even if the player has the tmp.tnt.abovelimit.place permission.
+# NOTE: This means the highest block atm, so this means ON a tree for example
+tntOnSurface: on
+# Give the TNT placement some slack and also allow TNT to be place / activated x blocks below surface.
+tntBelowSurfaceLevel: 5
+# Allow a tool to be used to reclaim TNT
+tntAllowReclaimTool: true
+# Tool to be used for reclaiming
+tntReclaimTool: 359
+
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+# Please change to your liking and use the following variables
+# %player = playername, %cmd = command, %help = help option
+# %abovelevel = blastlimit level, %radius = radius of blast
+# %yield = yield of blast, %blocks = replaced with tntBelowSurfaceLevel
+# %placeActivate = replaced by place or activate, %onOff = replaced by On or Off
+
+# The alias command for /tmptnt WITHOUT the / !!!
+TntCmd: "tnt"
+# The command description.
+TntCmdDescription: "Shows the status of TNT Control"
+# The command permissions description.
+TntCmdPermissionDescription: "allows access to the status command"
+# The alias for the help option
+TntHelpOption: "help"
+# The help message displayed.
+TntHelpMessage: "displays this help"
+
+# The alias command for /tmptntreclaim WITHOUT the / !!!
+TntReclaimCmd: "reclaim"
+# The command description.
+TntReclaimCmdDescription: "Allows you to reclaim TNT."
+# The command permissions description.
+TntReclaimCmdPermissionDescription: "allows access to the reclaim command"
+# The alias for the help option
+TntReclaimHelpOption: "help"
+# The help message displayed.
+TntReclaimHelpMessage: "displays this help"
+
+# Message displayed when player tries to place TNT above the limit
+YouCannotPlaceTntAbove: "You cannot place TNT above level %abovelevel"
+# Message displayed when player tries to place TNT on the surface
+YouCannotPlaceTntOnsurface: "You cannot place TNT on the surface!"
+# Message displayed when player tries to place TNT without permission
+YouDonotHaveThePermissionToUseTnt: "You do not have the permission to use TNT"
+# Message displayed when player tries to activate TNT above the limit
+YouCannotActivateTntAbove: "You cannot activate TNT above level %abovelevel"
+# Message displayed when player tries to activate TNT on the surface
+YouCannotActivateTntOnsurface: "You cannot activate TNT on the surface!"
+# Info Messages to display Elevation Limit
+InfoElevationLimit: "Elevation Limit : %abovelevel blocks"
+# Info Messages to display Blast Radius
+InfoBlastRadius: "Radius : %radius"
+# Info Messages to display Blast Yield
+InfoBlastYield: "Yield : %yield"
+# Info Messages to display if TNT explosion causes fire
+InfoBlastFire: "TNT Blast causes fire: %onOff"
+# Info Messages to display if TNT is allowed on the surface
+InfoOnSurface: "TNT is allowed on surface : %onOff"
+# Info Messages to display if Slack is allowed.
+InfoSlack: "including %blocks Feet under."
+# Info Messages to display if somebody is allowed to use TNT
+InfoAreAllowed: "You are allowed to use TNT!"
+# Info Messages to display if somebody is NOT allowed to use TNT
+InfoAreNotAllowed: "You are NOT allowed to use TNT!"
+# Info Messages to display if player is restricted to below tntBlastLimit
+InfoYouAreLimited: "You can only %placeActivate TNT at level %abovelevel and below"
+# Info Messages to display the reclaim tool
+InfoAllowedReclaimTool: "You are allowed to use the reclaim tool %tool"
+# Info Message to display if player is allowed the reclaim command
+InfoAllowedReclaimCommand: "You are allowed to use the reclaim command"
+# Message displayed when player issues the reclaim command without options
+ReclaimingIsOnoff: "Reclaiming TNT blocks is %onOff"
+# String for On
+OnString: "On"
+# String for Off
+OffString: "Off"
+# String for place
+PlaceString: "place"
+# String for activate
+ActivateString: "activate"
+# Message displayed when reclaim command is being executed without an option.
+ReclaimCommandRequires: "The %cmd command requires [on|off] to be useful"
+# Message displayed when the reclaim option is changed.
+SettingReclaimTo: "Setting reclaiming TNT blocks to: %onOff"
+
+

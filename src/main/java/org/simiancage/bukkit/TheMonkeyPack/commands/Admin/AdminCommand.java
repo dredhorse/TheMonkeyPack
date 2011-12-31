@@ -24,6 +24,7 @@ public class AdminCommand extends Commands implements CommandExecutor {
     private GetPayedHelper getPayedHelper;
     private GetPayedConfig getPayedConfig;
 
+
     public AdminCommand(TheMonkeyPack instance) {
         super(instance);
         this.setCommandName("tmpadmin");
@@ -42,6 +43,7 @@ public class AdminCommand extends Commands implements CommandExecutor {
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "version" + DEFAULT_COLOR + " check the version of plugin and config");
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "debug" + DEFAULT_COLOR + " enable debug logging (messy!");
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "getpayed" + DEFAULT_COLOR + " configure getpayed module");
+        sender.sendMessage("/tmpadmin " + SUB_COLOR + "tntcontrol" + DEFAULT_COLOR + " configure tntcontrol module");
     }
 
     @Override
@@ -57,17 +59,56 @@ public class AdminCommand extends Commands implements CommandExecutor {
         String subCommand = args[0];
 
         if (mainConfig.isGetPayedActive() && subCommand.equalsIgnoreCase("getpayed")) {
-            if (args.length < 2) {
-                sender.sendMessage(INFO_MESSAGES + "This command requires an option!");
-                sender.sendMessage(INFO_MESSAGES + "strip = removes blocks from config with 0.0 for break and place");
-                sender.sendMessage(INFO_MESSAGES + "complete = adds all missing blocks to config with 0.0 value");
-                return;
+            if (main.hasPermission(sender, mainConfig.getPERM_ADMIN_WORKPLACE())) {
+
+
+                if (args.length < 2) {
+                    sender.sendMessage(INFO_MESSAGES + "This command requires an option!");
+                    sender.sendMessage(INFO_MESSAGES + "strip = removes blocks from config with 0.0 for break and place");
+                    sender.sendMessage(INFO_MESSAGES + "complete = adds all missing blocks to config with 0.0 value");
+                    return;
+                }
+                getPayedConfig = mainConfig.getPayedConfig;
+                getPayedHelper = getPayedConfig.getGetPayedHelper();
+                getpayedSubCommand(sender, args[1]);
+            } else {
+
+                sender.sendMessage(WARNING_MESSAGES + "You don't have the permission " + mainConfig.getPERM_ADMIN_WORKPLACE());
+
+
             }
-            getPayedConfig = mainConfig.getPayedConfig;
-            getPayedHelper = getPayedConfig.getGetPayedHelper();
-            getpayedSubCommand(sender, args[1]);
+            return;
         }
 
+        if (mainConfig.isEnableTNTControl() && subCommand.equalsIgnoreCase("tntcontrol")) {
+            if (main.hasPermission(sender, mainConfig.getPERM_ADMIN_TNT())) {
+                if (args.length < 2) {
+                    tntcontrolHelp(sender);
+                    return;
+                }
+                TNTControlAdminCommand tntControlAdminCommand = new TNTControlAdminCommand(main);
+                if (!tntControlAdminCommand.tntcontrolSubCommand(sender, args)) {
+                    tntcontrolHelp(sender);
+                }
+                ;
+                return;
+            } else {
+                sender.sendMessage(WARNING_MESSAGES + "You don't have the permission " + mainConfig.getPERM_ADMIN_TNT());
+            }
+            return;
+        }
+
+    }
+
+    private void tntcontrolHelp(CommandSender sender) {
+        sender.sendMessage(INFO_MESSAGES + "This command requires an option!");
+        sender.sendMessage(INFO_MESSAGES + "limit = set's the new blast level limit");
+        sender.sendMessage(INFO_MESSAGES + "yield = set's the new blast yield level");
+        sender.sendMessage(INFO_MESSAGES + "radius = set's the new blast radius");
+        sender.sendMessage(INFO_MESSAGES + "fire = set's if blast causes fire");
+        sender.sendMessage(INFO_MESSAGES + "tool = set's the reclaim tool");
+        sender.sendMessage(INFO_MESSAGES + "reclaim = set's if reclaiming with tool is allowed");
+        sender.sendMessage(INFO_MESSAGES + "reload = reload the configuration");
     }
 
 

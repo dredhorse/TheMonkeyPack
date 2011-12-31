@@ -138,11 +138,11 @@ public class MainConfig {
     /**
      * This is the internal config version
      */
-    private final String configCurrent = "1.0";
+    private final String configCurrent = "0.3";
     /**
      * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
      */
-    private String configVer = "1.0";
+    private String configVer = "0.3";
 
 
 // and now the real stuff
@@ -191,11 +191,18 @@ public class MainConfig {
     private boolean enableKits = false;
     public static KitConfig kitConfig;
 
+    private final String ENABLE_TNT_CONTROL = "enableTNTControl";
+    private final String MODULE_NAME_TNT_CONTROL = "TNTControl";
+    private boolean enableTNTControl = false;
+    public static TNTControlConfig tntControlConfig;
+
+
+// Admin Permissions
+
     private final String PERM_ADMIN = "tmp.admin";
     private final String PERM_ADMIN_WORKPLACE = "tmp.admin.workplace";
+    private final String PERM_ADMIN_TNT = "tmp.admin.tnt";
 
-    // ToDo after integrating the module make it available
-    //public static KitsConfig kitsConfig;
 
 // *******************************************************************************************************************
 
@@ -226,6 +233,7 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(ENABLE_KITS, enableKits);
         config.addDefault(ENABLE_LAMPSTONE, enableLampstone);
         config.addDefault(ENABLE_GETPAYED, enableGetPayed);
+        config.addDefault(ENABLE_TNT_CONTROL, enableTNTControl);
 
         config.addDefault("permDenied", PERM_DENIED);
         config.addDefault("wrongSyntax", WRONG_SYNTAX);
@@ -250,6 +258,7 @@ afterwards parsable again from the configuration class of bukkit
         enableKits = config.getBoolean(ENABLE_KITS);
         enableLampstone = config.getBoolean(ENABLE_LAMPSTONE);
         enableGetPayed = config.getBoolean(ENABLE_GETPAYED);
+        enableTNTControl = config.getBoolean(ENABLE_TNT_CONTROL);
         PERM_DENIED = config.getString("permDenied");
         WRONG_SYNTAX = config.getString("wrongSyntax");
         ALLOWS_YOU_TO = config.getString("allowsYouTo");
@@ -264,6 +273,7 @@ afterwards parsable again from the configuration class of bukkit
         log.debug(ENABLE_AFKHANDLER, enableAfkHandler);
         log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
+        log.debug(ENABLE_TNT_CONTROL, enableTNTControl);
         log.debug("permDenied", PERM_DENIED);
         log.debug("wrongSyntax", WRONG_SYNTAX);
         log.debug("allowsYouTo", ALLOWS_YOU_TO);
@@ -309,10 +319,10 @@ afterwards parsable again from the configuration class of bukkit
 
         stream.println();
         stream.println("# Enable the different modules here or via");
-        stream.println("# /mtp enable [MODULENAME]");
+        stream.println("# /tmp enable [MODULENAME]");
         stream.println();
         stream.println("# After that you need to reload the server or use");
-        stream.println("# /mtp reload");
+        stream.println("# /tmp reload");
         stream.println("# to create the config files for the different modules");
         stream.println();
         stream.println("# So you still need to configure THEM!");
@@ -341,6 +351,11 @@ afterwards parsable again from the configuration class of bukkit
         stream.println();
         stream.println("# Give out kits to your players");
         stream.println(ENABLE_KITS + ": " + enableKits);
+        stream.println();
+        stream.println("#-------- Module [" + MODULE_NAME_TNT_CONTROL + "] --------");
+        stream.println();
+        stream.println("# Manage TNT based on Levels, Permissions and Amount");
+        stream.println(ENABLE_TNT_CONTROL + ": " + enableTNTControl);
 
 
     }
@@ -360,6 +375,10 @@ afterwards parsable again from the configuration class of bukkit
         if (enableGetPayed) {
             getPayedConfig = new GetPayedConfig(main, MODULE_NAME_GETPAYED);
         }
+
+        if (enableTNTControl) {
+            tntControlConfig = new TNTControlConfig(main, MODULE_NAME_TNT_CONTROL);
+        }
         // ToDo after enabling the module make it available
 
     }
@@ -372,6 +391,26 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public String getPluginVersion() {
+        return pluginVersion;
+    }
+
+    public String getMODULE_NAME_TNT_CONTROL() {
+        return MODULE_NAME_TNT_CONTROL;
+    }
+
+    public static TNTControlConfig getTntControlConfig() {
+        return tntControlConfig;
+    }
+
+    public boolean isEnableTNTControl() {
+        return enableTNTControl;
+    }
+
+    public String getPERM_ADMIN_TNT() {
+        return PERM_ADMIN_TNT;
+    }
 
     public String getPERM_ADMIN() {
         return PERM_ADMIN;
