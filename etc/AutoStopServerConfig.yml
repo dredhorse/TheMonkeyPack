@@ -1,0 +1,33 @@
+# TheMonkeyPack 0.4 by [Don Redhorse]
+#
+# Configuration File for module [AutoStopServer]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# --- AutoStop Configuration
+
+# Enable the AutoStop feature. 
+enableAutoStop: true
+# Interval to stop the server, can be fractions of an hour, eg. 2.5 
+autoStopInterval: 4.0
+# Interval to stop the server, can be fractions of an hour, eg. 2.5 
+warningTimes: [10.0, 5.0, 2.0, 1.0]
+
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+# Please change to your liking and use the following variables
+# %m = minutes
+
+
+# Warning Message displayed to announce server stop.
+WarningMessage: "Server will be stopped in %m minutes"
+# Message displayed when the server goes down.
+StopMessage: "Server is going down. Be back soon!"
+
+

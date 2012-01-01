@@ -44,6 +44,7 @@ public class AdminCommand extends Commands implements CommandExecutor {
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "debug" + DEFAULT_COLOR + " enable debug logging (messy!");
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "getpayed" + DEFAULT_COLOR + " configure getpayed module");
         sender.sendMessage("/tmpadmin " + SUB_COLOR + "tntcontrol" + DEFAULT_COLOR + " configure tntcontrol module");
+        sender.sendMessage("/tmpadmin " + SUB_COLOR + "autostop" + DEFAULT_COLOR + " configure autostop module");
     }
 
     @Override
@@ -90,7 +91,7 @@ public class AdminCommand extends Commands implements CommandExecutor {
                 if (!tntControlAdminCommand.tntcontrolSubCommand(sender, args)) {
                     tntcontrolHelp(sender);
                 }
-                ;
+
                 return;
             } else {
                 sender.sendMessage(WARNING_MESSAGES + "You don't have the permission " + mainConfig.getPERM_ADMIN_TNT());
@@ -98,6 +99,35 @@ public class AdminCommand extends Commands implements CommandExecutor {
             return;
         }
 
+        if (mainConfig.isEnableAutoStopServer() && subCommand.equalsIgnoreCase("autostop")) {
+            if (main.hasPermission(sender, mainConfig.getPERM_ADMIN_AUTOSTOPSERVER())) {
+                if (args.length < 2) {
+                    autostopHelp(sender);
+                    return;
+                }
+                AutoStopServerAdminCommand autoStopServerAdminCommand = new AutoStopServerAdminCommand(main);
+                if (!autoStopServerAdminCommand.autostopSubCommand(sender, args)) {
+                    autostopHelp(sender);
+                }
+
+                return;
+            } else {
+                sender.sendMessage(WARNING_MESSAGES + "You don't have the permission " + mainConfig.getPERM_ADMIN_AUTOSTOPSERVER());
+            }
+            return;
+        }
+
+    }
+
+    private void autostopHelp(CommandSender sender) {
+        sender.sendMessage(INFO_MESSAGES + "This command requires an option!");
+        sender.sendMessage(INFO_MESSAGES + "now = stop the server directly");
+        sender.sendMessage(INFO_MESSAGES + "time = returns the time left till server stop");
+        sender.sendMessage(INFO_MESSAGES + "(h|m|s) <time> = turns automatic stop on (if off) and reschedules to the configured time");
+        sender.sendMessage(INFO_MESSAGES + "on = set autostop on");
+        sender.sendMessage(INFO_MESSAGES + "off = set autostop off");
+        sender.sendMessage(INFO_MESSAGES + "status = the status of the autostop module");
+        sender.sendMessage(INFO_MESSAGES + "reload = reload the configuration");
     }
 
     private void tntcontrolHelp(CommandSender sender) {

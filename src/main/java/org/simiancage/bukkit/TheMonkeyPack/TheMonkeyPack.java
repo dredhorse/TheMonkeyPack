@@ -19,10 +19,7 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
-import org.simiancage.bukkit.TheMonkeyPack.configs.GetPayedConfig;
-import org.simiancage.bukkit.TheMonkeyPack.configs.KitConfig;
-import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
-import org.simiancage.bukkit.TheMonkeyPack.configs.TNTControlConfig;
+import org.simiancage.bukkit.TheMonkeyPack.configs.*;
 import org.simiancage.bukkit.TheMonkeyPack.listeners.*;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
@@ -41,6 +38,7 @@ public class TheMonkeyPack extends JavaPlugin {
     private KitConfig kitConfig;
     private GetPayedConfig getPayedConfig;
     private TNTControlConfig tntControlConfig;
+    private AutoStopServerConfig autoStopServerConfig;
     private Economy economy = null;
     HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
 
@@ -94,6 +92,11 @@ public class TheMonkeyPack extends JavaPlugin {
             tntControlConfig.getTNTControlHelper().onEnable();
         }
 
+        if (mainConfig.isEnableAutoStopServer()) {
+            autoStopServerConfig = AutoStopServerConfig.getInstance();
+            autoStopServerConfig.getAutoStopServerHelper().onEnable();
+        }
+
         // ToDo add more configs for other Modules on Top
         mainLogger.enableMsg();
 
@@ -109,6 +112,10 @@ public class TheMonkeyPack extends JavaPlugin {
 
         if (mainConfig.isEnableTNTControl()) {
             tntControlConfig.getTNTControlHelper().onDisable();
+        }
+
+        if (mainConfig.isEnableAutoStopServer()) {
+            autoStopServerConfig.getAutoStopServerHelper().onDisable();
         }
         registeredCommands = 0;
         registeredListeners = 0;
@@ -185,6 +192,7 @@ public class TheMonkeyPack extends JavaPlugin {
 
     public void sendPlayerMessage(Player player, String msg) {
         player.sendRawMessage(msg);
+        mainLogger.debug("Message to player: " + player.getName() + " = " + msg);
     }
 
     public void registerPlayerCommand(String command, Commands commands) {

@@ -1,6 +1,6 @@
 name: TheMonkeyPack
 main: org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack
-version: 0.3
+version: 0.4
 website: http://dev.bukkit.org/server-mods/themonkeypack/
 author: Don Redhorse
 description: Lot's of stuff.... neat stuff
@@ -34,5 +34,10 @@ commands:
 
     tmptntreclaim:
         description: toggle reclaiming TNT by punching it
+        usage: |
+            /<command> [option]
+
+    tmpmemory:
+        description: display memory information
         usage: |
             /<command> [option]

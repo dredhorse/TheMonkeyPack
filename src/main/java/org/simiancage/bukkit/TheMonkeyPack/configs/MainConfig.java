@@ -138,11 +138,11 @@ public class MainConfig {
     /**
      * This is the internal config version
      */
-    private final String configCurrent = "0.3";
+    private final String configCurrent = "0.4";
     /**
      * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
      */
-    private String configVer = "0.3";
+    private String configVer = "0.4";
 
 
 // and now the real stuff
@@ -196,12 +196,18 @@ public class MainConfig {
     private boolean enableTNTControl = false;
     public static TNTControlConfig tntControlConfig;
 
+    private final String ENABLE_AUTO_STOP_SERVER = "enableAutoStopServer";
+    private final String MODULE_NAME_AUTO_STOP_SERVER = "AutoStopServer";
+    private boolean enableAutoStopServer = false;
+    public static AutoStopServerConfig autoStopServerConfig;
+
 
 // Admin Permissions
 
     private final String PERM_ADMIN = "tmp.admin";
     private final String PERM_ADMIN_WORKPLACE = "tmp.admin.workplace";
     private final String PERM_ADMIN_TNT = "tmp.admin.tnt";
+    private final String PERM_ADMIN_AUTOSTOPSERVER = "tmp.admin.stopserver";
 
 
 // *******************************************************************************************************************
@@ -234,6 +240,7 @@ afterwards parsable again from the configuration class of bukkit
         config.addDefault(ENABLE_LAMPSTONE, enableLampstone);
         config.addDefault(ENABLE_GETPAYED, enableGetPayed);
         config.addDefault(ENABLE_TNT_CONTROL, enableTNTControl);
+        config.addDefault(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
 
         config.addDefault("permDenied", PERM_DENIED);
         config.addDefault("wrongSyntax", WRONG_SYNTAX);
@@ -259,6 +266,9 @@ afterwards parsable again from the configuration class of bukkit
         enableLampstone = config.getBoolean(ENABLE_LAMPSTONE);
         enableGetPayed = config.getBoolean(ENABLE_GETPAYED);
         enableTNTControl = config.getBoolean(ENABLE_TNT_CONTROL);
+        enableAutoStopServer = config.getBoolean(ENABLE_AUTO_STOP_SERVER);
+
+
         PERM_DENIED = config.getString("permDenied");
         WRONG_SYNTAX = config.getString("wrongSyntax");
         ALLOWS_YOU_TO = config.getString("allowsYouTo");
@@ -274,6 +284,7 @@ afterwards parsable again from the configuration class of bukkit
         log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
         log.debug(ENABLE_TNT_CONTROL, enableTNTControl);
+        log.debug(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
         log.debug("permDenied", PERM_DENIED);
         log.debug("wrongSyntax", WRONG_SYNTAX);
         log.debug("allowsYouTo", ALLOWS_YOU_TO);
@@ -356,6 +367,11 @@ afterwards parsable again from the configuration class of bukkit
         stream.println();
         stream.println("# Manage TNT based on Levels, Permissions and Amount");
         stream.println(ENABLE_TNT_CONTROL + ": " + enableTNTControl);
+        stream.println();
+        stream.println("#-------- Module [" + MODULE_NAME_AUTO_STOP_SERVER + "] --------");
+        stream.println();
+        stream.println("# Automatically stop the server, use the rightkind of script to start it again.");
+        stream.println(ENABLE_AUTO_STOP_SERVER + ": " + enableAutoStopServer);
 
 
     }
@@ -379,6 +395,10 @@ afterwards parsable again from the configuration class of bukkit
         if (enableTNTControl) {
             tntControlConfig = new TNTControlConfig(main, MODULE_NAME_TNT_CONTROL);
         }
+
+        if (enableAutoStopServer) {
+            autoStopServerConfig = new AutoStopServerConfig(main, MODULE_NAME_AUTO_STOP_SERVER);
+        }
         // ToDo after enabling the module make it available
 
     }
@@ -391,6 +411,22 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public boolean isEnableAutoStopServer() {
+        return enableAutoStopServer;
+    }
+
+    public String getPERM_ADMIN_AUTOSTOPSERVER() {
+        return PERM_ADMIN_AUTOSTOPSERVER;
+    }
+
+    public String getMODULE_NAME_AUTO_STOP_SERVER() {
+        return MODULE_NAME_AUTO_STOP_SERVER;
+    }
+
+    public static AutoStopServerConfig getAutoStopServerConfig() {
+        return autoStopServerConfig;
+    }
 
     public String getPluginVersion() {
         return pluginVersion;
