@@ -113,58 +113,62 @@ public class TCBlockEvent {
             if (tntControlHelper.isOnReclaim(player)) {
                 block.setType(Material.AIR);
                 event.setCancelled(true);
-                player.getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.TNT, 1));
+                player.getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.TNT, 1));
                 return;
-            } else {
-                if (tntControlConfig.isTntAllowReclaimTool() && tntControlConfig.isReclaimTool(itemInHand)) {
-                    block.setType(Material.AIR);
-                    player.getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.TNT, 1));
-                    event.setCancelled(true);
-                    return;
-                } else {
-                    String msg = "You should not see this, if yes, tell the plugin developer!";
-                    boolean bCancel = true;
-                    Location location = block.getLocation();
-                    int blockY = block.getY();
-                    if (main.hasPermission(player, TNT_CONTROL_PERMISSIONS.TNT_ALLOWED.toString())) {
-                        boolean onSurface = false;
-                        boolean aboveLimit = false;
-                        if (blockY >= (block.getWorld().getHighestBlockYAt(location) - tntControlConfig.getTntBelowSurfaceLevel())) {
-                            onSurface = true;
-                        }
-                        if (blockY > tntControlConfig.getTntBlastLimit()) {
-                            aboveLimit = true;
-                        } else {
-                            bCancel = false;
-                        }
-                        if (aboveLimit && !onSurface) {
-                            if (TNT_CONTROL_PERMISSIONS.TNT_ABOVELIMIT_ACTIVATE.hasPermission(player)) {
-                                bCancel = false;
-                            } else {
-                                msg = Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_CANNOT_ACTIVATE_TNT_ABOVE);
-                                msg = msg.replace("%abovelevel", "" + Commands.OPTIONAL_COLOR + tntControlConfig.getTntBlastLimit() + Commands.INFO_MESSAGES);
-                            }
-                        } else {
-
-                            if (onSurface && (TNT_CONTROL_PERMISSIONS.TNT_ON_SURFACE_ACTIVATE.hasPermission(player) || tntControlConfig.isTntOnSurfaceEnabled())) {
-                                bCancel = false;
-                            } else {
-                                msg = Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_CANNOT_ACTIVATE_TNT_ONSURFACE);
-                            }
-                        }
-                    } else {
-                        main.sendPlayerMessage(player, Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_DONOT_HAVE_THE_PERMISSION_TO_USE_TNT));
-                    }
-                    if (bCancel) {
-                        main.sendPlayerMessage(player, msg);
-                        event.setCancelled(true);
-                        return;
-                    }
-                    Location primedLocation = new Location(block.getWorld(), block.getX() + 0.5D, block.getY() + 0.5D, block.getZ() + 0.5D);
-                    block.getWorld().spawn(primedLocation, TNTPrimed.class);
-                }
             }
+
+            if (tntControlConfig.isTntAllowReclaimTool() && tntControlConfig.isReclaimTool(itemInHand)) {
+                block.setType(Material.AIR);
+                player.getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.TNT, 1));
+                event.setCancelled(true);
+                return;
+            }
+
+            String msg = "You should not see this, if yes, tell the plugin developer!";
+            boolean bCancel = true;
+            Location location = block.getLocation();
+            int blockY = block.getY();
+            if (main.hasPermission(player, TNT_CONTROL_PERMISSIONS.TNT_ALLOWED.toString())) {
+                boolean onSurface = false;
+                boolean aboveLimit = false;
+                if (blockY >= (block.getWorld().getHighestBlockYAt(location) - tntControlConfig.getTntBelowSurfaceLevel())) {
+                    onSurface = true;
+                }
+                if (blockY > tntControlConfig.getTntBlastLimit()) {
+                    aboveLimit = true;
+                } else {
+                    bCancel = false;
+                }
+                if (aboveLimit && !onSurface) {
+                    if (TNT_CONTROL_PERMISSIONS.TNT_ABOVELIMIT_ACTIVATE.hasPermission(player)) {
+                        bCancel = false;
+                    } else {
+                        msg = Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_CANNOT_ACTIVATE_TNT_ABOVE);
+                        msg = msg.replace("%abovelevel", "" + Commands.OPTIONAL_COLOR + tntControlConfig.getTntBlastLimit() + Commands.INFO_MESSAGES);
+                    }
+                } else {
+
+                    if (onSurface && (TNT_CONTROL_PERMISSIONS.TNT_ON_SURFACE_ACTIVATE.hasPermission(player) || tntControlConfig.isTntOnSurfaceEnabled())) {
+                        bCancel = false;
+                    } else {
+                        msg = Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_CANNOT_ACTIVATE_TNT_ONSURFACE);
+                    }
+                }
+            } else {
+                main.sendPlayerMessage(player, Commands.WARNING_MESSAGES + tntControlConfig.getMessage(Messages.YOU_DONOT_HAVE_THE_PERMISSION_TO_USE_TNT));
+            }
+            if (bCancel) {
+                main.sendPlayerMessage(player, msg);
+                event.setCancelled(true);
+                return;
+            }
+            // We cancel the orginal event, delete the block and spawn a primed tnt
+            event.setCancelled(true);
+            block.setType(Material.AIR);
+            Location primedLocation = new Location(block.getWorld(), block.getX() + 0.5D, block.getY() + 0.5D, block.getZ() + 0.5D);
+            block.getWorld().spawn(primedLocation, TNTPrimed.class);
         }
+
 
     }
 
