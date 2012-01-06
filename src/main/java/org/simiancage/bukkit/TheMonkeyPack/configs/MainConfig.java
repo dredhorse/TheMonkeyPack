@@ -138,11 +138,11 @@ public class MainConfig {
     /**
      * This is the internal config version
      */
-    private final String configCurrent = "0.4";
+    private final String configCurrent = "0.5";
     /**
      * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
      */
-    private String configVer = "0.4";
+    private String configVer = "0.5";
 
 
 // and now the real stuff
@@ -161,10 +161,10 @@ public class MainConfig {
 
 // These are the modules which can be enabled.
 
-    private final String ENABLE_LAMPSTONE = "enableLampstone";
-    private final String MODULE_NAME_LAMPSTONE = "Lampstone";
-    private boolean enableLampstone = false;
-    public static LampstoneConfig lampstoneConfig;
+    private final String ENABLE_ATTACKCONTROL = "enableAttackControl";
+    private final String MODULE_NAME_ATTACKCONTROL = "AttackControl";
+    private boolean enableAttackControl = false;
+    public static AttackControlConfig attackControlConfig;
 
     private final String ENABLE_AFKHANDLER = "enableAfkHandler";
     private final String MODULE_NAME_AFKHANDLER = "AFK Handler";
@@ -172,11 +172,6 @@ public class MainConfig {
     // ToDo after integrating the module make it available
     //public static AfkHandlerConfig afkHandlerConfig;
 
-    private final String ENABLE_HELLOWORLD = "enableHelloWorld";
-    private final String MODULE_NAME_HELLOWORLD = "HelloWorld";
-    private boolean enableHelloWorld = false;
-    // ToDo after integrating the module make it available
-    //public static HelloWorldConfig helloWorldConfig;
 
     private final String ENABLE_GETPAYED = "enableGetPayed";
     private final String MODULE_NAME_GETPAYED = "GetPayed";
@@ -235,9 +230,8 @@ afterwards parsable again from the configuration class of bukkit
 // ToDo Start here adding the config variables to the default configuration
 
         config.addDefault(ENABLE_AFKHANDLER, enableAfkHandler);
-        config.addDefault(ENABLE_HELLOWORLD, enableHelloWorld);
         config.addDefault(ENABLE_KITS, enableKits);
-        config.addDefault(ENABLE_LAMPSTONE, enableLampstone);
+        config.addDefault(ENABLE_ATTACKCONTROL, enableAttackControl);
         config.addDefault(ENABLE_GETPAYED, enableGetPayed);
         config.addDefault(ENABLE_TNT_CONTROL, enableTNTControl);
         config.addDefault(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
@@ -261,9 +255,8 @@ afterwards parsable again from the configuration class of bukkit
 // ToDo Start here loading the configuration into your config variables
 
         enableAfkHandler = config.getBoolean(ENABLE_AFKHANDLER);
-        enableHelloWorld = config.getBoolean(ENABLE_HELLOWORLD);
         enableKits = config.getBoolean(ENABLE_KITS);
-        enableLampstone = config.getBoolean(ENABLE_LAMPSTONE);
+        enableAttackControl = config.getBoolean(ENABLE_ATTACKCONTROL);
         enableGetPayed = config.getBoolean(ENABLE_GETPAYED);
         enableTNTControl = config.getBoolean(ENABLE_TNT_CONTROL);
         enableAutoStopServer = config.getBoolean(ENABLE_AUTO_STOP_SERVER);
@@ -278,10 +271,9 @@ afterwards parsable again from the configuration class of bukkit
 
         // ToDo Don't forget the debugging
 
-        log.debug(ENABLE_LAMPSTONE, enableLampstone);
+        log.debug(ENABLE_ATTACKCONTROL, enableAttackControl);
         log.debug(ENABLE_GETPAYED, enableGetPayed);
         log.debug(ENABLE_AFKHANDLER, enableAfkHandler);
-        log.debug(ENABLE_HELLOWORLD, enableHelloWorld);
         log.debug(ENABLE_KITS, enableKits);
         log.debug(ENABLE_TNT_CONTROL, enableTNTControl);
         log.debug(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
@@ -343,15 +335,10 @@ afterwards parsable again from the configuration class of bukkit
         stream.println("# Kick, Announce, GOD mode when AFK");
         stream.println(ENABLE_AFKHANDLER + ": " + enableAfkHandler);
         stream.println();
-        stream.println("#-------- Module [" + MODULE_NAME_HELLOWORLD + "] --------");
+        stream.println("#-------- Module [" + MODULE_NAME_ATTACKCONTROL + "] --------");
         stream.println();
-        stream.println("# Announce which world you entered");
-        stream.println(ENABLE_HELLOWORLD + ": " + enableHelloWorld);
-        stream.println();
-        stream.println("#-------- Module [" + MODULE_NAME_LAMPSTONE + "] --------");
-        stream.println();
-        stream.println("# Switch between different blocks between day and night");
-        stream.println(ENABLE_LAMPSTONE + ": " + enableLampstone);
+        stream.println("# Control if Monsters attack you via permissions");
+        stream.println(ENABLE_ATTACKCONTROL + ": " + enableAttackControl);
         stream.println();
         stream.println("#-------- Module [" + MODULE_NAME_GETPAYED + "] --------");
         stream.println();
@@ -382,9 +369,7 @@ afterwards parsable again from the configuration class of bukkit
     // Creating the necessary hooks into the different config classes
 
     private void loadModuleConfigs() {
-        /*  if (enableLampstone) {
-            lampstoneConfig = new LampstoneConfig(main, MODULE_NAME_LAMPSTONE);
-        }*/
+
         if (enableKits) {
             kitConfig = new KitConfig(main, MODULE_NAME_KITS);
         }
@@ -399,6 +384,11 @@ afterwards parsable again from the configuration class of bukkit
         if (enableAutoStopServer) {
             autoStopServerConfig = new AutoStopServerConfig(main, MODULE_NAME_AUTO_STOP_SERVER);
         }
+
+        if (enableAttackControl) {
+            attackControlConfig = new AttackControlConfig(main, MODULE_NAME_ATTACKCONTROL);
+        }
+
         // ToDo after enabling the module make it available
 
     }
@@ -411,6 +401,10 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+    public boolean isEnableAttackControl() {
+        return enableAttackControl;
+    }
 
     public boolean isEnableAutoStopServer() {
         return enableAutoStopServer;
@@ -492,16 +486,12 @@ afterwards parsable again from the configuration class of bukkit
         return EXAMPLE;
     }
 
-    public String getMODULE_NAME_LAMPSTONE() {
-        return MODULE_NAME_LAMPSTONE;
+    public String getMODULE_NAME_ATTACKCONTROL() {
+        return MODULE_NAME_ATTACKCONTROL;
     }
 
     public String getMODULE_NAME_AFKHANDLER() {
         return MODULE_NAME_AFKHANDLER;
-    }
-
-    public String getMODULE_NAME_HELLOWORLD() {
-        return MODULE_NAME_HELLOWORLD;
     }
 
     public String getMODULE_NAME_GETPAYED() {
@@ -512,12 +502,16 @@ afterwards parsable again from the configuration class of bukkit
         return MODULE_NAME_KITS;
     }
 
-    public boolean isEnableLampstone() {
-        return enableLampstone;
+    public void setEnableAttackControl(boolean enableAttackControl) {
+        this.enableAttackControl = enableAttackControl;
     }
 
-    public void setEnableLampstone(boolean enableLampstone) {
-        this.enableLampstone = enableLampstone;
+    public void setEnableAutoStopServer(boolean enableAutoStopServer) {
+        this.enableAutoStopServer = enableAutoStopServer;
+    }
+
+    public void setEnableTNTControl(boolean enableTNTControl) {
+        this.enableTNTControl = enableTNTControl;
     }
 
     public boolean isEnableAfkHandler() {
@@ -526,14 +520,6 @@ afterwards parsable again from the configuration class of bukkit
 
     public void setEnableAfkHandler(boolean enableAfkHandler) {
         this.enableAfkHandler = enableAfkHandler;
-    }
-
-    public boolean isEnableHelloWorld() {
-        return enableHelloWorld;
-    }
-
-    public void setEnableHelloWorld(boolean enableHelloWorld) {
-        this.enableHelloWorld = enableHelloWorld;
     }
 
     public boolean isEnableGetPayed() {

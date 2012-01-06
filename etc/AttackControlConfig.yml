@@ -1,0 +1,16 @@
+# TheMonkeyPack 0.5 by [Don Redhorse]
+#
+# Configuration File for module [AttackControl]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# --- Attack Control Configuration
+
+# Allow the player to attack those tamed beasts (Cheater!) 
+playerCanAttack: false
+

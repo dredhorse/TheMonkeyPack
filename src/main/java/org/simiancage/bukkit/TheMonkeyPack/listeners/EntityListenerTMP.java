@@ -1,10 +1,9 @@
 package org.simiancage.bukkit.TheMonkeyPack.listeners;
 
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.*;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
+import org.simiancage.bukkit.TheMonkeyPack.events.ACEntityEvent;
 import org.simiancage.bukkit.TheMonkeyPack.events.TCEntityEvent;
 import org.simiancage.bukkit.TheMonkeyPack.interfaces.Listeners;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
@@ -22,6 +21,7 @@ public class EntityListenerTMP extends EntityListener implements Listeners {
     private MainLogger mainLogger;
     private MainConfig mainConfig;
     private TCEntityEvent tcEntityEvent;
+    private ACEntityEvent acEntityEvent;
 
 
     public EntityListenerTMP(TheMonkeyPack plugin) {
@@ -56,4 +56,17 @@ public class EntityListenerTMP extends EntityListener implements Listeners {
         }
     }
 
+    public void onEntityTarget(EntityTargetEvent event) {
+        if (mainConfig.isEnableAttackControl()) {
+            acEntityEvent = ACEntityEvent.getInstance(main);
+            acEntityEvent.playerTargetEvent(event);
+        }
+    }
+
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (mainConfig.isEnableAttackControl()) {
+            acEntityEvent = ACEntityEvent.getInstance(main);
+            acEntityEvent.entityDamageEvent(event);
+        }
+    }
 }

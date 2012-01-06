@@ -39,6 +39,8 @@ public class TheMonkeyPack extends JavaPlugin {
     private GetPayedConfig getPayedConfig;
     private TNTControlConfig tntControlConfig;
     private AutoStopServerConfig autoStopServerConfig;
+    private AttackControlConfig attackControlConfig;
+
     private Economy economy = null;
     HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
 
@@ -97,6 +99,10 @@ public class TheMonkeyPack extends JavaPlugin {
             autoStopServerConfig.getAutoStopServerHelper().onEnable();
         }
 
+        if (mainConfig.isEnableAttackControl()) {
+            attackControlConfig = AttackControlConfig.getInstance();
+        }
+
         // ToDo add more configs for other Modules on Top
         mainLogger.enableMsg();
 
@@ -117,6 +123,8 @@ public class TheMonkeyPack extends JavaPlugin {
         if (mainConfig.isEnableAutoStopServer()) {
             autoStopServerConfig.getAutoStopServerHelper().onDisable();
         }
+
+
         registeredCommands = 0;
         registeredListeners = 0;
         mainConfig.resetBlockListeners();

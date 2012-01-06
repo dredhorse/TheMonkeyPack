@@ -1,42 +1,66 @@
-package org.simiancage.bukkit.TheMonkeyPack.configs; /**
- *
- * PluginName: TheMonkeyPack
- * Class: LampstoneConfig
- * User: DonRedhorse
- * Date: 08.12.11
- * Time: 22:20
- *
- */
+package org.simiancage.bukkit.TheMonkeyPack.configs;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Type;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.simiancage.bukkit.TheMonkeyPack.loging.LampstoneLogger;
+import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
+import org.simiancage.bukkit.TheMonkeyPack.loging.AttackControlLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
 /**
- * The LampstoneConfig Class allows you to write a custom config file for craftbukkit plugins incl. comments.
- * It allows autoupdating config changes, checking for plugin updates and writing back the configuration.
- * Please note that writing to the config file will overwrite any manual changes.<p>
- * You NEED to fix all ToDos, otherwise the class will NOT work!<p>
- *
- * @author Don Redhorse
+ * PluginName: TheMonkeyPack
+ * Class: AttackControlConfig
+ * User: DonRedhorse
+ * Date: 10.12.11
+ * Time: 22:06
  */
-@SuppressWarnings({"UnusedDeclaration"})
-public class LampstoneConfig extends Configs {
+
+public class AttackControlConfig extends Configs {
+
+
+    public enum ATTACK_CONTROL_PERMISSIONS {
+        AC_ALL, AC_MONSTER, AC_BLAZE, AC_CAVESPIDER, AC_CREEPER, AC_ENDERDRAGON, AC_ENDERMAN, AC_GHAST, AC_GIANT,
+        AC_MAGMACUBE, AC_PIGZOMBIE, AC_SILVERFISH, AC_SKELETON, AC_SLIME, AC_SNOWMAN, AC_SPIDER, AC_WOLF, AC_ZOMBIE;
+
+        @Override
+        public String toString() {
+            String s = toPermission(super.toString());
+            s = "tmp." + s;
+            return s;
+        }
+
+        String toPermission(String s) {
+            s = s.replace("_", ".");
+            s = s.toLowerCase();
+            return s;
+        }
+
+        public Permission asPermission() {
+            Permission permission = new Permission("tmp." + toPermission(super.toString()));
+            return permission;
+        }
+
+        public boolean hasPermission(Player player) {
+            return main.hasPermission(player, toPermission("tmp." + super.toString()));
+
+        }
+
+    }
+
 
     private static String MODULE_NAME;
 
     /**
      * Instance of the Configuration Class
      */
-    private LampstoneConfig instance;
+    private static AttackControlConfig instance = null;
 
 // Nothing to change from here to ==>>>
     /**
@@ -48,11 +72,11 @@ public class LampstoneConfig extends Configs {
     /**
      * Object to handle the plugin
      */
-    private static Plugin main;
+    private static TheMonkeyPack main;
     /**
      * Configuration File Name
      */
-    private static String configFile = "LampstoneConfig.yml";
+    private static String configFile = "AttackControlConfig.yml";
     /**
      * Is the configuration available or did we have problems?
      */
@@ -63,10 +87,13 @@ public class LampstoneConfig extends Configs {
      */
     private boolean configRequiresUpdate = false;
 
+    private String pluginPath;
+
 // <<<<=== here..
 
 
-    private static LampstoneLogger lampstoneLogger;
+    private AttackControlLogger attackControlLogger;
+
 
     // ToDo Change the configCurrent if the config changes!
     /**
@@ -84,26 +111,21 @@ public class LampstoneConfig extends Configs {
 
 // ********************************************************************************************************************
 
+    // the internal command names
+
+
 // Default Config Variables start here!
-// ToDo Start here adding config variables
-// You can declare defaults already here or later on in setupCustomDefaultVariables()
 
-// Some examples:
+    private boolean playerCanAttack = false;                   // if player can Attack / Kill if he is not targeted
+    private final String PLAYER_CAN_ATTACK = "playerCanAttack";
 
-/*    private boolean broadcastAll = true;
-    private boolean broadcastGroups = false;
-    private ArrayList<String> broadcastTargets = new ArrayList<String>();
-    private boolean generalPermChanges = false;
-    private Map<String, Object> aliasList;
-    private Map<String, Object> defaultAliasList = new HashMap<String, Object>();
-    private ArrayList<String> defaultBroadcastTargets = new ArrayList<String>();
-    private boolean preferVault = true;
-*/
+// Internal variables
+
 
 // *******************************************************************************************************************
 
 
-/*  Here comes the custom config, the default config is later on in the class
+/*  Here comes the custom config, the default config is later onString in the class
 Keep in mind that you need to create your config file in a way which is
 afterwards parsable again from the configuration class of bukkit
 */
@@ -111,23 +133,13 @@ afterwards parsable again from the configuration class of bukkit
 // First we have the default part..
 // Which is devided in setting up some variables first
 
+
     /**
      * Method to setup the config variables with default values
      */
 
     void setupCustomDefaultVariables() {
-// ToDo Start here setting up the config variables with default values
 
-// Some examples
-
-/*
-        defaultBroadcastTargets.add("Admin");
-        defaultBroadcastTargets.add("Moderators");
-        defaultAliasList.put("mod", "Builder,Moderators");
-        defaultAliasList.put("admin", "Builder,Admins");
-        broadcastTargets = defaultBroadcastTargets;
-        aliasList = defaultAliasList;
-*/
 
     }
 
@@ -138,17 +150,8 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     void customDefaultConfig() {
-// ToDo Start here adding the config variables to the default configuration
 
-// Some examples
-
-
-/*
-        config.addDefault("preferVault", preferVault);
-        config.addDefault("broadcastAll", broadcastAll);
-        config.addDefault("broadcastGroups", broadcastGroups);
-        config.addDefault("generalPermChanges", generalPermChanges);
-*/
+        config.addDefault(PLAYER_CAN_ATTACK, playerCanAttack);
 
 
     }
@@ -161,31 +164,9 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     void loadCustomConfig() {
-// ToDo Start here loading the configuration into your config variables
-
-// Some examples
-
-/*
-        preferVault = config.getBoolean("preferVault");
-        broadcastAll = config.getBoolean("broadcastAll");
-        broadcastGroups = config.getBoolean("broadcastGroups");
-        generalPermChanges = config.getBoolean("generalPermChanges");
-        broadcastTargets = (ArrayList<String>) config.getList("broadcastTargets", defaultBroadcastTargets);
-        aliasList = config.getConfigurationSection("aliasList").getValues(true);
-*/
 
 
-        // ToDo Don't forget the debugging
-
-/*
-        log.debug("preferVault", preferVault);
-        log.debug("broadcastAll", broadcastAll);
-        log.debug("broadcastGroups", broadcastGroups);
-        log.debug("generalPermChanges", generalPermChanges);
-        log.debug("broadcastTargets", broadcastTargets);
-        log.debug("aliasList", aliasList);
-*/
-
+        playerCanAttack = config.getBoolean(PLAYER_CAN_ATTACK);
     }
 
 // And than we write it....
@@ -200,44 +181,14 @@ afterwards parsable again from the configuration class of bukkit
     void writeCustomConfig(PrintWriter stream) {
 //Start here writing your config variables into the config file inkl. all comments
 
+        stream.println("#-------- Module Configuration");
+        stream.println();
+// first the options
+        stream.println("# --- Attack Control Configuration");
+        stream.println();
 
-// Some examples
-
-/*
-        stream.println("#-------- Plugin Configuration");
-        stream.println();
-        stream.println("# Prefer Vault Plugin as permission handler");
-        stream.println("preferVault: " + preferVault);
-        stream.println();
-        stream.println("# Broadcast to all players on the server when MakeMeMod is used");
-        stream.println("broadcastAll: " + broadcastAll);
-        stream.println();
-        stream.println("# Broadcast to specific groups on the server when MakeMeMod is used");
-        stream.println("broadcastGroups: " + broadcastGroups);
-        stream.println();
-        stream.println("# Groups to broadcast to");
-        stream.println("broadcastTargets:");
-
-        for (String groups : broadcastTargets) {
-
-            stream.println("- '" + groups + "'");
-        }
-        stream.println();
-        stream.println("# Make changes to GroupMembership general or world based?");
-        stream.println("# NOTE: You need to have your permissions correctly set up for this,");
-        stream.println("#       or you will see strange results.");
-        stream.println("generalPermChanges: " + generalPermChanges);
-        stream.println();
-        stream.println("#--------- Group Change Commands");
-        stream.println();
-        stream.println("# Customize group change commands in form of");
-        stream.println("# alias: GroupTheyAreIn,GroupTheyShouldBeIn");
-        stream.println("aliasList:");
-        List<String> aliasKeys = new ArrayList<String>(aliasList.keySet());
-        for (String alias : aliasKeys) {
-            stream.println("    " + alias + ": " + aliasList.get(alias));
-        }
-*/
+        stream.println("# Allow the player to attack those tamed beasts (Cheater!) ");
+        stream.println(PLAYER_CAN_ATTACK + ": " + playerCanAttack);
 
 
     }
@@ -249,15 +200,19 @@ afterwards parsable again from the configuration class of bukkit
 
 
     private void setupCommands() {
-        /* adminCommand = new AdminCommand(main);
-        main.registerCommand(adminCommand);*/
+        // registering the additional permissions
+
+        for (ATTACK_CONTROL_PERMISSIONS perm : ATTACK_CONTROL_PERMISSIONS.values()) {
+            main.getServer().getPluginManager().addPermission(perm.asPermission());
+        }
 
 
     }
 
     private void setupListeners() {
-/*        addServerListenerEvents(Type.PLUGIN_ENABLE);
-        addServerListenerEvents(Type.PLUGIN_DISABLE);*/
+        mainConfig.addEntityListeners(Type.ENTITY_TARGET);
+        mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
+
     }
 
 
@@ -266,72 +221,38 @@ afterwards parsable again from the configuration class of bukkit
 
 // The plugin specific getters start here!
 
+
 // ToDO Add your getters and setters for your config variables here.
 
 
-// Some examples..
-
-
-/*
-    public boolean isPreferVault() {
-        return preferVault;
+    public AttackControlLogger getAttackControlLogger() {
+        return attackControlLogger;
     }
 
-    public boolean isBroadcastAll() {
-        return broadcastAll;
+
+    public boolean isPlayerCanAttack() {
+        return playerCanAttack;
     }
 
-    public boolean isBroadcastGroups() {
-        return broadcastGroups;
+    public void setPlayerCanAttack(boolean playerCanAttack) {
+        this.playerCanAttack = playerCanAttack;
     }
 
-    public boolean isGeneralPermChanges() {
-        return generalPermChanges;
+    public static String getMODULE_NAME() {
+        return MODULE_NAME;
     }
 
-    public ArrayList<String> broadcastTargets() {
-        return broadcastTargets;
+
+    public String getConfigFile() {
+        return configFile;
     }
 
-    public Map<String, Object> aliasList() {
-        return aliasList;
+    public String getPluginPath() {
+        return pluginPath;
     }
 
-    public boolean isAlias(String alias) {
-        return aliasList.containsKey(alias);
-    }
 
-    public Boolean isValid(String alias) {
-        return aliasList.containsKey(alias);
-    }
-
-    public String getOldGroup(String alias) {
-        String[] groups = aliasList.get(alias).toString().split(",");
-        String oldGroup = "";
-        if (groups.length < 2) {
-            log.warning("There is no correct configuration for command: " + alias);
-        } else {
-            oldGroup = groups[0];
-        }
-        log.debug("OldGroup", oldGroup);
-        return oldGroup;
-    }
-
-    public String getNewGroup(String alias) {
-        String[] groups = aliasList.get(alias).toString().split(",");
-        String newGroup = "";
-        if (groups.length < 2) {
-            log.warning("There is no correct configuration for command: " + alias);
-        } else {
-            newGroup = groups[1];
-        }
-        log.debug("NewGroup", newGroup);
-        return newGroup;
-    }
-
-*/
-
-// Last change coming up... choosing the right ClassName for the Logger..
+    // Last change coming up... choosing the right ClassName for the Logger..
 
     /**
      * Method to get the Instance of the Class, if the class hasn't been initialized yet it will.
@@ -339,7 +260,7 @@ afterwards parsable again from the configuration class of bukkit
      * @return instance of class
      */
 
-    public LampstoneConfig getInstance() {
+    public static AttackControlConfig getInstance() {
         return instance;
     }
 
@@ -349,7 +270,7 @@ afterwards parsable again from the configuration class of bukkit
 
 // NOTHING TO CHANGE NORMALLY BELOW!!!
 
-// ToDo.... NOTHING.. you are DONE!    
+// ToDo.... NOTHING.. you are DONE!
 
 
 // *******************************************************************************************************************
@@ -359,12 +280,16 @@ afterwards parsable again from the configuration class of bukkit
 // The class stuff first
 
 
-    LampstoneConfig(Plugin plugin, String moduleName) {
+    AttackControlConfig(TheMonkeyPack plugin, String moduleName) {
         super();
         MODULE_NAME = moduleName;
         main = plugin;
-        lampstoneLogger = LampstoneLogger.getInstance(MODULE_NAME);
+        attackControlLogger = new AttackControlLogger(MODULE_NAME);
+        mainConfig = main.getMainConfig();
+        pluginPath = main.getDataFolder() + System.getProperty("file.separator");
+        instance = this;
         setupConfig();
+
     }
 
 
@@ -409,17 +334,23 @@ afterwards parsable again from the configuration class of bukkit
 
 
 // Checking if config file exists, if not create it
-        String pluginPath = main.getDataFolder() + System.getProperty("file.separator");
+
+
         if (!(new File(main.getDataFolder(), configFile)).exists()) {
-            lampstoneLogger.info("Creating default configuration file");
+            attackControlLogger.info("Creating default configuration file");
             defaultConfig();
         }
+
+// adding the default values
+
+        customDefaultConfig();
+
         try {
             config.load(pluginPath + configFile);
         } catch (IOException e) {
-            lampstoneLogger.severe("Can't read the " + configFile + " File!", e);
+            attackControlLogger.severe("Can't read the " + configFile + " File!", e);
         } catch (InvalidConfigurationException e) {
-            lampstoneLogger.severe("Problem with the configuration in " + configFile + "!", e);
+            attackControlLogger.severe("Problem with the configuration in " + configFile + "!", e);
         }
 // Loading the config from file
         loadConfig();
@@ -457,10 +388,13 @@ afterwards parsable again from the configuration class of bukkit
     private void defaultConfig() {
         setupCustomDefaultVariables();
         if (!writeConfig()) {
-            lampstoneLogger.info("Using internal Defaults!");
+            attackControlLogger.severe("Problems writing default config!");
+            attackControlLogger.info("Using internal Defaults!");
+        } else {
+            attackControlLogger.debug("DefaultConfig written");
         }
         config.addDefault("configVer", configVer);
-        customDefaultConfig();
+
     }
 
 
@@ -481,10 +415,10 @@ afterwards parsable again from the configuration class of bukkit
         // Starting to update the standard configuration
         configVer = config.getString("configVer");
         // Debug OutPut NOW!
-        lampstoneLogger.debug("configCurrent", configCurrent);
-        lampstoneLogger.debug("configVer", configVer);
+        attackControlLogger.debug("configCurrent", configCurrent);
+        attackControlLogger.debug("configVer", configVer);
         loadCustomConfig();
-        lampstoneLogger.info("Configuration v." + configVer + " loaded.");
+        attackControlLogger.info("Configuration v." + configVer + " loaded.");
     }
 
 
@@ -500,7 +434,8 @@ afterwards parsable again from the configuration class of bukkit
      * @see #writeCustomConfig(java.io.PrintWriter)
      */
 
-    boolean writeConfig() {
+    public boolean writeConfig() {
+        attackControlLogger.debug("creating config");
         boolean success = false;
         try {
             PrintWriter stream;
@@ -508,9 +443,9 @@ afterwards parsable again from the configuration class of bukkit
             if (folder != null) {
                 folder.mkdirs();
             }
-            String pluginPath = main.getDataFolder() + System.getProperty("file.separator");
-            PluginDescriptionFile pdfFile = this.main.getDescription();
+            PluginDescriptionFile pdfFile = main.getDescription();
             stream = new PrintWriter(pluginPath + configFile);
+            attackControlLogger.debug("starting contents");
 //Let's write our config ;)
             stream.println("# " + pdfFile.getName() + " " + pdfFile.getVersion() + " by " + pdfFile.getAuthors().toString());
             stream.println("#");
@@ -519,9 +454,10 @@ afterwards parsable again from the configuration class of bukkit
             stream.println("# For detailed assistance please visit: " + mainConfig.getPluginSlug());
             stream.println();
             stream.println("# Configuration Version");
-            stream.println("configVer: '" + configVer + "'");
+            stream.println("configVer: \"" + configVer + "\"");
             stream.println();
 // Getting the custom config information from the top of the class
+            attackControlLogger.debug("going for customConfig");
             writeCustomConfig(stream);
 
             stream.println();
@@ -531,9 +467,9 @@ afterwards parsable again from the configuration class of bukkit
             success = true;
 
         } catch (FileNotFoundException e) {
-            lampstoneLogger.warning("Error saving the " + configFile + ".");
+            attackControlLogger.warning("Error saving the " + configFile + ".");
         }
-        lampstoneLogger.debug("DefaultConfig written", success);
+
         return success;
     }
 
@@ -546,12 +482,12 @@ afterwards parsable again from the configuration class of bukkit
      */
     void updateNecessary() {
         if (configVer.equalsIgnoreCase(configCurrent)) {
-            lampstoneLogger.info("Config is up to date");
+            attackControlLogger.info("Config is up to date");
         } else {
-            lampstoneLogger.warning("Config is not up to date!");
-            lampstoneLogger.warning("Config File Version: " + configVer);
-            lampstoneLogger.warning("Internal Config Version: " + configCurrent);
-            lampstoneLogger.warning("It is suggested to update the config.yml!");
+            attackControlLogger.warning("Config is not up to date!");
+            attackControlLogger.warning("Config File Version: " + configVer);
+            attackControlLogger.warning("Internal Config Version: " + configCurrent);
+            attackControlLogger.warning("It is suggested to update the config.yml!");
             configRequiresUpdate = true;
         }
     }
@@ -566,11 +502,11 @@ afterwards parsable again from the configuration class of bukkit
         if (configRequiresUpdate) {
             configVer = configCurrent;
             if (writeConfig()) {
-                lampstoneLogger.info("Configuration was updated with new default values.");
-                lampstoneLogger.info("Please change them to your liking.");
+                attackControlLogger.info("Configuration was updated with new default values.");
+                attackControlLogger.info("Please change them to your liking.");
             } else {
-                lampstoneLogger.warning("Configuration file could not be auto updated.");
-                lampstoneLogger.warning("Please rename " + configFile + " and try again.");
+                attackControlLogger.warning("Configuration file could not be auto updated.");
+                attackControlLogger.warning("Please rename " + configFile + " and try again.");
             }
         }
     }
@@ -584,14 +520,23 @@ afterwards parsable again from the configuration class of bukkit
      */
 
     public String reloadConfig() {
+        configAvailable = false;
+        try {
+            config.load(pluginPath + configFile);
+            configAvailable = true;
+        } catch (IOException e) {
+            attackControlLogger.severe("Can't read the " + configFile + " File!", e);
+        } catch (InvalidConfigurationException e) {
+            attackControlLogger.severe("Problem with the configuration in " + configFile + "!", e);
+        }
         String msg;
         if (configAvailable) {
             loadConfig();
-            lampstoneLogger.info("Config reloaded");
-            msg = "Config was reloaded";
+            attackControlLogger.info("Config reloaded");
+            msg = MODULE_NAME + " Config was reloaded";
         } else {
-            lampstoneLogger.severe("Reloading Config before it exists.");
-            lampstoneLogger.severe("Flog the developer!");
+            attackControlLogger.severe("Reloading Config before it exists.");
+            attackControlLogger.severe("Flog the developer!");
             msg = "Something terrible terrible did go really really wrong, see console log!";
         }
         return msg;
@@ -612,4 +557,7 @@ afterwards parsable again from the configuration class of bukkit
         return saved;
     }
 
+
 }
+
+
