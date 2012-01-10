@@ -72,7 +72,6 @@ public class TCEntityEvent {
 				if (allowDetonate) {
 					event.setRadius(tntControlConfig.getTntBlastRadius());
 					event.setFire(tntControlConfig.isTntBlastCauseFire());
-					tntControlHelper.removeTNTFromDamaged(primedTNTLocation);
 				} else {
 					event.setCancelled(true);
 				}
@@ -86,11 +85,32 @@ public class TCEntityEvent {
 
 		if (!event.isCancelled()) {
 			if (event.getEntity() instanceof TNTPrimed) {
-				event.setYield(tntControlConfig.getTntBlastYield());
+				Location location = event.getEntity().getLocation();
+				int x = location.getBlockX();
+				int y = location.getBlockY();
+				int z = location.getBlockZ();
+				World world = location.getWorld();
+				Location primedTNTLocation = new Location(world, x, y, z);
+				tntControlLogger.debug("Explosion Location", primedTNTLocation);
+				boolean allowDetonate = false;
+				tntControlLogger.debug("TNTAllowRedstonePrime", tntControlConfig.isTntAllowRedstonePrime());
+				tntControlLogger.debug("isTNTDamaged", tntControlHelper.isTNTDamaged(primedTNTLocation));
+				if (tntControlConfig.isTntAllowRedstonePrime()) {
+					allowDetonate = true;
+				}
+				if (tntControlHelper.isTNTDamaged(primedTNTLocation)) {
+					allowDetonate = true;
+				}
+				if (allowDetonate) {
+					event.setYield(tntControlConfig.getTntBlastYield());
+				} else {
+					event.setCancelled(true);
+				}
+				tntControlHelper.removeTNTFromDamaged(primedTNTLocation);
 			}
 		}
+
+
 	}
-
-
 }
 

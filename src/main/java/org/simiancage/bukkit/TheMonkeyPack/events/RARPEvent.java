@@ -5,6 +5,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
@@ -296,6 +298,18 @@ public class RARPEvent {
 					event.setCancelled(true);
 					return;
 				}
+			}
+		}
+	}
+
+	public void rarpEntityDamageEvent(EntityDamageEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (rarpConfig.isDisableTNTCreeperDamage()) {
+			DamageCause damageCause = event.getCause();
+			if (damageCause == DamageCause.BLOCK_EXPLOSION) {
+				event.setCancelled(true);
 			}
 		}
 	}

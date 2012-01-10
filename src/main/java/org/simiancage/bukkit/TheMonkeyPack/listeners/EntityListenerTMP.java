@@ -74,6 +74,11 @@ public class EntityListenerTMP extends EntityListener implements Listeners {
 			acEntityEvent = ACEntityEvent.getInstance(main);
 			acEntityEvent.entityDamageEvent(event);
 		}
+		if (mainConfig.isEnableRARP()) {
+			rarpEvent = RARPEvent.getInstance(main);
+			rarpEvent.rarpEntityDamageEvent(event);
+		}
+
 	}
 
 }

@@ -329,6 +329,7 @@ afterwards parsable again from the configuration class of bukkit
 		mainConfig.addBlockListeners(Type.BLOCK_PLACE);
 		mainConfig.addBlockListeners(Type.BLOCK_PHYSICS);
 		mainConfig.addEntityListeners(Type.ENTITY_EXPLODE);
+		mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
 	}
 
 
