@@ -1,0 +1,41 @@
+# TheMonkeyPack 0.6 by [Don Redhorse]
+#
+# Configuration File for module [RaRP]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# --- Rail and Redstone Protection Configuration
+
+# Disable TNT and Creeper explosion to damage redstone / rails
+disableTNTCreeperDamage: true
+
+# Allow Redstone to be protected
+redstoneProtection: true
+
+# Allow Rails to be protected
+railProtection: true
+# Enable the effect that rails with 1 block water on top of them will disperse that water
+enableRedSeaEffekt: false
+
+
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+# Please change to your liking.
+
+
+# Message displayed when player tries to place redstone without having the permission.
+DontHavePermissionToPlaceRedstone: "You don't have the permission to place redstone!"
+# Message displayed when player tries to place rails without having the permission.
+DontHavePermissionToPlaceRails: "You don't have the permission to place rails!"
+# Message displayed when player tries to break redstone without having the permission.
+DontHavePermissionToBreakRedstone: "You don't have the permission to break redstone!"
+# Message displayed when player tries to break rails without having the permission.
+DontHavePermissionToBreakRails: "You don't have the permission to break rails!"
+
+

@@ -1,5 +1,7 @@
 package org.simiancage.bukkit.TheMonkeyPack.configs;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -7,27 +9,27 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
-import org.simiancage.bukkit.TheMonkeyPack.loging.AttackControlLogger;
+import org.simiancage.bukkit.TheMonkeyPack.loging.RARPLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 /**
  * PluginName: TheMonkeyPack
- * Class: AttackControlConfig
+ * Class: RARPConfig
  * User: DonRedhorse
  * Date: 10.12.11
  * Time: 22:06
  */
 
-public class AttackControlConfig extends Configs {
+public class RARPConfig extends Configs {
 
 
-	public enum ATTACK_CONTROL_PERMISSIONS {
-		AC_ALL, AC_MONSTER, AC_BLAZE, AC_CAVESPIDER, AC_CREEPER, AC_ENDERDRAGON, AC_ENDERMAN, AC_GHAST, AC_GIANT,
-		AC_MAGMACUBE, AC_PIGZOMBIE, AC_SILVERFISH, AC_SKELETON, AC_SLIME, AC_SNOWMAN, AC_SPIDER, AC_WOLF, AC_ZOMBIE;
+	public enum RARP_PERMISSIONS {
+		RARP, RARP_REDSTONE_BREAK, RARP_RAILS_BREAK, RARP_REDSTONE_PLACE, RARP_RAILS_PLACE;
 
 		@Override
 		public String toString() {
@@ -54,13 +56,65 @@ public class AttackControlConfig extends Configs {
 
 	}
 
+	/**
+	 * Messages for translation
+	 */
+	public enum Messages {
+		DONT_HAVE_PERMISSION_TO_PLACE_REDSTONE("You don't have the permission to place redstone!", "Message displayed when player tries to place redstone without having the permission."),
+		DONT_HAVE_PERMISSION_TO_PLACE_RAILS("You don't have the permission to place rails!", "Message displayed when player tries to place rails without having the permission."),
+		DONT_HAVE_PERMISSION_TO_BREAK_REDSTONE("You don't have the permission to break redstone!", "Message displayed when player tries to break redstone without having the permission."),
+		DONT_HAVE_PERMISSION_TO_BREAK_RAILS("You don't have the permission to break rails!", "Message displayed when player tries to break rails without having the permission.");
+
+
+		private String message;
+		private String commentMessage;
+
+		private Messages(String message, String comment) {
+			this.message = message;
+			this.commentMessage = comment;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
+		public String getComment() {
+			return this.commentMessage;
+		}
+
+		@Override
+		public String toString() {
+			String s = toCamelCase(super.toString());
+			return s;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+
+		String toCamelCase(String s) {
+			String[] parts = s.split("_");
+			String camelCaseString = "";
+			for (String part : parts) {
+				camelCaseString = camelCaseString + toProperCase(part);
+			}
+			return camelCaseString;
+		}
+
+		String toProperCase(String s) {
+			return s.substring(0, 1).toUpperCase() +
+					s.substring(1).toLowerCase();
+		}
+
+	}
+
 
 	private static String MODULE_NAME;
 
 	/**
 	 * Instance of the Configuration Class
 	 */
-	private static AttackControlConfig instance = null;
+	private static RARPConfig instance = null;
 
 // Nothing to change from here to ==>>>
 	/**
@@ -76,7 +130,7 @@ public class AttackControlConfig extends Configs {
 	/**
 	 * Configuration File Name
 	 */
-	private static String configFile = "AttackControlConfig.yml";
+	private static String configFile = "RailAndRedstoneProtectionConfig.yml";
 	/**
 	 * Is the configuration available or did we have problems?
 	 */
@@ -92,8 +146,7 @@ public class AttackControlConfig extends Configs {
 // <<<<=== here..
 
 
-	private AttackControlLogger attackControlLogger;
-
+	private RARPLogger rarpLogger;
 
 	// ToDo Change the configCurrent if the config changes!
 	/**
@@ -116,11 +169,21 @@ public class AttackControlConfig extends Configs {
 
 // Default Config Variables start here!
 
-	private boolean playerCanAttack = false;                   // if player can Attack / Kill if he is not targeted
-	private final String PLAYER_CAN_ATTACK = "playerCanAttack";
+	private boolean disableTNTCreeperDamage = true;
+	private final String DISABLE_TNT_CREEPER_DAMAGE = "disableTNTCreeperDamage";
+	private boolean redstoneProtection = true;
+	private final String REDSTONE_PROTECTION = "redstoneProtection";
+	private boolean railProtection = true;
+	private final String RAIL_PROTECTION = "railProtection";
+	private boolean enableRedSeaEffekt = false;
+	private final String ENABLE_RED_SEA_EFFEKT = "enableRedSeaEffekt";
 
-// Internal variables
 
+	// Internal variables
+	// Location and Counter of Rails after Piston Retract
+	private HashMap<Location, Integer> blocksAtLocation = new HashMap<Location, Integer>();
+	// Location and Type of Rails after Piston Rectract
+	private HashMap<Location, Material> reAddRailsAtLocation = new HashMap<Location, Material>();
 
 // *******************************************************************************************************************
 
@@ -150,10 +213,16 @@ afterwards parsable again from the configuration class of bukkit
 	 */
 
 	void customDefaultConfig() {
+		config.addDefault(DISABLE_TNT_CREEPER_DAMAGE, disableTNTCreeperDamage);
+		config.addDefault(REDSTONE_PROTECTION, redstoneProtection);
+		config.addDefault(RAIL_PROTECTION, railProtection);
+		config.addDefault(ENABLE_RED_SEA_EFFEKT, enableRedSeaEffekt);
 
-		config.addDefault(PLAYER_CAN_ATTACK, playerCanAttack);
+		// now adding messages
 
-
+		for (Messages node : Messages.values()) {
+			config.addDefault(node.toString(), node.getMessage());
+		}
 	}
 
 
@@ -165,11 +234,21 @@ afterwards parsable again from the configuration class of bukkit
 
 	void loadCustomConfig() {
 
+		// now loading messages
 
-		playerCanAttack = config.getBoolean(PLAYER_CAN_ATTACK);
-		if (playerCanAttack) {
-			attackControlLogger.info("an angel cried!");
+		for (Messages node : Messages.values()) {
+			if (config.contains(node.toString())) {
+				node.setMessage(config.getString(node.toString()));
+				rarpLogger.debug(node + ": " + getMessage(node));
+			} else {
+				rarpLogger.warning(node + " doesn't exist in " + configFile);
+				rarpLogger.warning("Using internal defaults!");
+			}
 		}
+		disableTNTCreeperDamage = config.getBoolean(DISABLE_TNT_CREEPER_DAMAGE);
+		redstoneProtection = config.getBoolean(REDSTONE_PROTECTION);
+		railProtection = config.getBoolean(RAIL_PROTECTION);
+		enableRedSeaEffekt = config.getBoolean(ENABLE_RED_SEA_EFFEKT);
 	}
 
 // And than we write it....
@@ -187,12 +266,42 @@ afterwards parsable again from the configuration class of bukkit
 		stream.println("#-------- Module Configuration");
 		stream.println();
 // first the options
-		stream.println("# --- Attack Control Configuration");
+		stream.println("# --- Rail and Redstone Protection Configuration");
 		stream.println();
 
-		stream.println("# Allow the player to attack those tamed beasts (Cheater!) ");
-		stream.println(PLAYER_CAN_ATTACK + ": " + playerCanAttack);
+		stream.println("# Disable TNT and Creeper explosion to damage redstone / rails");
+		stream.println(DISABLE_TNT_CREEPER_DAMAGE + ": " + disableTNTCreeperDamage);
+		stream.println();
+		stream.println("# Allow Redstone to be protected");
+		stream.println(REDSTONE_PROTECTION + ": " + redstoneProtection);
+		stream.println();
 
+		stream.println("# Allow Rails to be protected");
+		stream.println(RAIL_PROTECTION + ": " + railProtection);
+
+		stream.println("# Enable the effect that rails with 1 block water on top of them will disperse that water");
+		stream.println(ENABLE_RED_SEA_EFFEKT + ": " + enableRedSeaEffekt);
+
+		stream.println();
+		stream.println();
+		stream.println("# --- Translation Features");
+		stream.println();
+		stream.println("# Almost everything player visible can be translated!");
+		stream.println("# Please change to your liking.");
+
+
+		stream.println();
+
+
+// than the messages
+
+		stream.println();
+
+		for (Messages node : Messages.values()) {
+			stream.println("# " + node.getComment());
+			stream.println(node + ": \"" + node.getMessage() + "\"");
+		}
+		stream.println();
 
 	}
 
@@ -205,7 +314,7 @@ afterwards parsable again from the configuration class of bukkit
 	private void setupCommands() {
 		// registering the additional permissions
 
-		for (ATTACK_CONTROL_PERMISSIONS perm : ATTACK_CONTROL_PERMISSIONS.values()) {
+		for (RARP_PERMISSIONS perm : RARP_PERMISSIONS.values()) {
 			main.getServer().getPluginManager().addPermission(perm.asPermission());
 		}
 
@@ -213,9 +322,13 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		mainConfig.addEntityListeners(Type.ENTITY_TARGET);
-		mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
-
+		mainConfig.addBlockListeners(Type.BLOCK_PISTON_EXTEND);
+		mainConfig.addBlockListeners(Type.BLOCK_PISTON_RETRACT);
+		mainConfig.addBlockListeners(Type.BLOCK_FROMTO);
+		mainConfig.addBlockListeners(Type.BLOCK_BREAK);
+		mainConfig.addBlockListeners(Type.BLOCK_PLACE);
+		mainConfig.addBlockListeners(Type.BLOCK_PHYSICS);
+		mainConfig.addEntityListeners(Type.ENTITY_EXPLODE);
 	}
 
 
@@ -228,18 +341,86 @@ afterwards parsable again from the configuration class of bukkit
 // ToDO Add your getters and setters for your config variables here.
 
 
-	public AttackControlLogger getAttackControlLogger() {
-		return attackControlLogger;
+	public boolean isDisableTNTCreeperDamage() {
+		return disableTNTCreeperDamage;
+	}
+
+	public void setDisableTNTCreeperDamage(boolean disableTNTCreeperDamage) {
+		this.disableTNTCreeperDamage = disableTNTCreeperDamage;
+	}
+
+	/**
+	 * Methode to return the content of the MessagesNode
+	 *
+	 * @param node
+	 *
+	 * @return
+	 */
+	public String getMessage(Messages node) {
+		return node.getMessage();
+	}
+
+	public HashMap<Location, Material> getReAddRailsAtLocation() {
+		return reAddRailsAtLocation;
+	}
+
+	public void addRailToReAdd(Location location, Material railType) {
+		reAddRailsAtLocation.put(location, railType);
+	}
+
+	public void removeRailFromReAdd(Location location) {
+		reAddRailsAtLocation.remove(location);
+	}
+
+	public int getBlocksAtLocation(Location location) {
+		return blocksAtLocation.get(location);
+	}
+
+	public void removeOneBlockAtLocation(Location location) {
+		blocksAtLocation.put(location, blocksAtLocation.get(location) - 1);
+	}
+
+	public void removeBlockAtLocation(Location location) {
+		blocksAtLocation.remove(location);
+	}
+
+	public void initBlockAtLocation(Location location) {
+		blocksAtLocation.put(location, 6);
 	}
 
 
-	public boolean isPlayerCanAttack() {
-		return playerCanAttack;
+	public boolean isEnableRedSeaEffekt() {
+		return enableRedSeaEffekt;
 	}
 
-	public void setPlayerCanAttack(boolean playerCanAttack) {
-		this.playerCanAttack = playerCanAttack;
+	public void setEnableRedSeaEffekt(boolean enableRedSeaEffekt) {
+		this.enableRedSeaEffekt = enableRedSeaEffekt;
 	}
+
+	public boolean isRailProtection() {
+		return railProtection;
+	}
+
+	public void setRailProtection(boolean railProtection) {
+		this.railProtection = railProtection;
+	}
+
+	public boolean isRedstoneProtection() {
+		return redstoneProtection;
+	}
+
+	public void setRedstoneProtection(boolean redstoneProtection) {
+		this.redstoneProtection = redstoneProtection;
+	}
+
+	public RARPLogger getRarpLogger() {
+		return rarpLogger;
+	}
+
+	public void setRarpLogger(RARPLogger rarpLogger) {
+		this.rarpLogger = rarpLogger;
+	}
+
 
 	public static String getMODULE_NAME() {
 		return MODULE_NAME;
@@ -263,7 +444,7 @@ afterwards parsable again from the configuration class of bukkit
 	 * @return instance of class
 	 */
 
-	public static AttackControlConfig getInstance() {
+	public static RARPConfig getInstance() {
 		return instance;
 	}
 
@@ -283,11 +464,11 @@ afterwards parsable again from the configuration class of bukkit
 // The class stuff first
 
 
-	AttackControlConfig(TheMonkeyPack plugin, String moduleName) {
+	RARPConfig(TheMonkeyPack plugin, String moduleName) {
 		super();
 		MODULE_NAME = moduleName;
 		main = plugin;
-		attackControlLogger = new AttackControlLogger(MODULE_NAME);
+		rarpLogger = new RARPLogger(MODULE_NAME);
 		mainConfig = main.getMainConfig();
 		pluginPath = main.getDataFolder() + System.getProperty("file.separator");
 		instance = this;
@@ -340,7 +521,7 @@ afterwards parsable again from the configuration class of bukkit
 
 
 		if (!(new File(main.getDataFolder(), configFile)).exists()) {
-			attackControlLogger.info("Creating default configuration file");
+			rarpLogger.info("Creating default configuration file");
 			defaultConfig();
 		}
 
@@ -351,9 +532,9 @@ afterwards parsable again from the configuration class of bukkit
 		try {
 			config.load(pluginPath + configFile);
 		} catch (IOException e) {
-			attackControlLogger.severe("Can't read the " + configFile + " File!", e);
+			rarpLogger.severe("Can't read the " + configFile + " File!", e);
 		} catch (InvalidConfigurationException e) {
-			attackControlLogger.severe("Problem with the configuration in " + configFile + "!", e);
+			rarpLogger.severe("Problem with the configuration in " + configFile + "!", e);
 		}
 // Loading the config from file
 		loadConfig();
@@ -391,10 +572,10 @@ afterwards parsable again from the configuration class of bukkit
 	private void defaultConfig() {
 		setupCustomDefaultVariables();
 		if (!writeConfig()) {
-			attackControlLogger.severe("Problems writing default config!");
-			attackControlLogger.info("Using internal Defaults!");
+			rarpLogger.severe("Problems writing default config!");
+			rarpLogger.info("Using internal Defaults!");
 		} else {
-			attackControlLogger.debug("DefaultConfig written");
+			rarpLogger.debug("DefaultConfig written");
 		}
 		config.addDefault("configVer", configVer);
 
@@ -418,10 +599,10 @@ afterwards parsable again from the configuration class of bukkit
 		// Starting to update the standard configuration
 		configVer = config.getString("configVer");
 		// Debug OutPut NOW!
-		attackControlLogger.debug("configCurrent", configCurrent);
-		attackControlLogger.debug("configVer", configVer);
+		rarpLogger.debug("configCurrent", configCurrent);
+		rarpLogger.debug("configVer", configVer);
 		loadCustomConfig();
-		attackControlLogger.info("Configuration v." + configVer + " loaded.");
+		rarpLogger.info("Configuration v." + configVer + " loaded.");
 	}
 
 
@@ -438,7 +619,7 @@ afterwards parsable again from the configuration class of bukkit
 	 */
 
 	public boolean writeConfig() {
-		attackControlLogger.debug("creating config");
+		rarpLogger.debug("creating config");
 		boolean success = false;
 		try {
 			PrintWriter stream;
@@ -448,7 +629,7 @@ afterwards parsable again from the configuration class of bukkit
 			}
 			PluginDescriptionFile pdfFile = main.getDescription();
 			stream = new PrintWriter(pluginPath + configFile);
-			attackControlLogger.debug("starting contents");
+			rarpLogger.debug("starting contents");
 //Let's write our config ;)
 			stream.println("# " + pdfFile.getName() + " " + pdfFile.getVersion() + " by " + pdfFile.getAuthors().toString());
 			stream.println("#");
@@ -460,7 +641,7 @@ afterwards parsable again from the configuration class of bukkit
 			stream.println("configVer: \"" + configVer + "\"");
 			stream.println();
 // Getting the custom config information from the top of the class
-			attackControlLogger.debug("going for customConfig");
+			rarpLogger.debug("going for customConfig");
 			writeCustomConfig(stream);
 
 			stream.println();
@@ -470,7 +651,7 @@ afterwards parsable again from the configuration class of bukkit
 			success = true;
 
 		} catch (FileNotFoundException e) {
-			attackControlLogger.warning("Error saving the " + configFile + ".");
+			rarpLogger.warning("Error saving the " + configFile + ".");
 		}
 
 		return success;
@@ -485,12 +666,12 @@ afterwards parsable again from the configuration class of bukkit
 	 */
 	void updateNecessary() {
 		if (configVer.equalsIgnoreCase(configCurrent)) {
-			attackControlLogger.info("Config is up to date");
+			rarpLogger.info("Config is up to date");
 		} else {
-			attackControlLogger.warning("Config is not up to date!");
-			attackControlLogger.warning("Config File Version: " + configVer);
-			attackControlLogger.warning("Internal Config Version: " + configCurrent);
-			attackControlLogger.warning("It is suggested to update the config.yml!");
+			rarpLogger.warning("Config is not up to date!");
+			rarpLogger.warning("Config File Version: " + configVer);
+			rarpLogger.warning("Internal Config Version: " + configCurrent);
+			rarpLogger.warning("It is suggested to update the config.yml!");
 			configRequiresUpdate = true;
 		}
 	}
@@ -505,11 +686,11 @@ afterwards parsable again from the configuration class of bukkit
 		if (configRequiresUpdate) {
 			configVer = configCurrent;
 			if (writeConfig()) {
-				attackControlLogger.info("Configuration was updated with new default values.");
-				attackControlLogger.info("Please change them to your liking.");
+				rarpLogger.info("Configuration was updated with new default values.");
+				rarpLogger.info("Please change them to your liking.");
 			} else {
-				attackControlLogger.warning("Configuration file could not be auto updated.");
-				attackControlLogger.warning("Please rename " + configFile + " and try again.");
+				rarpLogger.warning("Configuration file could not be auto updated.");
+				rarpLogger.warning("Please rename " + configFile + " and try again.");
 			}
 		}
 	}
@@ -528,18 +709,18 @@ afterwards parsable again from the configuration class of bukkit
 			config.load(pluginPath + configFile);
 			configAvailable = true;
 		} catch (IOException e) {
-			attackControlLogger.severe("Can't read the " + configFile + " File!", e);
+			rarpLogger.severe("Can't read the " + configFile + " File!", e);
 		} catch (InvalidConfigurationException e) {
-			attackControlLogger.severe("Problem with the configuration in " + configFile + "!", e);
+			rarpLogger.severe("Problem with the configuration in " + configFile + "!", e);
 		}
 		String msg;
 		if (configAvailable) {
 			loadConfig();
-			attackControlLogger.info("Config reloaded");
+			rarpLogger.info("Config reloaded");
 			msg = MODULE_NAME + " Config was reloaded";
 		} else {
-			attackControlLogger.severe("Reloading Config before it exists.");
-			attackControlLogger.severe("Flog the developer!");
+			rarpLogger.severe("Reloading Config before it exists.");
+			rarpLogger.severe("Flog the developer!");
 			msg = "Something terrible terrible did go really really wrong, see console log!";
 		}
 		return msg;

@@ -65,7 +65,7 @@ example: 'An example for the command is '
 #-------- Module [AFK Handler] --------
 
 # Kick, Announce, GOD mode when AFK
-enableAfkHandler: false
+enableRARP: false
 
 #-------- Module [HelloWorld] --------
 
