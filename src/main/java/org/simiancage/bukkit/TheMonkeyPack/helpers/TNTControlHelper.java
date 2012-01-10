@@ -1,5 +1,6 @@
 package org.simiancage.bukkit.TheMonkeyPack.helpers;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
@@ -21,39 +22,40 @@ import java.util.List;
 
 public class TNTControlHelper {
 
-    protected TheMonkeyPack main;
-    private MainConfig mainConfig;
-    protected MainLogger mainLogger;
-    protected TNTControlConfig tntControlConfig;
-    protected TNTControlLogger tntControlLogger;
-    protected TNTControlHelper tntControlHelper;
-    static TNTControlHelper instance;
-    private List<String> playerIsReclaiming = new ArrayList<String>();
+	protected TheMonkeyPack main;
+	private MainConfig mainConfig;
+	protected MainLogger mainLogger;
+	protected TNTControlConfig tntControlConfig;
+	protected TNTControlLogger tntControlLogger;
+	protected TNTControlHelper tntControlHelper;
+	static TNTControlHelper instance;
+	private List<String> playerIsReclaiming = new ArrayList<String>();
+	private List<Location> tntIsDamaged = new ArrayList<Location>();
 
 
-    private TNTControlHelper(TheMonkeyPack plugin) {
-        main = plugin;
-        mainLogger = main.getMainLogger();
-        mainConfig = main.getMainConfig();
-        tntControlConfig = TNTControlConfig.getInstance();
-        tntControlLogger = tntControlConfig.getTNTControlLogger();
+	private TNTControlHelper(TheMonkeyPack plugin) {
+		main = plugin;
+		mainLogger = main.getMainLogger();
+		mainConfig = main.getMainConfig();
+		tntControlConfig = TNTControlConfig.getInstance();
+		tntControlLogger = tntControlConfig.getTNTControlLogger();
 
-    }
+	}
 
-    public static TNTControlHelper getInstance(TheMonkeyPack plugin) {
-        if (instance == null) {
-            instance = new TNTControlHelper(plugin);
-        }
-        return instance;
-    }
+	public static TNTControlHelper getInstance(TheMonkeyPack plugin) {
+		if (instance == null) {
+			instance = new TNTControlHelper(plugin);
+		}
+		return instance;
+	}
 
 
-    public void onDisable() {
+	public void onDisable() {
 
-    }
+	}
 
-    public void onEnable() {
-    }
+	public void onEnable() {
+	}
 
 
 // Methods
@@ -61,21 +63,35 @@ public class TNTControlHelper {
 
 // Getters & Setters
 
-    public boolean isOnReclaim(Player player) {
-        boolean isOnReclaim = false;
-        if (playerIsReclaiming.contains(player.getName())) {
-            isOnReclaim = true;
-        }
-        return isOnReclaim;
-    }
+	public boolean isOnReclaim(Player player) {
+		boolean isOnReclaim = false;
+		if (playerIsReclaiming.contains(player.getName())) {
+			isOnReclaim = true;
+		}
+		return isOnReclaim;
+	}
 
-    public void removePlayerFromReclaim(Player player) {
-        playerIsReclaiming.remove(player.getName());
-    }
+	public void removePlayerFromReclaim(Player player) {
+		playerIsReclaiming.remove(player.getName());
+	}
 
-    public void addPlayerToReclaim(Player player) {
-        playerIsReclaiming.add(player.getName());
-    }
+	public void addPlayerToReclaim(Player player) {
+		playerIsReclaiming.add(player.getName());
+	}
 
+	public boolean isTNTDamaged(Location location) {
+		if (tntIsDamaged.contains(location)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void removeTNTFromDamaged(Location location) {
+		tntIsDamaged.remove(location);
+	}
+
+	public void addTNTToDamaged(Location location) {
+		tntIsDamaged.add(location);
+	}
 }
 

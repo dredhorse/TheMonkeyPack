@@ -271,7 +271,7 @@ public class RARPEvent {
 	}
 
 	private boolean checkRedStoneType(Material checkBlockType) {
-		if (checkBlockType == Material.REDSTONE_WIRE || checkBlockType == Material.REDSTONE_TORCH_OFF || checkBlockType == Material.REDSTONE_TORCH_OFF) {
+		if (checkBlockType == Material.REDSTONE_WIRE || checkBlockType == Material.REDSTONE_TORCH_OFF || checkBlockType == Material.REDSTONE_TORCH_ON) {
 			return true;
 		}
 		return false;
