@@ -43,6 +43,7 @@ public class TheMonkeyPack extends JavaPlugin {
 	private AutoStopServerConfig autoStopServerConfig;
 	private AttackControlConfig attackControlConfig;
 	private RARPConfig rarpConfig;
+	private CreativeSwitchConfig creativeSwitchConfig;
 
 	private Economy economy = null;
 	HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
@@ -110,20 +111,20 @@ public class TheMonkeyPack extends JavaPlugin {
 			rarpConfig = RARPConfig.getInstance();
 		}
 
+		if (mainConfig.isEnableCreativeSwitch()) {
+			creativeSwitchConfig = CreativeSwitchConfig.getInstance();
+			creativeSwitchConfig.getCreativeSwitchHelper().onEnable();
+		}
+
 		// ToDo add more configs for other Modules on Top
 
-		// Enable Metrics from https://github.com/Hidendra/metrics.griefcraft.com/tree/master/Bukkit
+		enableMetrics();
 
-		try {
-			MetricsHelper metrics = new MetricsHelper();
-			metrics.beginMeasuringPlugin(this);
-		} catch (IOException e) {
-			mainLogger.severe("Couldn't submit plugin stats.");
-		}
 
 		mainLogger.enableMsg();
 
 	}
+
 
 	public void onDisable() {
 		if (mainConfig.isEnableKits()) {
@@ -139,6 +140,10 @@ public class TheMonkeyPack extends JavaPlugin {
 
 		if (mainConfig.isEnableAutoStopServer()) {
 			autoStopServerConfig.getAutoStopServerHelper().onDisable();
+		}
+
+		if (mainConfig.isEnableCreativeSwitch()) {
+			creativeSwitchConfig.getCreativeSwitchHelper().onDisable();
 		}
 
 
@@ -157,6 +162,152 @@ public class TheMonkeyPack extends JavaPlugin {
 		registeredPlayerCommands.clear();
 		economy = null;
 		economyEnabled = false;
+	}
+
+
+	private void enableMetrics() {
+		// Enable Metrics from https://github.com/Hidendra/metrics.griefcraft.com/tree/master/Bukkit
+
+		try {
+			MetricsHelper metrics = new MetricsHelper();
+
+			// adding plotter AttackControl
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "AttackControl";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableAttackControl()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter AutoStopServer
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "AutoStopServer";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableAutoStopServer()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter CreativeSwitch
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "CreativeSwitch";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableCreativeSwitch()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter GetPayed
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "GetPayed";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableGetPayed()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter Kit
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "Kit";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableKits()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter RARP
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "RARP";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableRARP()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			// adding plotter TNTControl
+			metrics.addCustomData(instance, new MetricsHelper.Plotter() {
+				@Override
+				public String getColumnName() {
+					return "TNTControl";
+				}
+
+				@Override
+				public int getValue() {
+					int enabled = 0;
+
+					if (mainConfig.isEnableTNTControl()) {
+						enabled = 1;
+					}
+
+					return enabled;
+				}
+			});
+
+			metrics.beginMeasuringPlugin(this);
+		} catch (IOException e) {
+			mainLogger.severe("Couldn't submit plugin stats.");
+		}
 	}
 
 	public void registerCommand(String command, Commands commands) {

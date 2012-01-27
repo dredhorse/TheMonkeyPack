@@ -1,0 +1,26 @@
+# TheMonkeyPack 0.9 by [Don Redhorse]
+#
+# Configuration File for module [CreativeSwitch]
+#
+# For detailed assistance please visit: http://dev.bukkit.org/server-mods/monkey-pack/
+
+# Configuration Version
+configVer: "1.0"
+
+#-------- Module Configuration
+
+# --- Creative Switch Configuration
+
+# Amount of time in seconds we check if player changed permissions
+checkIntervall: 10
+# --- Translation Features
+
+# Almost everything player visible can be translated!
+
+
+# Message displayed to tell player that he is in creative mode.
+CreativeModeMessage: "You are now in creative mode"
+# Message displayed to tell player that he is in survival mode.
+SurvialModeMessage: "You are now in survival mode"
+
+

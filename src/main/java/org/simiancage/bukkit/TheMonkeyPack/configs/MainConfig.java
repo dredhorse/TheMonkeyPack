@@ -138,11 +138,11 @@ public class MainConfig {
 	/**
 	 * This is the internal config version
 	 */
-	private final String configCurrent = "0.5";
+	private final String configCurrent = "0.6";
 	/**
 	 * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
 	 */
-	private String configVer = "0.5";
+	private String configVer = configCurrent;
 
 
 // and now the real stuff
@@ -195,6 +195,11 @@ public class MainConfig {
 	private boolean enableAutoStopServer = false;
 	public static AutoStopServerConfig autoStopServerConfig;
 
+	private final String ENABLE_CREATIVE_SWITCH = "enableCreativeSwitch";
+	private final String MODULE_NAME_CREATIVE_SWITCH = "CreativeSwitch";
+	private boolean enableCreativeSwitch = false;
+	public static CreativeSwitchConfig creativeSwitchConfig;
+
 
 // Admin Permissions
 
@@ -235,6 +240,7 @@ afterwards parsable again from the configuration class of bukkit
 		config.addDefault(ENABLE_TNT_CONTROL, enableTNTControl);
 		config.addDefault(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
 		config.addDefault(ENABLE_RARP, enableRARP);
+		config.addDefault(ENABLE_CREATIVE_SWITCH, enableCreativeSwitch);
 
 		config.addDefault("permDenied", PERM_DENIED);
 		config.addDefault("wrongSyntax", WRONG_SYNTAX);
@@ -260,6 +266,7 @@ afterwards parsable again from the configuration class of bukkit
 		enableGetPayed = config.getBoolean(ENABLE_GETPAYED);
 		enableTNTControl = config.getBoolean(ENABLE_TNT_CONTROL);
 		enableAutoStopServer = config.getBoolean(ENABLE_AUTO_STOP_SERVER);
+		enableCreativeSwitch = config.getBoolean(ENABLE_CREATIVE_SWITCH);
 
 
 		PERM_DENIED = config.getString("permDenied");
@@ -277,6 +284,7 @@ afterwards parsable again from the configuration class of bukkit
 		log.debug(ENABLE_KITS, enableKits);
 		log.debug(ENABLE_TNT_CONTROL, enableTNTControl);
 		log.debug(ENABLE_AUTO_STOP_SERVER, enableAutoStopServer);
+		log.debug(ENABLE_CREATIVE_SWITCH, enableCreativeSwitch);
 		log.debug("permDenied", PERM_DENIED);
 		log.debug("wrongSyntax", WRONG_SYNTAX);
 		log.debug("allowsYouTo", ALLOWS_YOU_TO);
@@ -359,6 +367,11 @@ afterwards parsable again from the configuration class of bukkit
 		stream.println();
 		stream.println("# Automatically stop the server, use the rightkind of script to start it again.");
 		stream.println(ENABLE_AUTO_STOP_SERVER + ": " + enableAutoStopServer);
+		stream.println();
+		stream.println("#-------- Module [" + MODULE_NAME_CREATIVE_SWITCH + "] --------");
+		stream.println();
+		stream.println("# Automatically put players into creative mode based on permissions.");
+		stream.println(ENABLE_CREATIVE_SWITCH + ": " + enableCreativeSwitch);
 
 
 	}
@@ -393,6 +406,10 @@ afterwards parsable again from the configuration class of bukkit
 			rarpConfig = new RARPConfig(main, MODULE_NAME_RARP);
 		}
 
+		if (enableCreativeSwitch) {
+			creativeSwitchConfig = new CreativeSwitchConfig(main, MODULE_NAME_CREATIVE_SWITCH);
+		}
+
 		// ToDo after enabling the module make it available
 
 	}
@@ -405,6 +422,10 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
+
+	public boolean isEnableCreativeSwitch() {
+		return enableCreativeSwitch;
+	}
 
 	public static RARPConfig getRarpConfig() {
 		return rarpConfig;

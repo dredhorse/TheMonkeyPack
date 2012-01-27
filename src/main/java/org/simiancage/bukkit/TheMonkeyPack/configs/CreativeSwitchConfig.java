@@ -2,37 +2,61 @@ package org.simiancage.bukkit.TheMonkeyPack.configs;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Type;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
-import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
-import org.simiancage.bukkit.TheMonkeyPack.commands.MemoryCommand;
-import org.simiancage.bukkit.TheMonkeyPack.helpers.AutoStopServerHelper;
-import org.simiancage.bukkit.TheMonkeyPack.loging.AutoStopServerLogger;
+import org.simiancage.bukkit.TheMonkeyPack.helpers.CreativeSwitchHelper;
+import org.simiancage.bukkit.TheMonkeyPack.loging.CreativeSwitchLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * PluginName: TheMonkeyPack
- * Class: AutoStopServerConfig
+ * Class: CreativeSwitchConfig
  * User: DonRedhorse
  * Date: 10.12.11
  * Time: 22:06
  */
 
-public class AutoStopServerConfig extends Configs {
+public class CreativeSwitchConfig extends Configs {
 
 
-	/**
-	 * Messages for translation
-	 */
+	public enum CREATIVE_SWITCH_PERMISSIONS {
+		CS;
+
+		@Override
+		public String toString() {
+			String s = toPermission(super.toString());
+			s = "tmp." + s;
+			return s;
+		}
+
+		String toPermission(String s) {
+			s = s.replace("_", ".");
+			s = s.toLowerCase();
+			return s;
+		}
+
+		public Permission asPermission() {
+			Permission permission = new Permission("tmp." + toPermission(super.toString()));
+			return permission;
+		}
+
+		public boolean hasPermission(Player player) {
+			return main.hasPermission(player, toPermission("tmp." + super.toString()));
+
+		}
+
+	}
+
 	public enum Messages {
-		WARNING_MESSAGE("Server will be stopped in %m minutes", "Warning Message displayed to announce server stop."),
-		STOP_MESSAGE("Server is going down. Be back soon!", "Message displayed when the server goes down.");
+		CREATIVE_MODE_MESSAGE("You are now in creative mode", "Message displayed to tell player that he is in creative mode."),
+		SURVIAL_MODE_MESSAGE("You are now in survival mode", "Message displayed to tell player that he is in survival mode.");
 
 
 		private String message;
@@ -77,65 +101,24 @@ public class AutoStopServerConfig extends Configs {
 
 	}
 
-	public enum MEMORY_COMMAND {
-		MEMORY_CMD("memory", "The alias command for /tmpmemory WITHOUT the / !!!"),
-		MEMORY_CMD_DESCRIPTION("Shows the Java Runtime memory usage", "The command description."),
-		MEMORY_CMD_PERMISSION_DESCRIPTION("allows access to the memory command", "The command permissions description."),
-		MEMORY_HELP_OPTION("help", "The alias for the help option"),
-		MEMORY_HELP_MESSAGE("displays this help", "The help message displayed.");
-
-		private String content;
-		private String commentMessage;
-
-		private MEMORY_COMMAND(String content, String comment) {
-			this.content = content;
-			this.commentMessage = comment;
-		}
-
-		public String getContent() {
-			return this.content;
-		}
-
-		public String getComment() {
-			return this.commentMessage;
-		}
-
-		public void setContent(String content) {
-			this.content = content;
-		}
-
-		@Override
-		public String toString() {
-			String s = toCamelCase(super.toString());
-			return s;
-		}
-
-		String toCamelCase(String s) {
-			String[] parts = s.split("_");
-			String camelCaseString = "";
-			for (String part : parts) {
-				camelCaseString = camelCaseString + toProperCase(part);
-			}
-			return camelCaseString;
-		}
-
-		String toProperCase(String s) {
-			return s.substring(0, 1).toUpperCase() +
-					s.substring(1).toLowerCase();
-		}
-
-	}
-
 
 	private static String MODULE_NAME;
 
 	/**
 	 * Instance of the Configuration Class
 	 */
-	private static AutoStopServerConfig instance = null;
+	private static CreativeSwitchConfig instance = null;
 
 	/**
+	 * Instance of the CreativeSwitch Helper
+	 */
+	private static CreativeSwitchHelper creativeSwitchHelper;
+
+// Nothing to change from here to ==>>>
+	/**
 	 * Object to handle the configuration
+	 *
+	 * @see org.bukkit.configuration.file.FileConfiguration
 	 */
 	private YamlConfiguration config = new YamlConfiguration();
 	/**
@@ -145,7 +128,7 @@ public class AutoStopServerConfig extends Configs {
 	/**
 	 * Configuration File Name
 	 */
-	private static String configFile = "AutoStopServerConfig.yml";
+	private static String configFile = "CreativeSwitchConfig.yml";
 	/**
 	 * Is the configuration available or did we have problems?
 	 */
@@ -157,14 +140,14 @@ public class AutoStopServerConfig extends Configs {
 	private boolean configRequiresUpdate = false;
 
 	private String pluginPath;
-	private Commands MemoryCommand;
-
 
 // <<<<=== here..
 
+	private int checkIntervall = 10;
+	private String CHECK_INTERFALL = "checkIntervall";
 
-	private AutoStopServerLogger autoStopServerLogger;
-	private AutoStopServerHelper autoStopServerHelper;
+
+	private CreativeSwitchLogger creativeSwitchLogger;
 
 
 	// ToDo Change the configCurrent if the config changes!
@@ -184,27 +167,6 @@ public class AutoStopServerConfig extends Configs {
 // ********************************************************************************************************************
 
 	// the internal command names
-
-	private final String CMD_MEMORY_COMMAND = "tmpmemory";
-
-
-	// permission for displaying java memory usage messages
-	private final String PERM_MEMORY_COMMAND = "tmp.ass.memory";
-
-
-// Default Config Variables start here!
-
-	private boolean enableAutoStop = true;
-	private final String ENABLE_AUTO_STOP = "enableAutoStop";
-	private double autoStopInterval = 4.0;
-	private final String AUTO_STOP_INTERVAL = "autoStopInterval";
-	private List<Double> warningTimes = new ArrayList<Double>() {{
-		add(10.0);
-		add(5.0);
-		add(2.0);
-		add(1.0);
-	}};
-	private final String WARNING_TIMES = "warningTimes";
 
 
 // Internal variables
@@ -239,22 +201,11 @@ afterwards parsable again from the configuration class of bukkit
 
 	void customDefaultConfig() {
 
-		config.addDefault(ENABLE_AUTO_STOP, enableAutoStop);
-		config.addDefault(AUTO_STOP_INTERVAL, autoStopInterval);
-		config.addDefault(WARNING_TIMES, warningTimes);
-
-		// now adding MEMORY_COMMAND
-
-		for (MEMORY_COMMAND node : MEMORY_COMMAND.values()) {
-			config.addDefault(node.toString(), node.getContent());
-		}
-
-		// now adding messages
+		config.addDefault(CHECK_INTERFALL, checkIntervall);
 
 		for (Messages node : Messages.values()) {
 			config.addDefault(node.toString(), node.getMessage());
 		}
-
 
 	}
 
@@ -267,42 +218,20 @@ afterwards parsable again from the configuration class of bukkit
 
 	void loadCustomConfig() {
 
-
-		enableAutoStop = config.getBoolean(ENABLE_AUTO_STOP);
-		autoStopInterval = config.getDouble(AUTO_STOP_INTERVAL);
-		warningTimes = config.getList(WARNING_TIMES);
-
-
-		// now loading TNT_COMMAND
-
-		for (MEMORY_COMMAND node : MEMORY_COMMAND.values()) {
-			if (config.contains(node.toString())) {
-				node.setContent(config.getString(node.toString()));
-				autoStopServerLogger.debug(node + ": " + node.getContent());
-			} else {
-				autoStopServerLogger.warning(node + " doesn't exist in " + configFile);
-				autoStopServerLogger.warning("Using internal defaults!");
-			}
-		}
-
-
-		// now loading messages
-
+		checkIntervall = config.getInt(CHECK_INTERFALL);
 		for (Messages node : Messages.values()) {
 			if (config.contains(node.toString())) {
 				node.setMessage(config.getString(node.toString()));
-				autoStopServerLogger.debug(node + ": " + getMessage(node));
+				creativeSwitchLogger.debug(node + ": " + getMessage(node));
 			} else {
-				autoStopServerLogger.warning(node + " doesn't exist in " + configFile);
-				autoStopServerLogger.warning("Using internal defaults!");
+				creativeSwitchLogger.warning(node + " doesn't exist in " + configFile);
+				creativeSwitchLogger.warning("Using internal defaults!");
 			}
 		}
 
-
-	}
-
 // And than we write it....
 
+	}
 
 	/**
 	 * Method to write the custom config variables into the config file
@@ -316,21 +245,15 @@ afterwards parsable again from the configuration class of bukkit
 		stream.println("#-------- Module Configuration");
 		stream.println();
 // first the options
-		stream.println("# --- AutoStop Configuration");
+		stream.println("# --- Creative Switch Configuration");
 		stream.println();
+		stream.println("# Amount of time in seconds we check if player changed permissions");
+		stream.println(CHECK_INTERFALL + ": " + checkIntervall);
 
-		stream.println("# Enable the AutoStop feature. ");
-		stream.println(ENABLE_AUTO_STOP + ": " + enableAutoStop);
-		stream.println("# Interval to stop the server, can be fractions of an hour, eg. 2.5 ");
-		stream.println(AUTO_STOP_INTERVAL + ": " + autoStopInterval);
-		stream.println("# Interval to stop the server, can be fractions of an hour, eg. 2.5 ");
-		stream.println(WARNING_TIMES + ": " + warningTimes);
-		stream.println();
+
 		stream.println("# --- Translation Features");
 		stream.println();
 		stream.println("# Almost everything player visible can be translated!");
-		stream.println("# Please change to your liking and use the following variables");
-		stream.println("# %m = minutes");
 
 		stream.println();
 
@@ -347,6 +270,7 @@ afterwards parsable again from the configuration class of bukkit
 		}
 		stream.println();
 
+
 	}
 
 
@@ -356,10 +280,17 @@ afterwards parsable again from the configuration class of bukkit
 
 
 	private void setupCommands() {
-		main.registerCommand(CMD_MEMORY_COMMAND, new MemoryCommand(main));
+		// registering the additional permissions
+
+		for (CREATIVE_SWITCH_PERMISSIONS perm : CREATIVE_SWITCH_PERMISSIONS.values()) {
+			main.getServer().getPluginManager().addPermission(perm.asPermission());
+		}
+
+
 	}
 
 	private void setupListeners() {
+		mainConfig.addPlayerListeners(Type.PLAYER_JOIN);
 	}
 
 
@@ -371,51 +302,22 @@ afterwards parsable again from the configuration class of bukkit
 
 // ToDO Add your getters and setters for your config variables here.
 
-
-	public void setWarningTimes(List<Double> warningTimes) {
-		this.warningTimes = warningTimes;
+	public String getMessage(Messages messages) {
+		return messages.getMessage();
 	}
 
-	public void setEnableAutoStop(boolean enableAutoStop) {
-		this.enableAutoStop = enableAutoStop;
+	public int getCheckIntervall() {
+		return checkIntervall;
 	}
 
-	public void setAutoStopInterval(double autoStopInterval) {
-		this.autoStopInterval = autoStopInterval;
+	public static CreativeSwitchHelper getCreativeSwitchHelper() {
+		return creativeSwitchHelper;
 	}
 
-	public String getPERM_MEMORY_COMMAND() {
-		return PERM_MEMORY_COMMAND;
+	public CreativeSwitchLogger getCreativeSwitchLogger() {
+		return creativeSwitchLogger;
 	}
 
-	public String getMemoryCommandConfig(MEMORY_COMMAND node) {
-		return node.getContent();
-	}
-
-	public double getWarningTime(int index) {
-		return warningTimes.get(index);
-	}
-
-
-	public List<Double> getWarningTimesList() {
-		return warningTimes;
-	}
-
-	public boolean isEnableAutoStop() {
-		return enableAutoStop;
-	}
-
-	public AutoStopServerLogger getAutoStopServerLogger() {
-		return autoStopServerLogger;
-	}
-
-	public double getAutoStopInterval() {
-		return autoStopInterval;
-	}
-
-	public AutoStopServerHelper getAutoStopServerHelper() {
-		return autoStopServerHelper;
-	}
 
 	public static String getMODULE_NAME() {
 		return MODULE_NAME;
@@ -439,7 +341,7 @@ afterwards parsable again from the configuration class of bukkit
 	 * @return instance of class
 	 */
 
-	public static AutoStopServerConfig getInstance() {
+	public static CreativeSwitchConfig getInstance() {
 		return instance;
 	}
 
@@ -459,16 +361,16 @@ afterwards parsable again from the configuration class of bukkit
 // The class stuff first
 
 
-	AutoStopServerConfig(TheMonkeyPack plugin, String moduleName) {
+	CreativeSwitchConfig(TheMonkeyPack plugin, String moduleName) {
 		super();
 		MODULE_NAME = moduleName;
 		main = plugin;
-		autoStopServerLogger = new AutoStopServerLogger(MODULE_NAME);
+		creativeSwitchLogger = new CreativeSwitchLogger(MODULE_NAME);
 		mainConfig = main.getMainConfig();
 		pluginPath = main.getDataFolder() + System.getProperty("file.separator");
 		instance = this;
 		setupConfig();
-		autoStopServerHelper = AutoStopServerHelper.getInstance(main);
+
 	}
 
 
@@ -516,7 +418,7 @@ afterwards parsable again from the configuration class of bukkit
 
 
 		if (!(new File(main.getDataFolder(), configFile)).exists()) {
-			autoStopServerLogger.info("Creating default configuration file");
+			creativeSwitchLogger.info("Creating default configuration file");
 			defaultConfig();
 		}
 
@@ -527,9 +429,9 @@ afterwards parsable again from the configuration class of bukkit
 		try {
 			config.load(pluginPath + configFile);
 		} catch (IOException e) {
-			autoStopServerLogger.severe("Can't read the " + configFile + " File!", e);
+			creativeSwitchLogger.severe("Can't read the " + configFile + " File!", e);
 		} catch (InvalidConfigurationException e) {
-			autoStopServerLogger.severe("Problem with the configuration in " + configFile + "!", e);
+			creativeSwitchLogger.severe("Problem with the configuration in " + configFile + "!", e);
 		}
 // Loading the config from file
 		loadConfig();
@@ -538,6 +440,8 @@ afterwards parsable again from the configuration class of bukkit
 
 		setupCommands();
 		setupListeners();
+
+		creativeSwitchHelper = CreativeSwitchHelper.getInstance(main);
 
 		updateNecessary();
 // If config file has new options update it if enabled
@@ -567,10 +471,10 @@ afterwards parsable again from the configuration class of bukkit
 	private void defaultConfig() {
 		setupCustomDefaultVariables();
 		if (!writeConfig()) {
-			autoStopServerLogger.severe("Problems writing default config!");
-			autoStopServerLogger.info("Using internal Defaults!");
+			creativeSwitchLogger.severe("Problems writing default config!");
+			creativeSwitchLogger.info("Using internal Defaults!");
 		} else {
-			autoStopServerLogger.debug("DefaultConfig written");
+			creativeSwitchLogger.debug("DefaultConfig written");
 		}
 		config.addDefault("configVer", configVer);
 
@@ -594,10 +498,10 @@ afterwards parsable again from the configuration class of bukkit
 		// Starting to update the standard configuration
 		configVer = config.getString("configVer");
 		// Debug OutPut NOW!
-		autoStopServerLogger.debug("configCurrent", configCurrent);
-		autoStopServerLogger.debug("configVer", configVer);
+		creativeSwitchLogger.debug("configCurrent", configCurrent);
+		creativeSwitchLogger.debug("configVer", configVer);
 		loadCustomConfig();
-		autoStopServerLogger.info("Configuration v." + configVer + " loaded.");
+		creativeSwitchLogger.info("Configuration v." + configVer + " loaded.");
 	}
 
 
@@ -614,7 +518,7 @@ afterwards parsable again from the configuration class of bukkit
 	 */
 
 	public boolean writeConfig() {
-		autoStopServerLogger.debug("creating config");
+		creativeSwitchLogger.debug("creating config");
 		boolean success = false;
 		try {
 			PrintWriter stream;
@@ -624,7 +528,7 @@ afterwards parsable again from the configuration class of bukkit
 			}
 			PluginDescriptionFile pdfFile = main.getDescription();
 			stream = new PrintWriter(pluginPath + configFile);
-			autoStopServerLogger.debug("starting contents");
+			creativeSwitchLogger.debug("starting contents");
 //Let's write our config ;)
 			stream.println("# " + pdfFile.getName() + " " + pdfFile.getVersion() + " by " + pdfFile.getAuthors().toString());
 			stream.println("#");
@@ -636,7 +540,7 @@ afterwards parsable again from the configuration class of bukkit
 			stream.println("configVer: \"" + configVer + "\"");
 			stream.println();
 // Getting the custom config information from the top of the class
-			autoStopServerLogger.debug("going for customConfig");
+			creativeSwitchLogger.debug("going for customConfig");
 			writeCustomConfig(stream);
 
 			stream.println();
@@ -646,7 +550,7 @@ afterwards parsable again from the configuration class of bukkit
 			success = true;
 
 		} catch (FileNotFoundException e) {
-			autoStopServerLogger.warning("Error saving the " + configFile + ".");
+			creativeSwitchLogger.warning("Error saving the " + configFile + ".");
 		}
 
 		return success;
@@ -661,12 +565,12 @@ afterwards parsable again from the configuration class of bukkit
 	 */
 	void updateNecessary() {
 		if (configVer.equalsIgnoreCase(configCurrent)) {
-			autoStopServerLogger.info("Config is up to date");
+			creativeSwitchLogger.info("Config is up to date");
 		} else {
-			autoStopServerLogger.warning("Config is not up to date!");
-			autoStopServerLogger.warning("Config File Version: " + configVer);
-			autoStopServerLogger.warning("Internal Config Version: " + configCurrent);
-			autoStopServerLogger.warning("It is suggested to update the config.yml!");
+			creativeSwitchLogger.warning("Config is not up to date!");
+			creativeSwitchLogger.warning("Config File Version: " + configVer);
+			creativeSwitchLogger.warning("Internal Config Version: " + configCurrent);
+			creativeSwitchLogger.warning("It is suggested to update the config.yml!");
 			configRequiresUpdate = true;
 		}
 	}
@@ -681,11 +585,11 @@ afterwards parsable again from the configuration class of bukkit
 		if (configRequiresUpdate) {
 			configVer = configCurrent;
 			if (writeConfig()) {
-				autoStopServerLogger.info("Configuration was updated with new default values.");
-				autoStopServerLogger.info("Please change them to your liking.");
+				creativeSwitchLogger.info("Configuration was updated with new default values.");
+				creativeSwitchLogger.info("Please change them to your liking.");
 			} else {
-				autoStopServerLogger.warning("Configuration file could not be auto updated.");
-				autoStopServerLogger.warning("Please rename " + configFile + " and try again.");
+				creativeSwitchLogger.warning("Configuration file could not be auto updated.");
+				creativeSwitchLogger.warning("Please rename " + configFile + " and try again.");
 			}
 		}
 	}
@@ -704,18 +608,18 @@ afterwards parsable again from the configuration class of bukkit
 			config.load(pluginPath + configFile);
 			configAvailable = true;
 		} catch (IOException e) {
-			autoStopServerLogger.severe("Can't read the " + configFile + " File!", e);
+			creativeSwitchLogger.severe("Can't read the " + configFile + " File!", e);
 		} catch (InvalidConfigurationException e) {
-			autoStopServerLogger.severe("Problem with the configuration in " + configFile + "!", e);
+			creativeSwitchLogger.severe("Problem with the configuration in " + configFile + "!", e);
 		}
 		String msg;
 		if (configAvailable) {
 			loadConfig();
-			autoStopServerLogger.info("Config reloaded");
+			creativeSwitchLogger.info("Config reloaded");
 			msg = MODULE_NAME + " Config was reloaded";
 		} else {
-			autoStopServerLogger.severe("Reloading Config before it exists.");
-			autoStopServerLogger.severe("Flog the developer!");
+			creativeSwitchLogger.severe("Reloading Config before it exists.");
+			creativeSwitchLogger.severe("Flog the developer!");
 			msg = "Something terrible terrible did go really really wrong, see console log!";
 		}
 		return msg;
@@ -734,22 +638,6 @@ afterwards parsable again from the configuration class of bukkit
 			saved = writeConfig();
 		}
 		return saved;
-	}
-
-	private void setMessage(Messages node, String contents) {
-		node.setMessage(contents);
-	}
-
-
-	/**
-	 * Methode to return the content of the MessagesNode
-	 *
-	 * @param node
-	 *
-	 * @return
-	 */
-	public String getMessage(Messages node) {
-		return node.getMessage();
 	}
 
 
