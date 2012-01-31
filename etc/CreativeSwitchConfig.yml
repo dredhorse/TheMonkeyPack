@@ -13,6 +13,7 @@ configVer: "1.0"
 
 # Amount of time in seconds we check if player changed permissions
 checkIntervall: 10
+
 # --- Translation Features
 
 # Almost everything player visible can be translated!

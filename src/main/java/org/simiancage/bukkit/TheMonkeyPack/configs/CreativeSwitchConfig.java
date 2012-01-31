@@ -154,15 +154,18 @@ public class CreativeSwitchConfig extends Configs {
 	/**
 	 * This is the internal config version
 	 */
-	private final String configCurrent = "1.0";
+	private final String configCurrent = "1.1";
 	/**
 	 * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
 	 */
-	private String configVer = "1.0";
+	private String configVer = configCurrent;
 
 
 // and now the real stuff
 
+	private boolean disableInstantBreak = false;
+
+	private final String DISABLE_INSTANT_BREAK = "disableInstantBreak";
 
 // ********************************************************************************************************************
 
@@ -202,6 +205,7 @@ afterwards parsable again from the configuration class of bukkit
 	void customDefaultConfig() {
 
 		config.addDefault(CHECK_INTERFALL, checkIntervall);
+		config.addDefault(DISABLE_INSTANT_BREAK, disableInstantBreak);
 
 		for (Messages node : Messages.values()) {
 			config.addDefault(node.toString(), node.getMessage());
@@ -219,6 +223,7 @@ afterwards parsable again from the configuration class of bukkit
 	void loadCustomConfig() {
 
 		checkIntervall = config.getInt(CHECK_INTERFALL);
+		disableInstantBreak = config.getBoolean(DISABLE_INSTANT_BREAK);
 		for (Messages node : Messages.values()) {
 			if (config.contains(node.toString())) {
 				node.setMessage(config.getString(node.toString()));
@@ -249,8 +254,12 @@ afterwards parsable again from the configuration class of bukkit
 		stream.println();
 		stream.println("# Amount of time in seconds we check if player changed permissions");
 		stream.println(CHECK_INTERFALL + ": " + checkIntervall);
+		stream.println();
+		stream.println("# Disable instant breaking of buttons, levers, doors, trap doors, fence gates, signs,");
+		stream.println("# furnaces, chest, enchantmenttables, cauldrons, minecarts, beds and bookshelfs.");
+		stream.println(DISABLE_INSTANT_BREAK + ": " + disableInstantBreak);
 
-
+		stream.println();
 		stream.println("# --- Translation Features");
 		stream.println();
 		stream.println("# Almost everything player visible can be translated!");
@@ -291,6 +300,7 @@ afterwards parsable again from the configuration class of bukkit
 
 	private void setupListeners() {
 		mainConfig.addPlayerListeners(Type.PLAYER_JOIN);
+		mainConfig.addBlockListeners(Type.BLOCK_BREAK);
 	}
 
 
@@ -301,6 +311,11 @@ afterwards parsable again from the configuration class of bukkit
 
 
 // ToDO Add your getters and setters for your config variables here.
+
+
+	public boolean isDisableInstantBreak() {
+		return disableInstantBreak;
+	}
 
 	public String getMessage(Messages messages) {
 		return messages.getMessage();

@@ -3,6 +3,7 @@ package org.simiancage.bukkit.TheMonkeyPack.listeners;
 import org.bukkit.event.block.*;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.MainConfig;
+import org.simiancage.bukkit.TheMonkeyPack.events.CSBlockEvent;
 import org.simiancage.bukkit.TheMonkeyPack.events.GPBlockEvent;
 import org.simiancage.bukkit.TheMonkeyPack.events.RARPEvent;
 import org.simiancage.bukkit.TheMonkeyPack.events.TCBlockEvent;
@@ -24,6 +25,7 @@ public class BlockListenerTMP extends BlockListener implements Listeners {
 	private GPBlockEvent gpBlockEvent;
 	private TCBlockEvent tcBlockEvent;
 	private RARPEvent rarpEvent;
+	private CSBlockEvent csBlockEvent;
 
 
 	public BlockListenerTMP(TheMonkeyPack plugin) {
@@ -41,7 +43,7 @@ public class BlockListenerTMP extends BlockListener implements Listeners {
 
 	@Override
 	public void onDisable() {
-		//To change body of implemented methods use File | Settings | File Templates.
+
 	}
 
 	public void onBlockBreak(BlockBreakEvent event) {
@@ -53,6 +55,10 @@ public class BlockListenerTMP extends BlockListener implements Listeners {
 		if (mainConfig.isEnableRARP()) {
 			rarpEvent = RARPEvent.getInstance(main);
 			rarpEvent.rarpBlockBreak(event);
+		}
+		if (mainConfig.isEnableCreativeSwitch()) {
+			csBlockEvent = CSBlockEvent.getInstance(main);
+			csBlockEvent.csBlockBreakEvent(event);
 		}
 	}
 

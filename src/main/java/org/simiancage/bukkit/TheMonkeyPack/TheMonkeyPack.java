@@ -69,12 +69,12 @@ public class TheMonkeyPack extends JavaPlugin {
 		}
 
 		for (Type event : mainConfig.getBlockListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new BlockListenerTMP(this), Priority.Monitor, this);
+			getServer().getPluginManager().registerEvent(event, new BlockListenerTMP(this), Priority.Highest, this);
 			addRegisteredListener();
 		}
 
 		for (Type event : mainConfig.getPlayerListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new PlayerListenerTMP(this), Priority.Monitor, this);
+			getServer().getPluginManager().registerEvent(event, new PlayerListenerTMP(this), Priority.Highest, this);
 			addRegisteredListener();
 		}
 
