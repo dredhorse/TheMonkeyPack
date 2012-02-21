@@ -3,7 +3,6 @@ package org.simiancage.bukkit.TheMonkeyPack.configs;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -11,6 +10,9 @@ import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.commands.TNTCommand;
 import org.simiancage.bukkit.TheMonkeyPack.commands.TNTReclaimCommand;
+import org.simiancage.bukkit.TheMonkeyPack.events.TCBlockEvent;
+import org.simiancage.bukkit.TheMonkeyPack.events.TCEntityEvent;
+import org.simiancage.bukkit.TheMonkeyPack.events.TCPlayerEvent;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.TNTControlHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.TNTControlLogger;
 
@@ -272,6 +274,9 @@ public class TNTControlConfig extends Configs {
 
 	private TNTControlLogger tntControlLogger;
 	private TNTControlHelper tntControlHelper;
+	private TCBlockEvent tcBlockEvent;
+	private TCEntityEvent tcEntityEvent;
+	private TCPlayerEvent tcPlayerEvent;
 
 
 	// ToDo Change the configCurrent if the config changes!
@@ -580,12 +585,12 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		mainConfig.addBlockListeners(Type.BLOCK_DAMAGE);
-		mainConfig.addBlockListeners(Type.BLOCK_PLACE);
-		mainConfig.addEntityListeners(Type.EXPLOSION_PRIME);
-		mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
-		mainConfig.addEntityListeners(Type.ENTITY_EXPLODE);
-		mainConfig.addPlayerListeners(Type.PLAYER_QUIT);
+		tcBlockEvent = TCBlockEvent.getInstance(main);
+		tcEntityEvent = TCEntityEvent.getInstance(main);
+		tcPlayerEvent = TCPlayerEvent.getInstance(main);
+		main.addRegisteredListener(tcBlockEvent);
+		main.addRegisteredListener(tcEntityEvent);
+		main.addRegisteredListener(tcPlayerEvent);
 	}
 
 
@@ -748,8 +753,9 @@ afterwards parsable again from the configuration class of bukkit
 		mainConfig = main.getMainConfig();
 		pluginPath = main.getDataFolder() + System.getProperty("file.separator");
 		instance = this;
-		setupConfig();
 		tntControlHelper = TNTControlHelper.getInstance(main);
+		setupConfig();
+
 	}
 
 

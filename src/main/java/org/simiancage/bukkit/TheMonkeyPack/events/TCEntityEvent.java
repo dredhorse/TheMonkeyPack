@@ -3,6 +3,9 @@ package org.simiancage.bukkit.TheMonkeyPack.events;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
@@ -23,7 +26,7 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.TNTControlLogger;
 
 // contains code from http://forums.bukkit.org/threads/8145/
 
-public class TCEntityEvent {
+public class TCEntityEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -50,6 +53,7 @@ public class TCEntityEvent {
 		return instance;
 	}
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void tntControlExplosionPrime(ExplosionPrimeEvent event) {
 		if (!event.isCancelled()) {
 			if (event.getEntity() instanceof TNTPrimed) {
@@ -80,7 +84,7 @@ public class TCEntityEvent {
 		}
 	}
 
-
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void tntControlEntityExplode(EntityExplodeEvent event) {
 
 		if (!event.isCancelled()) {

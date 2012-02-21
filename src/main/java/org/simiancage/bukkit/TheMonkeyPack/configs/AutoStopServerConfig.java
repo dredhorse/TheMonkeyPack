@@ -270,7 +270,7 @@ afterwards parsable again from the configuration class of bukkit
 
 		enableAutoStop = config.getBoolean(ENABLE_AUTO_STOP);
 		autoStopInterval = config.getDouble(AUTO_STOP_INTERVAL);
-		warningTimes = config.getList(WARNING_TIMES);
+		warningTimes = config.getDoubleList(WARNING_TIMES);
 
 
 		// now loading TNT_COMMAND

@@ -5,10 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
+import org.simiancage.bukkit.TheMonkeyPack.events.RARPEvent;
 import org.simiancage.bukkit.TheMonkeyPack.loging.RARPLogger;
 
 import java.io.File;
@@ -157,6 +157,8 @@ public class RARPConfig extends Configs {
 	 * This is the DEFAULT for the config file version, should be the same as configCurrent. Will afterwards be changed
 	 */
 	private String configVer = "1.0";
+
+	private RARPEvent rarpEvent;
 
 
 // and now the real stuff
@@ -322,14 +324,8 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		mainConfig.addBlockListeners(Type.BLOCK_PISTON_EXTEND);
-		mainConfig.addBlockListeners(Type.BLOCK_PISTON_RETRACT);
-		mainConfig.addBlockListeners(Type.BLOCK_FROMTO);
-		mainConfig.addBlockListeners(Type.BLOCK_BREAK);
-		mainConfig.addBlockListeners(Type.BLOCK_PLACE);
-		mainConfig.addBlockListeners(Type.BLOCK_PHYSICS);
-		mainConfig.addEntityListeners(Type.ENTITY_EXPLODE);
-		mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
+		rarpEvent = RARPEvent.getInstance(main);
+		main.addRegisteredListener(rarpEvent);
 	}
 
 

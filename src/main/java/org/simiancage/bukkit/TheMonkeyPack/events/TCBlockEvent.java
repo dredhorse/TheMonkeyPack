@@ -6,6 +6,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +33,7 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.TNTControlLogger;
 // contains code from http://forums.bukkit.org/threads/8145/
 
 
-public class TCBlockEvent {
+public class TCBlockEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -58,6 +61,7 @@ public class TCBlockEvent {
 	}
 
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void tntControlBlockPlace(BlockPlaceEvent event) {
 		if ((!event.isCancelled()) && event.getBlock().getType() == Material.TNT) {
 			String msg = "You should not see this, if yes, tell the plugin developer!";
@@ -105,7 +109,7 @@ public class TCBlockEvent {
 		}
 	}
 
-
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void tntControlBlockDamage(BlockDamageEvent event) {
 
 		if (!event.isCancelled() && event.getBlock().getType() == Material.TNT) {

@@ -1,6 +1,9 @@
 package org.simiancage.bukkit.TheMonkeyPack.events;
 
 import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -20,7 +23,7 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
  */
 
 
-public class ACEntityEvent {
+public class ACEntityEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -46,6 +49,7 @@ public class ACEntityEvent {
 		return instance;
 	}
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void playerTargetEvent(EntityTargetEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -76,6 +80,7 @@ public class ACEntityEvent {
 		}
 	}
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void entityDamageEvent(EntityDamageEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -155,11 +160,6 @@ public class ACEntityEvent {
 			return ATTACK_CONTROL_PERMISSIONS.AC_WOLF.hasPermission(player);
 		}
 
-
-		// Monster is a parent class and needs to be last
-		if (entity instanceof Monster) {
-			return ATTACK_CONTROL_PERMISSIONS.AC_MONSTER.hasPermission(player);
-		}
 
 		return false;
 	}

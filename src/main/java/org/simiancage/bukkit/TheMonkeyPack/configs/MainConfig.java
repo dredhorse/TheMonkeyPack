@@ -10,7 +10,6 @@ package org.simiancage.bukkit.TheMonkeyPack.configs; /**
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
@@ -21,8 +20,6 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -96,18 +93,6 @@ public class MainConfig {
 	 * Do we require a config update?
 	 */
 	private boolean configRequiresUpdate = false;
-
-
-	private static List<Type> blockListenerEvents = new ArrayList<Type>();
-	private static List<Type> eventListenerEvents = new ArrayList<Type>();
-	private static List<Type> entityListenerEvents = new ArrayList<Type>();
-	private static List<Type> inventoryListenerEvents = new ArrayList<Type>();
-	private static List<Type> playerListenerEvents = new ArrayList<Type>();
-	private static List<Type> vehicleListenerEvents = new ArrayList<Type>();
-	private static List<Type> weatherListenerEvents = new ArrayList<Type>();
-	private static List<Type> worldListenerEvents = new ArrayList<Type>();
-	private static List<Type> serverListenerEvents = new ArrayList<Type>();
-	private static List<Type> playerChatListeners = new ArrayList<Type>();
 
 
 // <<<<=== here..
@@ -604,9 +589,6 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		addServerListenerEvents(Type.PLUGIN_ENABLE);
-		addServerListenerEvents(Type.PLUGIN_DISABLE);
-		addPlayerChatListener(Type.PLAYER_COMMAND_PREPROCESS);
 	}
 
 
@@ -632,183 +614,6 @@ afterwards parsable again from the configuration class of bukkit
 
 // than the getters & setters
 
-
-	public static List<Type> getBlockListenerEvents() {
-		return blockListenerEvents;
-	}
-
-	public static List<Type> getEventListenerEvents() {
-		return eventListenerEvents;
-	}
-
-	public static List<Type> getEntityListenerEvents() {
-		return entityListenerEvents;
-	}
-
-	public static List<Type> getInventoryListenerEvents() {
-		return inventoryListenerEvents;
-	}
-
-	public static List<Type> getPlayerListenerEvents() {
-		return playerListenerEvents;
-	}
-
-	public static List<Type> getVehicleListenerEvents() {
-		return vehicleListenerEvents;
-	}
-
-	public static List<Type> getWeatherListenerEvents() {
-		return weatherListenerEvents;
-	}
-
-	public static List<Type> getWorldListenerEvents() {
-		return worldListenerEvents;
-	}
-
-	public static List<Type> getServerListenerEvents() {
-		return serverListenerEvents;
-	}
-
-	public static List<Type> getPlayerChatListeners() {
-		return playerChatListeners;
-	}
-
-	public static void resetBlockListeners() {
-		blockListenerEvents.clear();
-	}
-
-	public static void resetEventListeners() {
-		eventListenerEvents.clear();
-	}
-
-	public static void resetEntityListeners() {
-		entityListenerEvents.clear();
-	}
-
-	public static void resetInventoryListeners() {
-		inventoryListenerEvents.clear();
-	}
-
-	public static void resetPlayerListeners() {
-		playerListenerEvents.clear();
-	}
-
-	public static void resetVehicleListeners() {
-		vehicleListenerEvents.clear();
-	}
-
-	public static void resetWeatherListeners() {
-		weatherListenerEvents.clear();
-	}
-
-	public static void resetWorldListeners() {
-		worldListenerEvents.clear();
-	}
-
-	public static void resetServerListeners() {
-		serverListenerEvents.clear();
-	}
-
-	public static void resetPlayerChatListeners() {
-		playerChatListeners.clear();
-	}
-
-
-	public static void addBlockListeners(Type type) {
-		if (!blockListenerEvents.contains(type)) {
-			blockListenerEvents.add(type);
-		}
-	}
-
-	public static void addEventListeners(Type type) {
-		if (!eventListenerEvents.contains(type)) {
-			eventListenerEvents.add(type);
-		}
-	}
-
-	public static void addEntityListeners(Type type) {
-		if (!entityListenerEvents.contains(type)) {
-			entityListenerEvents.add(type);
-		}
-	}
-
-	public static void addInventoryListeners(Type type) {
-		if (!entityListenerEvents.contains(type)) {
-			inventoryListenerEvents.add(type);
-		}
-	}
-
-	public static void addPlayerListeners(Type type) {
-		if (!playerListenerEvents.contains(type)) {
-			playerListenerEvents.add(type);
-		}
-	}
-
-	public static void addPlayerChatListener(Type type) {
-		if (!playerChatListeners.contains(type)) {
-			playerChatListeners.add(type);
-		}
-	}
-
-	public static void addVehicleListeners(Type type) {
-		if (!vehicleListenerEvents.contains(type)) {
-			vehicleListenerEvents.add(type);
-		}
-	}
-
-	public static void addWeatherListeners(Type type) {
-		if (!weatherListenerEvents.contains(type)) {
-			weatherListenerEvents.add(type);
-		}
-	}
-
-	public static void addWorldListeners(Type type) {
-		if (!worldListenerEvents.contains(type)) {
-			worldListenerEvents.add(type);
-		}
-	}
-
-	public static void addServerListenerEvents(Type type) {
-		if (!serverListenerEvents.contains(type)) {
-			serverListenerEvents.add(type);
-		}
-	}
-
-	public static boolean isEnableEntityListener() {
-		return entityListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableEventListener() {
-		return eventListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableBlockListener() {
-		return blockListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableInventoryListener() {
-		return inventoryListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnablePlayerListener() {
-		return playerListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableVehicleListener() {
-		return vehicleListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableWeatherListener() {
-		return weatherListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableWorldListeners() {
-		return worldListenerEvents.size() > 0;
-	}
-
-	public static boolean isEnableServerListeners() {
-		return serverListenerEvents.size() > 0;
-	}
 
 	/**
 	 * Method to return the PluginName

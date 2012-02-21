@@ -14,14 +14,14 @@ package org.simiancage.bukkit.TheMonkeyPack;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simiancage.bukkit.TheMonkeyPack.commands.Commands;
 import org.simiancage.bukkit.TheMonkeyPack.configs.*;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.MetricsHelper;
-import org.simiancage.bukkit.TheMonkeyPack.listeners.*;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.PlayerChatListener;
+import org.simiancage.bukkit.TheMonkeyPack.listeners.ServerListenerTMP;
 import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
 import java.io.IOException;
@@ -44,6 +44,9 @@ public class TheMonkeyPack extends JavaPlugin {
 	private AttackControlConfig attackControlConfig;
 	private RARPConfig rarpConfig;
 	private CreativeSwitchConfig creativeSwitchConfig;
+	private ServerListenerTMP serverListenerTMP;
+	private PlayerChatListener playerChatListener;
+
 
 	private Economy economy = null;
 	HashMap<String, Commands> registeredPlayerCommands = new HashMap<String, Commands>();
@@ -57,34 +60,12 @@ public class TheMonkeyPack extends JavaPlugin {
 		mainLogger.setConfig(mainConfig);
 		mainConfig.setupConfig(this);
 
+		serverListenerTMP = new ServerListenerTMP(this);
+		playerChatListener = new PlayerChatListener(this);
+		addRegisteredListener(serverListenerTMP);
+		addRegisteredListener(playerChatListener);
 
-		for (Type event : mainConfig.getServerListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new ServerListenerTMP(this), Priority.Monitor, this);
-			addRegisteredListener();
-		}
 
-		for (Type event : mainConfig.getPlayerChatListeners()) {
-			getServer().getPluginManager().registerEvent(event, new PlayerChatListener(this), Priority.Normal, this);
-			addRegisteredListener();
-		}
-
-		for (Type event : mainConfig.getBlockListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new BlockListenerTMP(this), Priority.Highest, this);
-			addRegisteredListener();
-		}
-
-		for (Type event : mainConfig.getPlayerListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new PlayerListenerTMP(this), Priority.Highest, this);
-			addRegisteredListener();
-		}
-
-		for (Type event : mainConfig.getEntityListenerEvents()) {
-			getServer().getPluginManager().registerEvent(event, new EntityListenerTMP(this), Priority.High, this);
-			addRegisteredListener();
-		}
-
-		mainLogger.debug(registeredCommands + " Commands registered");
-		mainLogger.debug(registeredListeners + " Listeners registered");
 		if (mainConfig.isEnableKits()) {
 			kitConfig = KitConfig.getInstance();
 		}
@@ -113,13 +94,14 @@ public class TheMonkeyPack extends JavaPlugin {
 
 		if (mainConfig.isEnableCreativeSwitch()) {
 			creativeSwitchConfig = CreativeSwitchConfig.getInstance();
-			creativeSwitchConfig.getCreativeSwitchHelper().onEnable();
+			CreativeSwitchConfig.getCreativeSwitchHelper().onEnable();
 		}
 
 		// ToDo add more configs for other Modules on Top
 
 		enableMetrics();
-
+		mainLogger.debug(registeredCommands + " Commands registered");
+		mainLogger.debug(registeredListeners + " Listeners registered");
 
 		mainLogger.enableMsg();
 
@@ -143,22 +125,12 @@ public class TheMonkeyPack extends JavaPlugin {
 		}
 
 		if (mainConfig.isEnableCreativeSwitch()) {
-			creativeSwitchConfig.getCreativeSwitchHelper().onDisable();
+			CreativeSwitchConfig.getCreativeSwitchHelper().onDisable();
 		}
 
 
 		registeredCommands = 0;
 		registeredListeners = 0;
-		mainConfig.resetBlockListeners();
-		mainConfig.resetEntityListeners();
-		mainConfig.resetEventListeners();
-		mainConfig.resetInventoryListeners();
-		mainConfig.resetPlayerListeners();
-		mainConfig.resetVehicleListeners();
-		mainConfig.resetWeatherListeners();
-		mainConfig.resetWorldListeners();
-		mainConfig.resetServerListeners();
-		mainConfig.resetPlayerChatListeners();
 		registeredPlayerCommands.clear();
 		economy = null;
 		economyEnabled = false;
@@ -319,7 +291,8 @@ public class TheMonkeyPack extends JavaPlugin {
 		registeredCommands++;
 	}
 
-	private void addRegisteredListener() {
+	public void addRegisteredListener(Listener listener) {
+		getServer().getPluginManager().registerEvents(listener, this);
 		registeredListeners++;
 	}
 
@@ -387,5 +360,14 @@ public class TheMonkeyPack extends JavaPlugin {
 	public Commands getPlayerCommand(String command) {
 		return registeredPlayerCommands.get(command);
 	}
+
+	public ServerListenerTMP getServerListenerTMP() {
+		return serverListenerTMP;
+	}
+
+	public PlayerChatListener getPlayerChatListener() {
+		return playerChatListener;
+	}
+
 }
 

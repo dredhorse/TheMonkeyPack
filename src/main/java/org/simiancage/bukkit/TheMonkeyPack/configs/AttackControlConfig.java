@@ -3,10 +3,10 @@ package org.simiancage.bukkit.TheMonkeyPack.configs;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
+import org.simiancage.bukkit.TheMonkeyPack.events.ACEntityEvent;
 import org.simiancage.bukkit.TheMonkeyPack.loging.AttackControlLogger;
 
 import java.io.File;
@@ -93,6 +93,8 @@ public class AttackControlConfig extends Configs {
 
 
 	private AttackControlLogger attackControlLogger;
+
+	private ACEntityEvent acEntityEvent;
 
 
 	// ToDo Change the configCurrent if the config changes!
@@ -213,9 +215,8 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		mainConfig.addEntityListeners(Type.ENTITY_TARGET);
-		mainConfig.addEntityListeners(Type.ENTITY_DAMAGE);
-
+		acEntityEvent = ACEntityEvent.getInstance(main);
+		main.addRegisteredListener(acEntityEvent);
 	}
 
 

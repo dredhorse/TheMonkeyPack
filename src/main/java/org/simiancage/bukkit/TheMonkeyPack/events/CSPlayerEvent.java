@@ -2,6 +2,9 @@ package org.simiancage.bukkit.TheMonkeyPack.events;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.CreativeSwitchConfig;
@@ -21,7 +24,7 @@ import org.simiancage.bukkit.TheMonkeyPack.loging.MainLogger;
 
 // contains code from http://forums.bukkit.org/threads/20984/
 
-public class CSPlayerEvent {
+public class CSPlayerEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -46,7 +49,7 @@ public class CSPlayerEvent {
 		return instance;
 	}
 
-
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void getCreativeSwitchLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		if (CREATIVE_SWITCH_PERMISSIONS.CS.hasPermission(player)) {

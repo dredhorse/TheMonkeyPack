@@ -3,10 +3,11 @@ package org.simiancage.bukkit.TheMonkeyPack.configs;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
+import org.simiancage.bukkit.TheMonkeyPack.events.CSBlockEvent;
+import org.simiancage.bukkit.TheMonkeyPack.events.CSPlayerEvent;
 import org.simiancage.bukkit.TheMonkeyPack.helpers.CreativeSwitchHelper;
 import org.simiancage.bukkit.TheMonkeyPack.loging.CreativeSwitchLogger;
 
@@ -148,6 +149,8 @@ public class CreativeSwitchConfig extends Configs {
 
 
 	private CreativeSwitchLogger creativeSwitchLogger;
+	private CSBlockEvent csBlockEvent;
+	private CSPlayerEvent csPlayerEvent;
 
 
 	// ToDo Change the configCurrent if the config changes!
@@ -299,8 +302,10 @@ afterwards parsable again from the configuration class of bukkit
 	}
 
 	private void setupListeners() {
-		mainConfig.addPlayerListeners(Type.PLAYER_JOIN);
-		mainConfig.addBlockListeners(Type.BLOCK_BREAK);
+		csBlockEvent = CSBlockEvent.getInstance(main);
+		csPlayerEvent = CSPlayerEvent.getInstance(main);
+		main.addRegisteredListener(csBlockEvent);
+		main.addRegisteredListener(csPlayerEvent);
 	}
 
 

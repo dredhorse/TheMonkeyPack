@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -29,7 +31,7 @@ import java.util.List;
  */
 
 
-public class RARPEvent {
+public class RARPEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -56,6 +58,7 @@ public class RARPEvent {
 		return instance;
 	}
 
+	@EventHandler(ignoreCancelled = true)
 	public void rarpBlockFromTo(BlockFromToEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -78,6 +81,7 @@ public class RARPEvent {
 	}
 
 
+	@EventHandler(ignoreCancelled = true)
 	public void rarpPistonExtend(BlockPistonExtendEvent event) {
 		rarpLogger.debug("pistonextend", event.getDirection());
 		rarpLogger.debug("3 blocks up", event.getBlock().getRelative(0, 2, 0).getType());
@@ -158,6 +162,7 @@ public class RARPEvent {
 
 	}
 
+	@EventHandler(ignoreCancelled = true)
 	public void rarpBlockPlace(BlockPlaceEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -180,6 +185,7 @@ public class RARPEvent {
 
 	}
 
+	@EventHandler(ignoreCancelled = true)
 	public void rarpBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -279,7 +285,7 @@ public class RARPEvent {
 		return false;
 	}
 
-
+	@EventHandler(ignoreCancelled = true)
 	public void rarpEntityExplodeEvent(EntityExplodeEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -302,6 +308,7 @@ public class RARPEvent {
 		}
 	}
 
+	@EventHandler(ignoreCancelled = true)
 	public void rarpEntityDamageEvent(EntityDamageEvent event) {
 		if (event.isCancelled()) {
 			return;

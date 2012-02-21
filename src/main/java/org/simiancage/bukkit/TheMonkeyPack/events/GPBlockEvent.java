@@ -3,6 +3,9 @@ package org.simiancage.bukkit.TheMonkeyPack.events;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
@@ -25,7 +28,7 @@ import java.util.Map;
 
 // contains code from http://forums.bukkit.org/threads/20984/
 
-public class GPBlockEvent {
+public class GPBlockEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -53,8 +56,11 @@ public class GPBlockEvent {
 		return instance;
 	}
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void getPayedBlockBreakEvent(BlockBreakEvent event) {
-
+		if (!mainConfig.isGetPayedActive()) {
+			return;
+		}
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		blockEvent(block, player, false);
@@ -87,9 +93,11 @@ public class GPBlockEvent {
 		return Double.valueOf(0.0D);
 	}
 
-
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void getPayedBlockPlaceEvent(BlockPlaceEvent event) {
-
+		if (!mainConfig.isGetPayedActive()) {
+			return;
+		}
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		blockEvent(block, player, true);

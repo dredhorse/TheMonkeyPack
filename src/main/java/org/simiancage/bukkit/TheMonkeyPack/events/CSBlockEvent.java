@@ -3,7 +3,9 @@ package org.simiancage.bukkit.TheMonkeyPack.events;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.CreativeSwitchConfig;
@@ -22,7 +24,7 @@ import java.util.HashMap;
  */
 
 
-public class CSBlockEvent {
+public class CSBlockEvent implements Listener {
 
 	protected TheMonkeyPack main;
 	private MainConfig mainConfig;
@@ -49,6 +51,7 @@ public class CSBlockEvent {
 		return instance;
 	}
 
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void csBlockBreakEvent(BlockBreakEvent event) {
 		if (event.isCancelled() || !creativeSwitchConfig.isDisableInstantBreak()) {
 			return;
@@ -83,9 +86,6 @@ public class CSBlockEvent {
 				event.setCancelled(true);
 			}
 		}
-
-
-		Player player = event.getPlayer();
 	}
 
 
