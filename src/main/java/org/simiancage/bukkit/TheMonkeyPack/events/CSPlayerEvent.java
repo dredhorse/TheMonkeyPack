@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.simiancage.bukkit.TheMonkeyPack.TheMonkeyPack;
 import org.simiancage.bukkit.TheMonkeyPack.configs.CreativeSwitchConfig;
 import org.simiancage.bukkit.TheMonkeyPack.configs.CreativeSwitchConfig.CREATIVE_SWITCH_PERMISSIONS;
@@ -50,7 +50,7 @@ public class CSPlayerEvent implements Listener {
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-	public void getCreativeSwitchLogin(PlayerLoginEvent event) {
+	public void getCreativeSwitchLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		if (CREATIVE_SWITCH_PERMISSIONS.CS.hasPermission(player)) {
 			player.setGameMode(GameMode.CREATIVE);
