@@ -1,5 +1,6 @@
 package org.simiancage.bukkit.TheMonkeyPack.events;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -57,6 +58,9 @@ public class CSBlockEvent implements Listener {
 			return;
 		}
 		Block block = event.getBlock();
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			return;
+		}
 		Material blockType = block.getType();
 		creativeSwitchLogger.debug("BlockType: " + blockType);
 		if (blockType == Material.LEVER || blockType == Material.WOODEN_DOOR || blockType == Material.IRON_DOOR_BLOCK || blockType == Material.STONE_BUTTON
