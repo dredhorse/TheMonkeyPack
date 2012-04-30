@@ -95,7 +95,7 @@ public class MetricsHelper {
 	/**
 	 * The base url of the metrics domain
 	 */
-	private static final String BASE_URL = "http://metrics.griefcraft.com";
+	private static final String BASE_URL = "http://mcstats.org/";
 
 	/**
 	 * The url used to report a server's status
